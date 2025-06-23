@@ -33,23 +33,25 @@ export function ResumeBuilder() {
       <div className="flex min-h-screen flex-col bg-background">
         <AppHeader />
         <main className="flex-1 overflow-hidden">
-          <PanelGroup direction="horizontal" className="h-full">
-            <Panel defaultSize={isClient && isDesktop ? 50 : 100} minSize={40}>
-              <div className="h-full overflow-y-auto p-4 sm:p-8 print:hidden">
-                <ResumeForm />
-              </div>
-            </Panel>
-            {isClient && isDesktop && (
-              <>
-                <PanelResizeHandle className="w-px bg-border transition-colors hover:bg-primary data-[resize-handle-state=drag]:bg-primary print:hidden" />
-                <Panel defaultSize={50} minSize={30}>
-                  <div className="h-full overflow-y-auto bg-muted/30 p-4 sm:p-8">
-                    <ResumePreview />
-                  </div>
-                </Panel>
-              </>
-            )}
-          </PanelGroup>
+          {isClient && isDesktop ? (
+            <PanelGroup direction="horizontal" className="h-full">
+              <Panel defaultSize={50} minSize={40}>
+                <div className="h-full overflow-y-auto p-4 sm:p-8 print:hidden">
+                  <ResumeForm />
+                </div>
+              </Panel>
+              <PanelResizeHandle className="w-px bg-border transition-colors hover:bg-primary data-[resize-handle-state=drag]:bg-primary print:hidden" />
+              <Panel defaultSize={50} minSize={30}>
+                <div className="h-full overflow-y-auto bg-muted/30 p-4 sm:p-8">
+                  <ResumePreview />
+                </div>
+              </Panel>
+            </PanelGroup>
+          ) : (
+            <div className="h-full overflow-y-auto p-4 sm:p-8 print:hidden">
+              <ResumeForm />
+            </div>
+          )}
         </main>
       </div>
     </FormProvider>
