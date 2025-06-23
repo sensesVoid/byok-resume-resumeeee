@@ -6,6 +6,13 @@ import { resumeSchema, defaultResumeData, type ResumeSchema } from '@/lib/schema
 import { ResumeForm } from '@/components/resume-form';
 import { ResumePreview } from '@/components/resume-preview';
 import { AppHeader } from '@/components/app-header';
+import {
+  Panel,
+  PanelGroup,
+  PanelResizeHandle,
+} from 'react-resizable-panels';
+import { useMediaQuery } from '@/hooks/use-media-query';
+import { useState, useEffect } from 'react';
 
 export function ResumeBuilder() {
   const form = useForm<ResumeSchema>({
@@ -14,19 +21,35 @@ export function ResumeBuilder() {
     mode: 'onBlur',
   });
 
+  const [isClient, setIsClient] = useState(false);
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  const isDesktop = useMediaQuery('(min-width: 768px)');
+
   return (
     <FormProvider {...form}>
       <div className="flex min-h-screen flex-col bg-background">
         <AppHeader />
         <main className="flex-1 overflow-hidden">
-          <div className="grid h-full md:grid-cols-2">
-            <div className="h-full overflow-y-auto p-4 sm:p-8 print:hidden">
-              <ResumeForm />
-            </div>
-            <div className="hidden h-full overflow-y-auto bg-muted/30 p-4 sm:p-8 md:block">
-              <ResumePreview />
-            </div>
-          </div>
+          <PanelGroup direction="horizontal" className="h-full">
+            <Panel defaultSize={isClient && isDesktop ? 50 : 100} minSize={40}>
+              <div className="h-full overflow-y-auto p-4 sm:p-8 print:hidden">
+                <ResumeForm />
+              </div>
+            </Panel>
+            {isClient && isDesktop && (
+              <>
+                <PanelResizeHandle className="w-px bg-border transition-colors hover:bg-primary data-[resize-handle-state=drag]:bg-primary print:hidden" />
+                <Panel defaultSize={50} minSize={30}>
+                  <div className="h-full overflow-y-auto bg-muted/30 p-4 sm:p-8">
+                    <ResumePreview />
+                  </div>
+                </Panel>
+              </>
+            )}
+          </PanelGroup>
         </main>
       </div>
     </FormProvider>
