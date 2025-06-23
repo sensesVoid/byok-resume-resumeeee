@@ -65,7 +65,9 @@ export function TemplateSwitcher() {
                         <CardContent className="flex flex-col items-center gap-2 p-2">
                           <div className="h-[210px] w-[150px] overflow-hidden rounded-md border bg-white">
                             <div className="origin-top-left scale-[0.25] transform">
-                               <TemplateComponent data={data} />
+                               <div className="h-[840px] w-[600px]">
+                                <TemplateComponent data={data} />
+                               </div>
                             </div>
                           </div>
                           <span className="font-semibold">{template.label}</span>
