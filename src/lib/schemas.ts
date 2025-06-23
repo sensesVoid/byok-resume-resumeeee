@@ -1,0 +1,83 @@
+import { z } from 'zod';
+
+export const personalInfoSchema = z.object({
+  name: z.string().min(1, 'Name is required'),
+  email: z.string().email('Invalid email address'),
+  phone: z.string().optional(),
+  website: z.string().url('Invalid URL').optional(),
+  location: z.string().optional(),
+});
+
+export const experienceSchema = z.object({
+  id: z.string().default(() => crypto.randomUUID()),
+  jobTitle: z.string().min(1, 'Job title is required'),
+  company: z.string().min(1, 'Company name is required'),
+  location: z.string().optional(),
+  startDate: z.string().min(1, 'Start date is required'),
+  endDate: z.string().optional(),
+  description: z.string().optional(),
+});
+
+export const educationSchema = z.object({
+  id: z.string().default(() => crypto.randomUUID()),
+  degree: z.string().min(1, 'Degree is required'),
+  institution: z.string().min(1, 'Institution is required'),
+  location: z.string().optional(),
+  graduationDate: z.string().min(1, 'Graduation date is required'),
+  description: z.string().optional(),
+});
+
+export const resumeSchema = z.object({
+  personalInfo: personalInfoSchema,
+  summary: z.string().optional(),
+  experience: z.array(experienceSchema),
+  education: z.array(educationSchema),
+  skills: z.array(z.object({ id: z.string(), name: z.string() })),
+  jobDescription: z.string().optional(),
+  coverLetter: z.string().optional(),
+});
+
+export type ResumeSchema = z.infer<typeof resumeSchema>;
+
+export const defaultResumeData: ResumeSchema = {
+  personalInfo: {
+    name: 'John Doe',
+    email: 'john.doe@example.com',
+    phone: '123-456-7890',
+    website: 'https://johndoe.dev',
+    location: 'San Francisco, CA',
+  },
+  summary:
+    'Innovative and deadline-driven Software Engineer with 5+ years of experience designing and developing user-centered digital products from initial concept to final, polished deliverable.',
+  experience: [
+    {
+      id: '1',
+      jobTitle: 'Senior Software Engineer',
+      company: 'Tech Corp',
+      location: 'Palo Alto, CA',
+      startDate: 'Jan 2022',
+      endDate: 'Present',
+      description: '- Led a team of 5 engineers to develop a new e-commerce platform, resulting in a 30% increase in sales.\n- Optimized application performance, reducing page load times by 40%.\n- Mentored junior engineers and conducted code reviews.',
+    },
+  ],
+  education: [
+    {
+      id: '1',
+      degree: 'B.S. in Computer Science',
+      institution: 'State University',
+      location: 'Anytown, USA',
+      graduationDate: 'May 2019',
+      description: 'Graduated with honors, GPA 3.8/4.0.',
+    },
+  ],
+  skills: [
+    { id: '1', name: 'React' },
+    { id: '2', name: 'Node.js' },
+    { id: '3', name: 'TypeScript' },
+    { id: '4', name: 'Next.js' },
+    { id: '5', name: 'GraphQL' },
+    { id: '6', name: 'Cloud Services (AWS, GCP)' },
+  ],
+  jobDescription: '',
+  coverLetter: '',
+};
