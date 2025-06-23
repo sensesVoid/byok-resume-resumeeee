@@ -9,7 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
-import { BrainCircuit, Loader2, Plus, Trash2, Wand2 } from 'lucide-react';
+import { BrainCircuit, Eraser, Loader2, Plus, Trash2, Wand2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { generateCoverLetterAction, improveContentAction } from '@/app/actions';
 import { useState, useTransition } from 'react';
@@ -210,6 +210,20 @@ export function ResumeForm() {
           <AccordionItem value="personal">
             <AccordionTrigger className="text-lg font-semibold">Personal Information</AccordionTrigger>
             <AccordionContent>
+              <div className="mb-4 flex justify-end">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    form.setValue('personalInfo', { name: '', email: '', phone: '', website: '', location: '' });
+                    toast({ title: 'Personal Information cleared.' });
+                  }}
+                >
+                  <Eraser className="mr-2 h-4 w-4" />
+                  Clear Section
+                </Button>
+              </div>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <FormField control={form.control} name="personalInfo.name" render={({ field }) => (
                   <FormItem><FormLabel>Full Name</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
@@ -242,6 +256,18 @@ export function ResumeForm() {
                         {isImproving && fieldToUpdate === 'summary' ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
                         Improve with AI
                       </Button>
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => {
+                          form.setValue('summary', '');
+                          toast({ title: 'Summary cleared.' });
+                        }}
+                      >
+                        <Eraser className="mr-2 h-4 w-4" />
+                        Clear
+                      </Button>
                     </div>
                   </FormItem>
                 )} />
@@ -251,6 +277,21 @@ export function ResumeForm() {
           <AccordionItem value="experience">
             <AccordionTrigger className="text-lg font-semibold">Work Experience</AccordionTrigger>
             <AccordionContent>
+              <div className="mb-4 flex justify-end">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    form.setValue('experience', []);
+                    toast({ title: 'Work Experience cleared.' });
+                  }}
+                  disabled={experienceFields.length === 0}
+                >
+                  <Eraser className="mr-2 h-4 w-4" />
+                  Clear Section
+                </Button>
+              </div>
               <div className="space-y-6">
                 {experienceFields.map((field, index) => (
                   <Card key={field.id} className="relative">
@@ -300,6 +341,21 @@ export function ResumeForm() {
           <AccordionItem value="education">
             <AccordionTrigger className="text-lg font-semibold">Education</AccordionTrigger>
             <AccordionContent>
+              <div className="mb-4 flex justify-end">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    form.setValue('education', []);
+                    toast({ title: 'Education cleared.' });
+                  }}
+                  disabled={educationFields.length === 0}
+                >
+                  <Eraser className="mr-2 h-4 w-4" />
+                  Clear Section
+                </Button>
+              </div>
               <div className="space-y-6">
                 {educationFields.map((field, index) => (
                   <Card key={field.id} className="relative">
@@ -341,7 +397,7 @@ export function ResumeForm() {
                   <Input value={newSkill} onChange={e => setNewSkill(e.target.value)} placeholder="e.g. TypeScript" onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddSkill())} />
                   <Button type="button" onClick={handleAddSkill}><Plus className="h-4 w-4" /> Add</Button>
                 </div>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex min-h-[2.25rem] flex-wrap gap-2">
                   {skillFields.map((field, index) => (
                     <div key={field.id} className="flex items-center gap-1 rounded-full bg-secondary px-3 py-1 text-sm">
                       {form.watch(`skills.${index}.name`)}
@@ -349,6 +405,21 @@ export function ResumeForm() {
                     </div>
                   ))}
                 </div>
+                 <div className="flex justify-end">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        form.setValue('skills', []);
+                        toast({ title: 'Skills cleared.' });
+                      }}
+                      disabled={skillFields.length === 0}
+                    >
+                      <Eraser className="mr-2 h-4 w-4" />
+                      Clear Section
+                    </Button>
+                  </div>
               </div>
             </AccordionContent>
           </AccordionItem>
@@ -365,10 +436,24 @@ export function ResumeForm() {
                     <FormMessage />
                   </FormItem>
                 )} />
-                <Button type="button" onClick={handleGenerateCoverLetter} disabled={isPending}>
-                  {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <BrainCircuit className="mr-2 h-4 w-4" />}
-                  Generate Cover Letter
-                </Button>
+                <div className="flex flex-wrap gap-2">
+                  <Button type="button" onClick={handleGenerateCoverLetter} disabled={isPending}>
+                    {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <BrainCircuit className="mr-2 h-4 w-4" />}
+                    Generate Cover Letter
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      form.setValue('jobDescription', '');
+                      form.setValue('coverLetter', '');
+                      toast({ title: 'Cover Letter section cleared.' });
+                    }}
+                  >
+                    <Eraser className="mr-2 h-4 w-4" />
+                    Clear Section
+                  </Button>
+                </div>
               </div>
             </AccordionContent>
           </AccordionItem>
