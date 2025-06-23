@@ -118,7 +118,7 @@ export function ResumeBuilder() {
                   <ResumeForm />
                 </div>
               </Panel>
-              <PanelResizeHandle className="w-px bg-border transition-colors hover:bg-primary data-[resize-handle-state=drag]:bg-primary print:hidden" />
+              <PanelResizeHandle className="w-1 bg-primary/20 transition-colors hover:bg-primary/40 data-[resize-handle-state=drag]:bg-primary print:hidden" />
               <Panel defaultSize={50} minSize={30}>
                 <div className="h-full overflow-y-auto bg-muted/30 p-4 sm:p-8">
                   <ResumePreview />
