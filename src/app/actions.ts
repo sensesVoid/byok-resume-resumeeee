@@ -1,6 +1,11 @@
 'use server';
 
 import {
+  calculateAtsScore,
+  type CalculateAtsScoreInput,
+  type CalculateAtsScoreOutput,
+} from '@/ai/flows/calculate-ats-score';
+import {
   generateCoverLetter,
   type GenerateCoverLetterInput,
   type GenerateCoverLetterOutput,
@@ -15,6 +20,17 @@ import {
   type ParseResumeInput,
   type ParseResumeOutput,
 } from '@/ai/flows/parse-resume';
+
+export async function calculateAtsScoreAction(
+  input: CalculateAtsScoreInput
+): Promise<CalculateAtsScoreOutput> {
+  try {
+    return await calculateAtsScore(input);
+  } catch (error) {
+    console.error('Error calculating ATS score:', error);
+    throw new Error('Failed to calculate ATS score. Please try again.');
+  }
+}
 
 export async function generateCoverLetterAction(
   input: GenerateCoverLetterInput

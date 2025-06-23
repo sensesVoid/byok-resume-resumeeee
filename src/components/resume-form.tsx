@@ -9,7 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
-import { BrainCircuit, Eraser, Loader2, Plus, Trash2, Wand2 } from 'lucide-react';
+import { BrainCircuit, Eraser, Loader2, Plus, ScanSearch, Trash2, Wand2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { generateCoverLetterAction, improveContentAction } from '@/app/actions';
 import { useState, useTransition } from 'react';
@@ -18,6 +18,7 @@ import { ScrollArea } from './ui/scroll-area';
 import { TemplateSwitcher } from '@/components/template-switcher';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { AtsChecker } from '@/components/ats-checker';
 
 const fontColors = [
   { value: '#111827', name: 'Dark Gray' },
@@ -424,6 +425,18 @@ export function ResumeForm() {
             </AccordionContent>
           </AccordionItem>
 
+          <AccordionItem value="ats-checker">
+            <AccordionTrigger className="text-lg font-semibold">
+              <div className="flex items-center gap-2">
+                <ScanSearch className="h-5 w-5" />
+                <span>ATS Score Checker</span>
+              </div>
+            </AccordionTrigger>
+            <AccordionContent>
+              <AtsChecker />
+            </AccordionContent>
+          </AccordionItem>
+
           <AccordionItem value="cover-letter">
             <AccordionTrigger className="text-lg font-semibold">AI Cover Letter Generator</AccordionTrigger>
             <AccordionContent>
@@ -431,7 +444,7 @@ export function ResumeForm() {
                 <FormField control={form.control} name="jobDescription" render={({ field }) => (
                   <FormItem>
                     <FormLabel>Job Description</FormLabel>
-                    <FormDescription>Paste the job description here to generate a tailored cover letter.</FormDescription>
+                    <FormDescription>Paste the job description here to generate a tailored cover letter and check your ATS score.</FormDescription>
                     <FormControl><Textarea rows={8} {...field} /></FormControl>
                     <FormMessage />
                   </FormItem>
