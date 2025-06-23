@@ -28,6 +28,7 @@ export const educationSchema = z.object({
 });
 
 export const resumeSchema = z.object({
+  template: z.enum(['modern', 'classic', 'creative']).default('modern'),
   personalInfo: personalInfoSchema,
   summary: z.string().optional(),
   experience: z.array(experienceSchema),
@@ -40,6 +41,7 @@ export const resumeSchema = z.object({
 export type ResumeSchema = z.infer<typeof resumeSchema>;
 
 export const defaultResumeData: ResumeSchema = {
+  template: 'modern',
   personalInfo: {
     name: 'John Doe',
     email: 'john.doe@example.com',

@@ -15,6 +15,7 @@ import { generateCoverLetterAction, improveContentAction } from '@/app/actions';
 import { useState, useTransition } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { ScrollArea } from './ui/scroll-area';
+import { TemplateSwitcher } from '@/components/template-switcher';
 
 export function ResumeForm() {
   const form = useFormContext<ResumeSchema>();
@@ -99,6 +100,18 @@ export function ResumeForm() {
     });
   };
 
+  const handleDownloadSuggestion = () => {
+    const blob = new Blob([suggestion], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'ai-suggestion.txt';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   const handleAddSkill = () => {
     if (newSkill.trim()) {
       appendSkill({ id: crypto.randomUUID(), name: newSkill.trim() });
@@ -109,7 +122,14 @@ export function ResumeForm() {
   return (
     <Form {...form}>
       <div className="space-y-8">
-        <Accordion type="multiple" defaultValue={['personal', 'summary', 'experience']} className="w-full">
+        <Accordion type="multiple" defaultValue={['template', 'personal', 'summary', 'experience']} className="w-full">
+          <AccordionItem value="template">
+            <AccordionTrigger className="text-lg font-semibold">Template Selection</AccordionTrigger>
+            <AccordionContent>
+                <TemplateSwitcher />
+            </AccordionContent>
+          </AccordionItem>
+
           <AccordionItem value="personal">
             <AccordionTrigger className="text-lg font-semibold">Personal Information</AccordionTrigger>
             <AccordionContent>
@@ -294,6 +314,7 @@ export function ResumeForm() {
                       setIsSuggestionModalOpen(false);
                       toast({ title: "Success!", description: "Content has been updated with AI suggestion."});
                     }}>Use This Suggestion</Button>
+                    <Button variant="outline" onClick={handleDownloadSuggestion}>Download</Button>
                     <Button variant="secondary" onClick={() => setIsSuggestionModalOpen(false)}>Close</Button>
                 </DialogFooter>
             </DialogContent>
