@@ -12,7 +12,8 @@ import {
   PanelResizeHandle,
 } from 'react-resizable-panels';
 import { useMediaQuery } from '@/hooks/use-media-query';
-import { useState, useEffect } from 'react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+
 
 export function ResumeBuilder() {
   const form = useForm<ResumeSchema>({
@@ -21,11 +22,6 @@ export function ResumeBuilder() {
     mode: 'onBlur',
   });
 
-  const [isClient, setIsClient] = useState(false);
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
   const isDesktop = useMediaQuery('(min-width: 768px)');
 
   return (
@@ -33,7 +29,7 @@ export function ResumeBuilder() {
       <div className="flex min-h-screen flex-col bg-background">
         <AppHeader />
         <main className="flex-1 overflow-hidden">
-          {isClient && isDesktop ? (
+          {isDesktop ? (
             <PanelGroup direction="horizontal" className="h-full">
               <Panel defaultSize={50} minSize={40}>
                 <div className="h-full overflow-y-auto p-4 sm:p-8 print:hidden">
@@ -48,8 +44,19 @@ export function ResumeBuilder() {
               </Panel>
             </PanelGroup>
           ) : (
-            <div className="h-full overflow-y-auto p-4 sm:p-8 print:hidden">
-              <ResumeForm />
+            <div className="h-full overflow-y-auto p-4 sm:p-8">
+              <Tabs defaultValue="form" className="h-full">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="form">Editor</TabsTrigger>
+                  <TabsTrigger value="preview">Preview</TabsTrigger>
+                </TabsList>
+                <TabsContent value="form" className="mt-4">
+                  <ResumeForm />
+                </TabsContent>
+                <TabsContent value="preview" className="mt-4">
+                   <ResumePreview />
+                </TabsContent>
+              </Tabs>
             </div>
           )}
         </main>
