@@ -9,7 +9,7 @@ export const personalInfoSchema = z.object({
 });
 
 export const experienceSchema = z.object({
-  id: z.string().default(() => crypto.randomUUID()),
+  id: z.string(),
   jobTitle: z.string().min(1, 'Job title is required'),
   company: z.string().min(1, 'Company name is required'),
   location: z.string().optional(),
@@ -19,7 +19,7 @@ export const experienceSchema = z.object({
 });
 
 export const educationSchema = z.object({
-  id: z.string().default(() => crypto.randomUUID()),
+  id: z.string(),
   degree: z.string().min(1, 'Degree is required'),
   institution: z.string().min(1, 'Institution is required'),
   location: z.string().optional(),
