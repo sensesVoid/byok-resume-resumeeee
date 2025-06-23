@@ -9,10 +9,10 @@ import { Textarea } from '@/components/ui/textarea';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
-import { BrainCircuit, Loader2, Plus, Trash2, Wand2, Upload } from 'lucide-react';
+import { BrainCircuit, Loader2, Plus, Trash2, Wand2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { generateCoverLetterAction, improveContentAction } from '@/app/actions';
-import { useState, useTransition, useRef } from 'react';
+import { useState, useTransition } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { ScrollArea } from './ui/scroll-area';
 
@@ -24,9 +24,6 @@ export function ResumeForm() {
   const [suggestion, setSuggestion] = useState<string>('');
   const [isSuggestionModalOpen, setIsSuggestionModalOpen] = useState(false);
   const [fieldToUpdate, setFieldToUpdate] = useState<any>(null);
-
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [fieldToUploadTo, setFieldToUploadTo] = useState<any>(null);
 
   const {
     fields: experienceFields,
@@ -46,45 +43,6 @@ export function ResumeForm() {
     remove: removeSkill,
   } = useFieldArray({ control: form.control, name: 'skills' });
   const [newSkill, setNewSkill] = useState('');
-
-  const handleUploadClick = (fieldName: any) => {
-    setFieldToUploadTo(fieldName);
-    fileInputRef.current?.click();
-  };
-
-  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file && fieldToUploadTo) {
-      if (file.type === 'text/plain') {
-        try {
-          const content = await file.text();
-          form.setValue(fieldToUploadTo, content, { shouldValidate: true });
-          toast({
-            title: 'Success!',
-            description: 'Content has been uploaded from the file.',
-          });
-        } catch (error) {
-            toast({
-                variant: 'destructive',
-                title: 'Error reading file',
-                description: 'Could not read the content from the selected file.',
-            });
-        }
-      } else {
-        toast({
-          variant: 'destructive',
-          title: 'Invalid File Type',
-          description: 'Please upload a plain text (.txt) file.',
-        });
-      }
-      setFieldToUploadTo(null);
-    }
-    
-    if(event.target) {
-        event.target.value = '';
-    }
-  };
-
 
   const handleGenerateCoverLetter = () => {
     startTransition(async () => {
@@ -150,13 +108,6 @@ export function ResumeForm() {
 
   return (
     <Form {...form}>
-      <input
-        type="file"
-        ref={fileInputRef}
-        onChange={handleFileChange}
-        accept=".txt"
-        className="hidden"
-      />
       <div className="space-y-8">
         <Accordion type="multiple" defaultValue={['personal', 'summary', 'experience']} className="w-full">
           <AccordionItem value="personal">
@@ -193,10 +144,6 @@ export function ResumeForm() {
                       <Button type="button" size="sm" variant="outline" onClick={() => handleImproveContent('summary', field.value || '')} disabled={isImproving}>
                         {isImproving && fieldToUpdate === 'summary' ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
                         Improve with AI
-                      </Button>
-                      <Button type="button" size="sm" variant="outline" onClick={() => handleUploadClick('summary')}>
-                        <Upload className="mr-2 h-4 w-4" />
-                        Upload .txt
                       </Button>
                     </div>
                   </FormItem>
@@ -240,10 +187,6 @@ export function ResumeForm() {
                             <Button type="button" size="sm" variant="outline" onClick={() => handleImproveContent(`experience.${index}.description`, descriptionField.value || '')} disabled={isImproving}>
                               {isImproving && fieldToUpdate === `experience.${index}.description` ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
                               Improve with AI
-                            </Button>
-                            <Button type="button" size="sm" variant="outline" onClick={() => handleUploadClick(`experience.${index}.description`)}>
-                              <Upload className="mr-2 h-4 w-4" />
-                              Upload .txt
                             </Button>
                           </div>
                         </FormItem>

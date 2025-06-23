@@ -10,6 +10,11 @@ import {
   type ImproveResumeContentInput,
   type ImproveResumeContentOutput,
 } from '@/ai/flows/improve-resume-content';
+import {
+  parseResume,
+  type ParseResumeInput,
+  type ParseResumeOutput,
+} from '@/ai/flows/parse-resume';
 
 export async function generateCoverLetterAction(
   input: GenerateCoverLetterInput
@@ -30,5 +35,18 @@ export async function improveContentAction(
   } catch (error) {
     console.error('Error improving content:', error);
     throw new Error('Failed to get suggestions. Please try again.');
+  }
+}
+
+export async function parseResumeAction(
+  input: ParseResumeInput
+): Promise<ParseResumeOutput> {
+  try {
+    return await parseResume(input);
+  } catch (error) {
+    console.error('Error parsing resume:', error);
+    throw new Error(
+      'Failed to parse resume. Please check the file and try again.'
+    );
   }
 }
