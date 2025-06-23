@@ -2,13 +2,34 @@
 
 import { type ResumeSchema } from '@/lib/schemas';
 import { AtSign, Globe, MapPin, Phone, Briefcase, GraduationCap, Star } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import type * as React from 'react';
 
 interface TemplateProps {
     data: ResumeSchema;
 }
 
+const fontMap: { [key: string]: string } = {
+  inter: "'Inter', sans-serif",
+  roboto: "'Roboto', sans-serif",
+  lato: "'Lato', sans-serif",
+  merriweather: "'Merriweather', serif",
+};
+
+const fontClassMap: { [key: string]: string } = {
+  inter: 'font-sans',
+  roboto: 'font-sans',
+  lato: 'font-sans',
+  merriweather: 'font-serif',
+}
+
 export function CreativeTemplate({ data }: TemplateProps) {
-    const { personalInfo, summary, experience, education, skills } = data;
+    const { personalInfo, summary, experience, education, skills, fontStyle, fontColor } = data;
+
+    const style = {
+      fontFamily: fontMap[fontStyle] || fontMap.inter,
+      color: fontColor || '#111827',
+    } as React.CSSProperties;
 
     const renderDescription = (text?: string) => {
         if (!text) return null;
@@ -22,7 +43,7 @@ export function CreativeTemplate({ data }: TemplateProps) {
       };
 
     return (
-        <div className="p-8 bg-background text-foreground grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className={cn("p-8 bg-background grid grid-cols-1 md:grid-cols-3 gap-8", fontClassMap[fontStyle] || 'font-sans')} style={style}>
             {/* Left Column */}
             <div className="md:col-span-1 space-y-8">
                 <div className="text-center">

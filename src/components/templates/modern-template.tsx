@@ -3,13 +3,34 @@
 import { type ResumeSchema } from '@/lib/schemas';
 import { Separator } from '@/components/ui/separator';
 import { AtSign, Globe, MapPin, Phone, Briefcase, GraduationCap, Star } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import type * as React from 'react';
 
 interface TemplateProps {
     data: ResumeSchema;
 }
 
+const fontMap: { [key: string]: string } = {
+  inter: "'Inter', sans-serif",
+  roboto: "'Roboto', sans-serif",
+  lato: "'Lato', sans-serif",
+  merriweather: "'Merriweather', serif",
+};
+
+const fontClassMap: { [key: string]: string } = {
+  inter: 'font-sans',
+  roboto: 'font-sans',
+  lato: 'font-sans',
+  merriweather: 'font-serif',
+}
+
 export function ModernTemplate({ data }: TemplateProps) {
-  const { personalInfo, summary, experience, education, skills } = data;
+  const { personalInfo, summary, experience, education, skills, fontStyle, fontColor } = data;
+
+  const style = {
+    fontFamily: fontMap[fontStyle] || fontMap.inter,
+    color: fontColor || '#111827',
+  } as React.CSSProperties;
 
   const renderDescription = (text?: string) => {
     if (!text) return null;
@@ -23,7 +44,7 @@ export function ModernTemplate({ data }: TemplateProps) {
   };
 
   return (
-    <div className="p-6 sm:p-8 bg-white text-gray-900">
+    <div className={cn("p-6 sm:p-8 bg-white", fontClassMap[fontStyle] || 'font-sans')} style={style}>
       <header className="text-center">
         <h1 className="text-4xl font-bold tracking-tight text-primary">{personalInfo?.name || 'Your Name'}</h1>
         <div className="mt-2 flex flex-wrap justify-center gap-x-4 gap-y-1 text-sm text-gray-500">

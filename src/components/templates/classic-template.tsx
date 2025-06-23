@@ -1,15 +1,35 @@
 'use client';
 
 import { type ResumeSchema } from '@/lib/schemas';
-import { Separator } from '@/components/ui/separator';
 import { AtSign, Globe, MapPin, Phone } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import type * as React from 'react';
 
 interface TemplateProps {
     data: ResumeSchema;
 }
 
+const fontMap: { [key: string]: string } = {
+  inter: "'Inter', sans-serif",
+  roboto: "'Roboto', sans-serif",
+  lato: "'Lato', sans-serif",
+  merriweather: "'Merriweather', serif",
+};
+
+const fontClassMap: { [key: string]: string } = {
+  inter: 'font-sans',
+  roboto: 'font-sans',
+  lato: 'font-sans',
+  merriweather: 'font-serif',
+}
+
 export function ClassicTemplate({ data }: TemplateProps) {
-  const { personalInfo, summary, experience, education, skills } = data;
+  const { personalInfo, summary, experience, education, skills, fontStyle, fontColor } = data;
+  
+  const style = {
+    fontFamily: fontMap[fontStyle] || fontMap.inter,
+    color: fontColor || '#111827',
+  } as React.CSSProperties;
 
   const renderDescription = (text?: string) => {
     if (!text) return null;
@@ -23,7 +43,7 @@ export function ClassicTemplate({ data }: TemplateProps) {
   };
   
   return (
-    <div className="p-8 bg-white text-black font-serif">
+    <div className={cn("p-8 bg-white", fontClassMap[fontStyle] || 'font-sans')} style={style}>
       <header className="text-center mb-6">
         <h1 className="text-3xl font-bold tracking-wider uppercase">{personalInfo?.name || 'Your Name'}</h1>
         <div className="mt-2 flex justify-center gap-x-6 text-xs">
@@ -36,7 +56,7 @@ export function ClassicTemplate({ data }: TemplateProps) {
 
       {summary && (
         <section className="mb-6">
-          <h2 className="text-sm font-bold uppercase tracking-widest text-center border-b-2 border-black pb-1 mb-2">Summary</h2>
+          <h2 className="text-sm font-bold uppercase tracking-widest text-center border-b-2 border-current pb-1 mb-2">Summary</h2>
           <p className="text-sm text-center">{summary}</p>
         </section>
       )}
@@ -44,7 +64,7 @@ export function ClassicTemplate({ data }: TemplateProps) {
       <div className="space-y-6">
         {experience?.length > 0 && (
           <section>
-            <h2 className="text-sm font-bold uppercase tracking-widest border-b-2 border-black pb-1 mb-2">Experience</h2>
+            <h2 className="text-sm font-bold uppercase tracking-widest border-b-2 border-current pb-1 mb-2">Experience</h2>
             <div className="space-y-4">
               {experience.map((exp) => (
                 <div key={exp.id}>
@@ -65,7 +85,7 @@ export function ClassicTemplate({ data }: TemplateProps) {
 
         {education?.length > 0 && (
           <section>
-            <h2 className="text-sm font-bold uppercase tracking-widest border-b-2 border-black pb-1 mb-2">Education</h2>
+            <h2 className="text-sm font-bold uppercase tracking-widest border-b-2 border-current pb-1 mb-2">Education</h2>
             <div className="space-y-3">
               {education.map((edu) => (
                 <div key={edu.id}>
@@ -86,7 +106,7 @@ export function ClassicTemplate({ data }: TemplateProps) {
 
         {skills?.length > 0 && (
           <section>
-            <h2 className="text-sm font-bold uppercase tracking-widest border-b-2 border-black pb-1 mb-2">Skills</h2>
+            <h2 className="text-sm font-bold uppercase tracking-widest border-b-2 border-current pb-1 mb-2">Skills</h2>
             <p className="text-sm">
               {skills.map((skill) => skill.name).join(' | ')}
             </p>
