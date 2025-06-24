@@ -5,7 +5,6 @@ import * as AccordionPrimitive from "@radix-ui/react-accordion"
 import { ChevronDown } from "lucide-react"
 
 import { cn } from "@/lib/utils"
-import { GlowEffect } from "./glow-effect"
 
 const Accordion = AccordionPrimitive.Root
 
@@ -30,19 +29,12 @@ const AccordionTrigger = React.forwardRef<
     <AccordionPrimitive.Trigger
       ref={ref}
       className={cn(
-        "group relative flex w-full flex-1 items-center justify-between p-6 text-lg font-semibold transition-all bg-gradient-to-br from-white/10 to-transparent hover:bg-white/20 dark:from-white/5 dark:to-transparent dark:hover:bg-white/10",
+        "group relative flex w-full flex-1 items-center justify-between overflow-hidden p-6 text-lg font-semibold transition-all bg-gradient-to-br from-white/10 to-transparent hover:bg-white/20 dark:from-white/5 dark:to-transparent dark:hover:bg-white/10",
         className
       )}
       {...props}
     >
-      <GlowEffect
-        colors={['#2dd4bf', '#34d399', '#a7f3d0']}
-        mode="flowHorizontal"
-        blur="strong"
-        duration={10}
-        scale={2}
-        className="opacity-10 dark:opacity-20"
-      />
+       <div className="absolute inset-0 z-0 bg-gradient-to-r from-emerald-400/20 via-teal-400/20 to-cyan-400/20 bg-[length:200%_200%] opacity-0 transition-opacity duration-500 group-hover:opacity-100 group-data-[state=open]:opacity-100 animate-flow-glow blur-lg" />
       <div className="relative z-10 flex w-full items-center justify-between">
         {children}
         <ChevronDown className="h-5 w-5 shrink-0 transition-transform duration-200 group-data-[state=open]:rotate-180" />
