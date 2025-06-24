@@ -21,6 +21,7 @@ import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Switch } from './ui/switch';
+import { Label } from '@/components/ui/label';
 
 
 const fontStyles = [
@@ -559,9 +560,12 @@ export function ResumeForm() {
             <AccordionTrigger><Star className="mr-3 text-primary" /> Skills</AccordionTrigger>
             <AccordionContent>
               <div className="space-y-4">
-                <div className="flex gap-2">
-                  <Input value={newSkill} onChange={e => setNewSkill(e.target.value)} placeholder="e.g. TypeScript" onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddSkill())} />
-                  <Button type="button" onClick={handleAddSkill}><Plus className="mr-2 h-4 w-4" /> Add</Button>
+                <div className="space-y-2">
+                  <Label htmlFor="new-skill-input">Add a skill</Label>
+                  <div className="flex gap-2">
+                    <Input id="new-skill-input" value={newSkill} onChange={e => setNewSkill(e.target.value)} placeholder="e.g. TypeScript" onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddSkill())} />
+                    <Button type="button" onClick={handleAddSkill}><Plus className="mr-2 h-4 w-4" /> Add</Button>
+                  </div>
                 </div>
                 <div className="flex min-h-[2.25rem] flex-wrap gap-2 rounded-lg border border-border/50 p-3 bg-background/30">
                   {skillFields.map((field, index) => (
