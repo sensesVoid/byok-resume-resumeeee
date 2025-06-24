@@ -70,7 +70,7 @@ export function DonationModal({ isOpen, onOpenChange }: DonationModalProps) {
                 </Card>
               )}
 
-              {config.maya.enabled && config.maya.number && (
+              {config.maya.enabled && config.maya.link && (
                 <Card>
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
@@ -80,15 +80,16 @@ export function DonationModal({ isOpen, onOpenChange }: DonationModalProps) {
                   </CardHeader>
                   <CardContent className="flex flex-col items-center gap-4">
                     <div className="p-4 bg-white rounded-lg border">
-                       {/* The type for QRCode value is string, so we need to ensure number is a string */}
-                       <QRCode value={String(config.maya.number)} size={192} />
+                       <QRCode value={config.maya.link} size={192} />
                     </div>
-                    <div className="text-center">
-                      <p className="font-mono text-sm">{config.maya.number}</p>
-                       <Button variant="ghost" size="sm" className="ml-2" onClick={() => handleCopy(config.maya.number || '', 'Maya number')}>
-                          <Copy size={14} />
-                      </Button>
-                    </div>
+                    {config.maya.number && (
+                        <div className="text-center">
+                        <p className="font-mono text-sm">{config.maya.number}</p>
+                        <Button variant="ghost" size="sm" className="ml-2" onClick={() => handleCopy(config.maya.number || '', 'Maya number')}>
+                            <Copy size={14} />
+                        </Button>
+                        </div>
+                    )}
                   </CardContent>
                 </Card>
               )}

@@ -49,6 +49,7 @@ export const donationConfigSchema = z.object({
   maya: z.object({
     enabled: z.boolean().default(false),
     number: z.string().optional().or(z.literal('')),
+    link: z.string().url().optional().or(z.literal('')),
   }),
 });
 
@@ -175,6 +176,7 @@ export const defaultResumeData: ResumeSchema = {
     maya: {
       enabled: true,
       number: '09625449481',
+      link: 'https://www.paymaya.com/app/sendmoney?p=eyJyIjoiKzYzOTYyNTQ0OTQ4MSIsInQiOiJQQVlNQVlBIiwiYyI6IlBIUCIsImEiOiIwLjAwIiwibSI6IlRoYW5rIFlvdSEifQ%3D%3D',
     },
   },
 };
