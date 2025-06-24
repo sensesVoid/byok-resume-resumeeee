@@ -30,6 +30,14 @@ export function AboutModal({ isOpen, onOpenChange }: AboutModalProps) {
           </DialogDescription>
         </DialogHeader>
         <Accordion type="single" collapsible className="w-full">
+          <AccordionItem value="item-0">
+            <AccordionTrigger>What is the goal of Resumeee?</AccordionTrigger>
+            <AccordionContent className="space-y-2 text-sm">
+              <p>
+                Resumeee aims to provide a free, powerful, and user-friendly tool to help job seekers create professional resumes and cover letters. By leveraging AI and providing a clean, modern interface, it seeks to level the playing field, making high-quality application materials accessible to everyone—without hidden fees, subscriptions, or data harvesting.
+              </p>
+            </AccordionContent>
+          </AccordionItem>
           <AccordionItem value="item-1">
             <AccordionTrigger>Where is my resume data saved?</AccordionTrigger>
             <AccordionContent className="space-y-2 text-sm">
