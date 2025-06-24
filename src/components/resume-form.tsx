@@ -16,11 +16,9 @@ import { ScrollArea } from './ui/scroll-area';
 import { TemplateSwitcher } from '@/components/template-switcher';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { AtsChecker } from '@/components/ats-checker';
 import { Label } from './ui/label';
 import { Separator } from './ui/separator';
 import { cn } from '@/lib/utils';
-import type { CalculateAtsScoreOutput } from '@/ai/flows/calculate-ats-score';
 
 const fontColors = [
   { value: '#111827', name: 'Dark Gray' },
@@ -36,12 +34,7 @@ const fontStyles = [
   { value: 'merriweather', label: 'Merriweather (Serif)' },
 ];
 
-interface ResumeFormProps {
-  atsResult: CalculateAtsScoreOutput | null;
-  isCalculatingAts: boolean;
-}
-
-export function ResumeForm({ atsResult, isCalculatingAts }: ResumeFormProps) {
+export function ResumeForm() {
   const form = useFormContext<ResumeSchema>();
   const { toast } = useToast();
   const [isGenerating, startGeneratingTransition] = useTransition();
@@ -314,12 +307,9 @@ export function ResumeForm({ atsResult, isCalculatingAts }: ResumeFormProps) {
                        )} />
                    </div>
                 </div>
+                
                 <Separator className="my-6" />
-                <div>
-                  <h3 className="font-semibold mb-2">ATS Score Checker</h3>
-                  <AtsChecker atsResult={atsResult} isPending={isCalculatingAts} />
-                </div>
-                <Separator className="my-6" />
+
                 <div>
                   <h3 className="font-semibold mb-2">AI Cover Letter Generator</h3>
                    <div className="space-y-4">

@@ -17,6 +17,8 @@ import { useRef, useTransition, useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { parseResumeAction, calculateAtsScoreAction } from '@/app/actions';
 import type { CalculateAtsScoreOutput } from '@/ai/flows/calculate-ats-score';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { AtsChecker } from '@/components/ats-checker';
 
 
 export function ResumeBuilder() {
@@ -34,6 +36,7 @@ export function ResumeBuilder() {
   const [isCalculatingAts, startAtsTransition] = useTransition();
   
   const [atsResult, setAtsResult] = useState<CalculateAtsScoreOutput | null>(null);
+  const [isAtsModalOpen, setIsAtsModalOpen] = useState(false);
 
   const aiPowered = form.watch('aiPowered');
 
@@ -118,6 +121,8 @@ export function ResumeBuilder() {
       return;
     }
 
+    setIsAtsModalOpen(true);
+
     const resumeText = `
       Name: ${personalInfo.name}
       Email: ${personalInfo.email}
@@ -159,6 +164,7 @@ export function ResumeBuilder() {
           title: 'Error',
           description: (error as Error).message,
         });
+        setAtsResult(null);
       }
     });
   };
@@ -185,7 +191,7 @@ export function ResumeBuilder() {
             <PanelGroup direction="horizontal" className="h-full">
               <Panel defaultSize={50} minSize={40}>
                 <div className="h-full overflow-y-auto p-4 sm:p-8 print:hidden">
-                  <ResumeForm atsResult={atsResult} isCalculatingAts={isCalculatingAts} />
+                  <ResumeForm />
                 </div>
               </Panel>
               <PanelResizeHandle className="w-1 bg-primary/20 transition-colors hover:bg-primary/40 data-[resize-handle-state=drag]:bg-primary print:hidden" />
@@ -203,7 +209,7 @@ export function ResumeBuilder() {
                   <TabsTrigger value="preview">Preview</TabsTrigger>
                 </TabsList>
                 <TabsContent value="form" className="mt-4">
-                  <ResumeForm atsResult={atsResult} isCalculatingAts={isCalculatingAts} />
+                  <ResumeForm />
                 </TabsContent>
                 <TabsContent value="preview" className="mt-4">
                    <ResumePreview />
@@ -213,6 +219,18 @@ export function ResumeBuilder() {
           )}
         </main>
       </div>
+
+       <Dialog open={isAtsModalOpen} onOpenChange={setIsAtsModalOpen}>
+          <DialogContent className="sm:max-w-[625px]">
+              <DialogHeader>
+                  <DialogTitle>ATS Score Checker</DialogTitle>
+                  <DialogDescription>
+                      Results of the analysis of your resume against the provided job description.
+                  </DialogDescription>
+              </DialogHeader>
+              <AtsChecker isPending={isCalculatingAts} atsResult={atsResult} />
+          </DialogContent>
+      </Dialog>
     </FormProvider>
   );
 }

@@ -15,10 +15,6 @@ interface AtsCheckerProps {
 export function AtsChecker({ atsResult, isPending }: AtsCheckerProps) {
   return (
     <div className="space-y-4">
-      <p className="text-sm text-muted-foreground">
-        Click the "Calculate ATS" button in the header to analyze your resume against a job description.
-      </p>
-
       {isPending && (
          <Card>
             <CardHeader className="flex flex-row items-center gap-2">
@@ -115,7 +111,9 @@ export function AtsChecker({ atsResult, isPending }: AtsCheckerProps) {
       {!isPending && !atsResult && (
         <Card className="flex items-center justify-center p-8">
             <div className="text-center text-muted-foreground">
-                <p>Your ATS analysis results will appear here.</p>
+                <AlertTriangle className="mx-auto h-8 w-8 mb-2" />
+                <p className="font-semibold">Analysis Failed</p>
+                <p className="text-sm">Could not retrieve ATS score. Please try again.</p>
             </div>
         </Card>
       )}
