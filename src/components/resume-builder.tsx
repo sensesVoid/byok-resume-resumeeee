@@ -19,10 +19,10 @@ import { parseResumeAction, calculateAtsScoreAction } from '@/app/actions';
 import type { CalculateAtsScoreOutput } from '@/ai/flows/calculate-ats-score';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { AtsChecker } from '@/components/ats-checker';
-import * as pdfjs from 'pdfjs-dist';
+import * as pdfjs from 'pdfjs-dist/build/pdf';
 
 // Set worker source for pdfjs-dist
-pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.mjs`;
+pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.mjs`;
 
 export function ResumeBuilder() {
   const form = useForm<ResumeSchema>({
@@ -72,10 +72,14 @@ export function ResumeBuilder() {
         if (file.type === 'application/pdf' || file.name.endsWith('.pdf')) {
           const arrayBuffer = await file.arrayBuffer();
           const pdf = await pdfjs.getDocument(arrayBuffer).promise;
-          for (let i = 1; i <= pdf.numPages; i++) {
+          const numPages = pdf.numPages;
+          for (let i = 1; i <= numPages; i++) {
             const page = await pdf.getPage(i);
             const textContent = await page.getTextContent();
-            text += textContent.items.map(item => ('str' in item ? item.str : '')).join(' ') + '\n';
+            text += textContent.items.map(item => ('str' in item ? item.str : '')).join(' ');
+            if (i < numPages) {
+                text += '\n\n'; // Add more space between pages
+            }
           }
         } else {
           text = await file.text();
