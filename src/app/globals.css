@@ -98,3 +98,13 @@ body {
     background-color: white !important;
   }
 }
+
+/* Styles for DIY Template */
+@layer components {
+  .inline-edit-input {
+    @apply w-full bg-transparent border-none p-0 focus:outline-none focus:ring-0 focus:bg-muted/50 rounded-sm;
+  }
+  .inline-edit-textarea {
+    @apply w-full bg-transparent border-none p-0 focus:outline-none focus:ring-0 focus:bg-muted/50 rounded-sm resize-none overflow-hidden;
+  }
+}

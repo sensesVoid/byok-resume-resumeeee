@@ -13,6 +13,7 @@ import { ProfessionalTemplate } from '@/components/templates/professional-templa
 import { ElegantTemplate } from '@/components/templates/elegant-template';
 import { GeometricTemplate } from '@/components/templates/geometric-template';
 import { TechnicalTemplate } from '@/components/templates/technical-template';
+import { DiyTemplate } from '@/components/templates/diy-template';
 
 const templates = {
   modern: ModernTemplate,
@@ -23,6 +24,7 @@ const templates = {
   elegant: ElegantTemplate,
   geometric: GeometricTemplate,
   technical: TechnicalTemplate,
+  diy: DiyTemplate,
 };
 
 export function ResumePreview() {

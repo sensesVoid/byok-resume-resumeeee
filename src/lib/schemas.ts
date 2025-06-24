@@ -54,6 +54,7 @@ export const resumeSchema = z.object({
 
   template: z
     .enum([
+      'diy',
       'modern',
       'classic',
       'creative',
