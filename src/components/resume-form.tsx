@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
-import { BrainCircuit, Brush, GraduationCap, Info, Loader2, Plus, Trash2, User, Wand2, Briefcase, Star, KeyRound, Power, PowerOff, FileText } from 'lucide-react';
+import { Bot, Brush, GraduationCap, Info, Loader2, Plus, Trash2, User, Wand2, Briefcase, Star, KeyRound, Power, PowerOff, FileText } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { generateCoverLetterAction, improveContentAction, validateApiKeyAction } from '@/app/actions';
 import { useState, useTransition } from 'react';
@@ -132,8 +132,68 @@ export function ResumeForm() {
   return (
     <Form {...form}>
       <div className="space-y-4">
-        <Accordion type="multiple" defaultValue={['design', 'personal', 'ai-tools']} className="w-full">
+        <Accordion type="multiple" defaultValue={['ai-tools', 'design', 'personal']} className="w-full">
           
+          <AccordionItem value="ai-tools">
+             <AccordionTrigger><Bot className="mr-3 text-primary" /> Power your Agent</AccordionTrigger>
+             <AccordionContent>
+                <div>
+                   <div className="flex items-center justify-between mb-4">
+                     <h3 className="font-semibold flex items-center gap-2"><KeyRound/> API Configuration</h3>
+                     <Button
+                        size="icon"
+                        onClick={handlePowerToggle}
+                        disabled={isValidating}
+                        className={cn('transition-all',
+                            aiPowered
+                            ? 'bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 bg-[length:200%_200%] text-white shadow-lg shadow-primary/50 animate-flow-glow'
+                            : 'bg-destructive hover:bg-destructive/90 text-destructive-foreground'
+                        )}
+                      >
+                       {isValidating ? <Loader2 className="animate-spin" /> : aiPowered ? <Power /> : <PowerOff />}
+                     </Button>
+                   </div>
+                   <p className="text-sm text-muted-foreground mb-4">Provide your API key, then click the power button to validate it and enable AI features.</p>
+                   <div className="space-y-4">
+                        <FormField control={form.control} name="aiConfig.provider" render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>AI Provider</FormLabel>
+                                <Select onValueChange={field.onChange} defaultValue={field.value} disabled={aiPowered}>
+                                    <FormControl>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select a provider" />
+                                        </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                        <SelectItem value="google">Google AI</SelectItem>
+                                        <SelectItem value="openai">OpenAI</SelectItem>
+                                        <SelectItem value="openrouter">OpenRouter</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                <FormDescription>Select the AI provider you want to use.</FormDescription>
+                                <FormMessage />
+                            </FormItem>
+                        )} />
+                       <FormField control={form.control} name="aiConfig.apiKey" render={({ field }) => (
+                         <FormItem>
+                           <FormLabel>API Key</FormLabel>
+                           <FormControl><Input type="password" placeholder="Enter your API key" {...field} disabled={aiPowered} /></FormControl>
+                           <FormMessage />
+                         </FormItem>
+                       )} />
+                       <FormField control={form.control} name="aiConfig.model" render={({ field }) => (
+                         <FormItem>
+                           <FormLabel>Model Name (Optional)</FormLabel>
+                           <FormControl><Input placeholder="e.g., gemini-1.5-flash-latest" {...field} disabled={aiPowered}/></FormControl>
+                           <FormDescription>If left blank, a default model will be used.</FormDescription>
+                           <FormMessage />
+                         </FormItem>
+                       )} />
+                   </div>
+                </div>
+             </AccordionContent>
+          </AccordionItem>
+
           <AccordionItem value="design">
             <AccordionTrigger><Brush className="mr-3 text-primary" /> Design & Style</AccordionTrigger>
             <AccordionContent className="space-y-6">
@@ -248,66 +308,6 @@ export function ResumeForm() {
                 </div>
               </div>
             </AccordionContent>
-          </AccordionItem>
-
-          <AccordionItem value="ai-tools">
-             <AccordionTrigger><BrainCircuit className="mr-3 text-primary" /> AI Tools</AccordionTrigger>
-             <AccordionContent>
-                <div>
-                   <div className="flex items-center justify-between mb-4">
-                     <h3 className="font-semibold flex items-center gap-2"><KeyRound/> API Configuration</h3>
-                     <Button
-                        size="icon"
-                        onClick={handlePowerToggle}
-                        disabled={isValidating}
-                        className={cn('transition-all',
-                            aiPowered
-                            ? 'bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 bg-[length:200%_200%] text-white shadow-lg shadow-primary/50 animate-flow-glow'
-                            : 'bg-destructive hover:bg-destructive/90 text-destructive-foreground'
-                        )}
-                      >
-                       {isValidating ? <Loader2 className="animate-spin" /> : aiPowered ? <Power /> : <PowerOff />}
-                     </Button>
-                   </div>
-                   <p className="text-sm text-muted-foreground mb-4">Provide your API key, then click the power button to validate it and enable AI features.</p>
-                   <div className="space-y-4">
-                        <FormField control={form.control} name="aiConfig.provider" render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>AI Provider</FormLabel>
-                                <Select onValueChange={field.onChange} defaultValue={field.value} disabled={aiPowered}>
-                                    <FormControl>
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Select a provider" />
-                                        </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent>
-                                        <SelectItem value="google">Google AI</SelectItem>
-                                        <SelectItem value="openai">OpenAI</SelectItem>
-                                        <SelectItem value="openrouter">OpenRouter</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                                <FormDescription>Select the AI provider you want to use.</FormDescription>
-                                <FormMessage />
-                            </FormItem>
-                        )} />
-                       <FormField control={form.control} name="aiConfig.apiKey" render={({ field }) => (
-                         <FormItem>
-                           <FormLabel>API Key</FormLabel>
-                           <FormControl><Input type="password" placeholder="Enter your API key" {...field} disabled={aiPowered} /></FormControl>
-                           <FormMessage />
-                         </FormItem>
-                       )} />
-                       <FormField control={form.control} name="aiConfig.model" render={({ field }) => (
-                         <FormItem>
-                           <FormLabel>Model Name (Optional)</FormLabel>
-                           <FormControl><Input placeholder="e.g., gemini-1.5-flash-latest" {...field} disabled={aiPowered}/></FormControl>
-                           <FormDescription>If left blank, a default model will be used.</FormDescription>
-                           <FormMessage />
-                         </FormItem>
-                       )} />
-                   </div>
-                </div>
-             </AccordionContent>
           </AccordionItem>
 
           <AccordionItem value="cover-letter">
