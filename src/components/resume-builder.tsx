@@ -30,6 +30,7 @@ import {
 } from '@/components/ui/dialog';
 import { AtsChecker } from '@/components/ats-checker';
 import * as pdfjs from 'pdfjs-dist/build/pdf';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 // Set worker source for pdfjs-dist
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.mjs`;
@@ -346,7 +347,7 @@ export function ResumeBuilder() {
       </div>
 
       <Dialog open={isAtsModalOpen} onOpenChange={setIsAtsModalOpen}>
-        <DialogContent className="sm:max-w-[625px]">
+        <DialogContent className="sm:max-w-[625px] flex flex-col max-h-[90vh]">
           <DialogHeader>
             <DialogTitle>ATS Score Checker</DialogTitle>
             <DialogDescription>
@@ -354,11 +355,13 @@ export function ResumeBuilder() {
               job description.
             </DialogDescription>
           </DialogHeader>
-          <AtsChecker
-            isPending={isCalculatingAts}
-            atsResult={atsResult}
-            documentType={atsCheckType}
-          />
+          <ScrollArea>
+            <AtsChecker
+              isPending={isCalculatingAts}
+              atsResult={atsResult}
+              documentType={atsCheckType}
+            />
+          </ScrollArea>
         </DialogContent>
       </Dialog>
     </FormProvider>
