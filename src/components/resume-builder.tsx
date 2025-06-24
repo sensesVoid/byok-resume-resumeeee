@@ -357,6 +357,14 @@ export function ResumeBuilder() {
             ...skill,
             id: crypto.randomUUID(),
           })),
+          certifications: (parsedData.certifications || []).map((cert) => ({
+            ...cert,
+            id: crypto.randomUUID(),
+          })),
+          projects: (parsedData.projects || []).map((proj) => ({
+            ...proj,
+            id: crypto.randomUUID(),
+          })),
         };
 
         form.reset(finalData);
