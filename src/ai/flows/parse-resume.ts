@@ -19,7 +19,7 @@ const ParsedExperienceSchema = z.object({
   location: z.string().optional().describe('The location of the company.'),
   startDate: z.string().describe('The start date of the employment.'),
   endDate: z.string().optional().describe("The end date of the employment (or 'Present')."),
-  description: z.string().optional().describe('A description of the responsibilities and achievements.'),
+  description: z.string().optional().describe('A description of the responsibilities and achievements, with newlines for bullet points.'),
 });
 
 const ParsedEducationSchema = z.object({
@@ -54,15 +54,55 @@ const ParseResumeInputSchema = z.object({
 export type ParseResumeInput = z.infer<typeof ParseResumeInputSchema>;
 
 function buildPrompt(resumeText: string): string {
-    return `You are an expert resume parser. Your task is to analyze the provided resume text and extract the information.
+    return `You are an expert resume parser. Your task is to analyze the provided resume text and extract the information into a structured JSON format.
 
-Pay close attention to dates, job titles, company names, and educational degrees. For descriptions, capture the key responsibilities and achievements. For skills, list each skill individually.
+**Instructions:**
+1.  Analyze the resume text provided below.
+2.  Extract the information for each section: personal info, summary, experience, education, and skills.
+3.  For descriptions, capture key responsibilities and achievements as a single string with newline characters (\\n) for bullet points.
+4.  Return **only** a single, valid JSON object. Do not include any other text, markdown formatting like \`\`\`json, or explanations before or after the JSON object.
 
-Resume Text:
+**Example JSON Structure:**
+{
+  "personalInfo": {
+    "name": "John Doe",
+    "email": "john.doe@example.com",
+    "phone": "123-456-7890",
+    "website": "https://johndoe.dev",
+    "location": "San Francisco, CA"
+  },
+  "summary": "Innovative and deadline-driven Software Engineer...",
+  "experience": [
+    {
+      "jobTitle": "Senior Software Engineer",
+      "company": "Tech Corp",
+      "location": "Palo Alto, CA",
+      "startDate": "Jan 2022",
+      "endDate": "Present",
+      "description": "- Led a team of 5 engineers...\\n- Optimized application performance..."
+    }
+  ],
+  "education": [
+    {
+      "degree": "B.S. in Computer Science",
+      "institution": "State University",
+      "location": "Anytown, USA",
+      "graduationDate": "May 2019",
+      "description": "Graduated with honors, GPA 3.8/4.0."
+    }
+  ],
+  "skills": [
+    { "name": "React" },
+    { "name": "Node.js" }
+  ]
+}
+
+**Resume Text to Parse:**
+---
 ${resumeText}
+---
 
-Provide a response as a single, valid JSON object that conforms to the schema of the 'ParseResumeOutput' type, which includes keys for "personalInfo", "summary", "experience", "education", and "skills".
-Do not include any other text, markdown, or explanations before or after the JSON object.`;
+Now, parse the resume text above and provide the JSON output.`;
 }
 
 export async function parseResume(input: ParseResumeInput): Promise<ParseResumeOutput> {
@@ -85,7 +125,7 @@ export async function parseResume(input: ParseResumeInput): Promise<ParseResumeO
         throw new Error('The AI response structure was unexpected. Please check the resume file or try again.');
     } else if (error instanceof SyntaxError) { // Catches JSON.parse errors
         // This means the string from callApi was not valid JSON
-        throw new Error('The AI returned a malformed response. Please try again.');
+        throw new Error('The AI returned a malformed response. The document may not be a valid resume.');
     }
     
     // For other errors (e.g. from callApi's fetch)
