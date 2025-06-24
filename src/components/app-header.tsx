@@ -1,9 +1,20 @@
 'use client';
 
-import { FileDown, Loader2, Upload, ScanSearch } from 'lucide-react';
+import {
+  FileDown,
+  Loader2,
+  Upload,
+  ScanSearch,
+  ChevronDown,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/icons';
-import { useState, useEffect } from 'react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 interface AppHeaderProps {
   onUploadClick: () => void;
@@ -11,36 +22,23 @@ interface AppHeaderProps {
   onCalculateAtsScore: () => void;
   isCalculatingAts: boolean;
   isAiPowered: boolean;
+  onDownloadResume: () => void;
+  onDownloadCoverLetter: () => void;
+  isCoverLetterEmpty: boolean;
+  isPrinting: boolean;
 }
 
-export function AppHeader({ 
-  onUploadClick, 
+export function AppHeader({
+  onUploadClick,
   isUploading,
   onCalculateAtsScore,
   isCalculatingAts,
-  isAiPowered 
+  isAiPowered,
+  onDownloadResume,
+  onDownloadCoverLetter,
+  isCoverLetterEmpty,
+  isPrinting,
 }: AppHeaderProps) {
-  const [isPrinting, setIsPrinting] = useState(false);
-
-  useEffect(() => {
-    const handleAfterPrint = () => {
-      setIsPrinting(false);
-    };
-
-    window.addEventListener('afterprint', handleAfterPrint);
-    return () => {
-      window.removeEventListener('afterprint', handleAfterPrint);
-    };
-  }, []);
-
-  const handlePrint = () => {
-    setIsPrinting(true);
-    // Timeout to allow state to update before print dialog opens
-    setTimeout(() => {
-      window.print();
-    }, 100);
-  };
-
   return (
     <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center justify-between border-b bg-background/80 px-4 backdrop-blur-sm sm:px-8 print:hidden">
       <div className="flex items-center gap-2">
@@ -58,16 +56,44 @@ export function AppHeader({
             <span className="ml-2 hidden sm:inline">Upload Resume</span>
           </Button>
         )}
-        <Button onClick={handlePrint} disabled={isPrinting || isUploading || isCalculatingAts}>
-          {isPrinting ? <Loader2 className="animate-spin" /> : <FileDown />}
-          <span className="ml-2 hidden sm:inline">Download PDF</span>
-        </Button>
-        <Button 
+
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button disabled={isPrinting || isUploading || isCalculatingAts}>
+              {isPrinting ? (
+                <Loader2 className="animate-spin" />
+              ) : (
+                <FileDown />
+              )}
+              <span className="ml-2 hidden sm:inline">Download PDF</span>
+              <ChevronDown className="ml-1 h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuItem onClick={onDownloadResume}>
+              Download Resume
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={onDownloadCoverLetter}
+              disabled={isCoverLetterEmpty}
+            >
+              Download Cover Letter
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        <Button
           onClick={onCalculateAtsScore}
-          disabled={!isAiPowered || isCalculatingAts || isPrinting || isUploading}
+          disabled={
+            !isAiPowered || isCalculatingAts || isPrinting || isUploading
+          }
         >
-          {isCalculatingAts ? <Loader2 className="animate-spin" /> : <ScanSearch />}
-           <span className="ml-2 hidden sm:inline">Calculate ATS</span>
+          {isCalculatingAts ? (
+            <Loader2 className="animate-spin" />
+          ) : (
+            <ScanSearch />
+          )}
+          <span className="ml-2 hidden sm:inline">Calculate ATS</span>
         </Button>
       </div>
     </header>

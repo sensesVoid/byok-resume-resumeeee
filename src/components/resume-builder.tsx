@@ -2,7 +2,11 @@
 
 import { FormProvider, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { resumeSchema, defaultResumeData, type ResumeSchema } from '@/lib/schemas';
+import {
+  resumeSchema,
+  defaultResumeData,
+  type ResumeSchema,
+} from '@/lib/schemas';
 import { ResumeForm } from '@/components/resume-form';
 import { ResumePreview } from '@/components/resume-preview';
 import { AppHeader } from '@/components/app-header';
@@ -13,11 +17,17 @@ import {
 } from 'react-resizable-panels';
 import { useMediaQuery } from '@/hooks/use-media-query';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useRef, useTransition, useState } from 'react';
+import { useRef, useTransition, useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { parseResumeAction, calculateAtsScoreAction } from '@/app/actions';
 import type { CalculateAtsScoreOutput } from '@/ai/flows/calculate-ats-score';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
 import { AtsChecker } from '@/components/ats-checker';
 import * as pdfjs from 'pdfjs-dist/build/pdf';
 
@@ -37,17 +47,43 @@ export function ResumeBuilder() {
 
   const [isUploading, startUploadingTransition] = useTransition();
   const [isCalculatingAts, startAtsTransition] = useTransition();
-  
-  const [atsResult, setAtsResult] = useState<CalculateAtsScoreOutput | null>(null);
+
+  const [atsResult, setAtsResult] =
+    useState<CalculateAtsScoreOutput | null>(null);
   const [isAtsModalOpen, setIsAtsModalOpen] = useState(false);
+  const [isPrinting, setIsPrinting] = useState(false);
 
   const aiPowered = form.watch('aiPowered');
+  const coverLetter = form.watch('coverLetter');
+
+  useEffect(() => {
+    const handleAfterPrint = () => {
+      document.body.classList.remove('printing-resume', 'printing-cover-letter');
+      setIsPrinting(false);
+    };
+
+    window.addEventListener('afterprint', handleAfterPrint);
+    return () => {
+      window.removeEventListener('afterprint', handleAfterPrint);
+    };
+  }, []);
+
+  const handleDownload = (target: 'resume' | 'cover-letter') => {
+    setIsPrinting(true);
+    document.body.classList.add(`printing-${target}`);
+    // Use a short timeout to allow the class to be applied before printing
+    setTimeout(() => {
+      window.print();
+    }, 100);
+  };
 
   const handleUploadClick = () => {
     fileInputRef.current?.click();
   };
 
-  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
@@ -78,9 +114,11 @@ export function ResumeBuilder() {
           for (let i = 1; i <= numPages; i++) {
             const page = await pdf.getPage(i);
             const textContent = await page.getTextContent();
-            text += textContent.items.map(item => ('str' in item ? item.str : '')).join(' ');
+            text += textContent.items
+              .map((item) => ('str' in item ? item.str : ''))
+              .join(' ');
             if (i < numPages) {
-                text += '\n\n'; // Add more space between pages
+              text += '\n\n'; // Add more space between pages
             }
           }
         } else {
@@ -97,7 +135,10 @@ export function ResumeBuilder() {
         }
 
         // AI will analyze and parse the resume
-        const parsedData = await parseResumeAction({ resumeText: text, aiConfig: originalValues.aiConfig });
+        const parsedData = await parseResumeAction({
+          resumeText: text,
+          aiConfig: originalValues.aiConfig,
+        });
 
         // If successful, populate the form with extracted details
         const finalData = {
@@ -107,9 +148,18 @@ export function ResumeBuilder() {
             ...parsedData.personalInfo,
             photo: originalValues.personalInfo.photo, // Explicitly preserve photo
           },
-          experience: parsedData.experience.map((exp) => ({ ...exp, id: crypto.randomUUID() })),
-          education: parsedData.education.map((edu) => ({ ...edu, id: crypto.randomUUID() })),
-          skills: parsedData.skills.map((skill) => ({ ...skill, id: crypto.randomUUID() })),
+          experience: parsedData.experience.map((exp) => ({
+            ...exp,
+            id: crypto.randomUUID(),
+          })),
+          education: parsedData.education.map((edu) => ({
+            ...edu,
+            id: crypto.randomUUID(),
+          })),
+          skills: parsedData.skills.map((skill) => ({
+            ...skill,
+            id: crypto.randomUUID(),
+          })),
         };
 
         form.reset(finalData);
@@ -122,7 +172,9 @@ export function ResumeBuilder() {
         toast({
           variant: 'destructive',
           title: 'Parsing Failed',
-          description: (error as Error).message || "An unknown error occurred during parsing.",
+          description:
+            (error as Error).message ||
+            'An unknown error occurred during parsing.',
         });
       }
     });
@@ -133,13 +185,22 @@ export function ResumeBuilder() {
   };
 
   const handleCalculateAtsScore = () => {
-    const { personalInfo, summary, experience, education, skills, jobDescription, aiConfig } = form.getValues();
-    
+    const {
+      personalInfo,
+      summary,
+      experience,
+      education,
+      skills,
+      jobDescription,
+      aiConfig,
+    } = form.getValues();
+
     if (!jobDescription) {
       toast({
         variant: 'destructive',
         title: 'Job Description Missing',
-        description: 'Please provide a job description in the AI Tools section to calculate the ATS score.',
+        description:
+          'Please provide a job description in the AI Tools section to calculate the ATS score.',
       });
       return;
     }
@@ -149,33 +210,49 @@ export function ResumeBuilder() {
     const resumeText = `
       Name: ${personalInfo.name}
       Email: ${personalInfo.email}
-      ${personalInfo.phone ? `Phone: ${personalInfo.phone}`: ''}
-      ${personalInfo.website ? `Website: ${personalInfo.website}`: ''}
-      ${personalInfo.location ? `Location: ${personalInfo.location}`: ''}
+      ${personalInfo.phone ? `Phone: ${personalInfo.phone}` : ''}
+      ${personalInfo.website ? `Website: ${personalInfo.website}` : ''}
+      ${personalInfo.location ? `Location: ${personalInfo.location}` : ''}
 
       Summary: ${summary}
 
       Experience:
-      ${experience.map(exp => `
-        - ${exp.jobTitle} at ${exp.company} (${exp.startDate} - ${exp.endDate || 'Present'})
-          ${exp.location ? `, ${exp.location}`: ''}
+      ${experience
+        .map(
+          (exp) => `
+        - ${exp.jobTitle} at ${exp.company} (${exp.startDate} - ${
+          exp.endDate || 'Present'
+        })
+          ${exp.location ? `, ${exp.location}` : ''}
           Description: ${exp.description}
-      `).join('\n')}
+      `
+        )
+        .join('\n')}
 
       Education:
-      ${education.map(edu => `
-        - ${edu.degree} from ${edu.institution} (Graduated: ${edu.graduationDate})
-          ${edu.location ? `, ${edu.location}`: ''}
-          ${edu.description ? `Details: ${edu.description}`: ''}
-      `).join('\n')}
+      ${education
+        .map(
+          (edu) => `
+        - ${edu.degree} from ${edu.institution} (Graduated: ${
+          edu.graduationDate
+        })
+          ${edu.location ? `, ${edu.location}` : ''}
+          ${edu.description ? `Details: ${edu.description}` : ''}
+      `
+        )
+        .join('\n')}
 
-      Skills: ${skills.map(s => s.name).join(', ')}
+      Skills: ${skills.map((s) => s.name).join(', ')}
     `;
 
     startAtsTransition(async () => {
       try {
         setAtsResult(null); // Clear previous results
-        const result = await calculateAtsScoreAction({ resumeText, jobDescription, aiConfig });
+        const result = await calculateAtsScoreAction({
+          resumeText,
+          jobDescription,
+          aiConfig,
+        });
         setAtsResult(result);
         toast({
           title: 'Success!',
@@ -194,7 +271,7 @@ export function ResumeBuilder() {
 
   return (
     <FormProvider {...form}>
-       <input
+      <input
         type="file"
         ref={fileInputRef}
         onChange={handleFileChange}
@@ -202,12 +279,16 @@ export function ResumeBuilder() {
         className="hidden"
       />
       <div className="flex min-h-screen flex-col bg-background">
-        <AppHeader 
-          onUploadClick={handleUploadClick} 
+        <AppHeader
+          onUploadClick={handleUploadClick}
           isUploading={isUploading}
           onCalculateAtsScore={handleCalculateAtsScore}
           isCalculatingAts={isCalculatingAts}
           isAiPowered={aiPowered}
+          onDownloadResume={() => handleDownload('resume')}
+          onDownloadCoverLetter={() => handleDownload('cover-letter')}
+          isCoverLetterEmpty={!coverLetter}
+          isPrinting={isPrinting}
         />
         <main className="flex-1 overflow-hidden">
           {isDesktop ? (
@@ -235,7 +316,7 @@ export function ResumeBuilder() {
                   <ResumeForm />
                 </TabsContent>
                 <TabsContent value="preview" className="mt-4 pt-6">
-                   <ResumePreview />
+                  <ResumePreview />
                 </TabsContent>
               </Tabs>
             </div>
@@ -243,16 +324,17 @@ export function ResumeBuilder() {
         </main>
       </div>
 
-       <Dialog open={isAtsModalOpen} onOpenChange={setIsAtsModalOpen}>
-          <DialogContent className="sm:max-w-[625px]">
-              <DialogHeader>
-                  <DialogTitle>ATS Score Checker</DialogTitle>
-                  <DialogDescription>
-                      Results of the analysis of your resume against the provided job description.
-                  </DialogDescription>
-              </DialogHeader>
-              <AtsChecker isPending={isCalculatingAts} atsResult={atsResult} />
-          </DialogContent>
+      <Dialog open={isAtsModalOpen} onOpenChange={setIsAtsModalOpen}>
+        <DialogContent className="sm:max-w-[625px]">
+          <DialogHeader>
+            <DialogTitle>ATS Score Checker</DialogTitle>
+            <DialogDescription>
+              Results of the analysis of your resume against the provided job
+              description.
+            </DialogDescription>
+          </DialogHeader>
+          <AtsChecker isPending={isCalculatingAts} atsResult={atsResult} />
+        </DialogContent>
       </Dialog>
     </FormProvider>
   );

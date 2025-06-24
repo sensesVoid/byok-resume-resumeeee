@@ -46,10 +46,13 @@ export function ResumePreview() {
           </TabsList>
           <div className="flex-1 overflow-y-auto pt-6">
             <div id="printable-area" className="bg-white text-gray-900">
-              <TabsContent value="resume" className="m-0">
+              <TabsContent value="resume" className="m-0 resume-content-wrapper">
                 <SelectedTemplate data={data} />
               </TabsContent>
-              <TabsContent value="cover-letter" className="m-0">
+              <TabsContent
+                value="cover-letter"
+                className="m-0 cover-letter-content-wrapper"
+              >
                 <div className="p-6 sm:p-8">
                   {coverLetter ? (
                     <div className="prose prose-sm max-w-full">
