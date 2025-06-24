@@ -29,6 +29,17 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { buttonVariants } from '@/components/ui/button';
 import { AtsChecker } from '@/components/ats-checker';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { AboutModal } from '@/components/about-modal';
@@ -108,6 +119,7 @@ export function ResumeBuilder() {
   const [isDonationModalOpen, setIsDonationModalOpen] = useState(false);
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
   const [previewTarget, setPreviewTarget] = useState<'resume' | 'cover-letter' | null>(null);
+  const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
 
   const [atsCheckType, setAtsCheckType] = useState<'resume' | 'cover-letter'>(
     'resume'
@@ -529,6 +541,25 @@ export function ResumeBuilder() {
     });
   };
 
+  const handleConfirmDelete = () => {
+    try {
+      localStorage.removeItem('resumeeee-data');
+      form.reset(defaultResumeData);
+      toast({
+        title: 'Data Cleared',
+        description: 'Your resume data has been deleted from this browser.',
+      });
+    } catch (error) {
+      console.error('Failed to delete data from localStorage', error);
+      toast({
+        variant: 'destructive',
+        title: 'Deletion Failed',
+        description: 'Could not delete your data. Please try again.',
+      });
+    }
+    setIsDeleteAlertOpen(false);
+  };
+
 
   return (
     <FormProvider {...form}>
@@ -556,6 +587,7 @@ export function ResumeBuilder() {
           onDonateClick={() => setIsDonationModalOpen(true)}
           onSaveClick={handleSaveClick}
           isSaving={isSaving}
+          onDeleteClick={() => setIsDeleteAlertOpen(true)}
         />
         <main className="overflow-hidden">
           {isDesktop ? (
@@ -645,6 +677,27 @@ export function ResumeBuilder() {
           </div>
         </DialogContent>
       </Dialog>
+
+      <AlertDialog open={isDeleteAlertOpen} onOpenChange={setIsDeleteAlertOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete all your
+              resume and configuration data from this browser's local storage.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirmDelete}
+              className={buttonVariants({ variant: 'destructive' })}
+            >
+              Continue
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <AboutModal isOpen={isAboutModalOpen} onOpenChange={setIsAboutModalOpen} />
       <DonationModal isOpen={isDonationModalOpen} onOpenChange={setIsDonationModalOpen} />

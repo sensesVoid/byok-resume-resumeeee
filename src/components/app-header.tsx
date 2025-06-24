@@ -11,6 +11,9 @@ import {
   Gift,
   Eye,
   Save,
+  MoreVertical,
+  Trash2,
+  Brush,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/icons';
@@ -20,8 +23,11 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
 } from '@/components/ui/dropdown-menu';
-import { ThemeToggle } from '@/components/theme-toggle';
+import { useTheme } from 'next-themes';
 
 interface AppHeaderProps {
   onUploadClick: () => void;
@@ -39,6 +45,7 @@ interface AppHeaderProps {
   onDonateClick: () => void;
   onSaveClick: () => void;
   isSaving: boolean;
+  onDeleteClick: () => void;
 }
 
 export function AppHeader({
@@ -57,7 +64,10 @@ export function AppHeader({
   onDonateClick,
   onSaveClick,
   isSaving,
+  onDeleteClick,
 }: AppHeaderProps) {
+  const { setTheme } = useTheme();
+
   return (
     <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center justify-between border-b bg-background/80 px-4 backdrop-blur-sm sm:px-8 print:hidden">
       <div className="flex items-center gap-2">
@@ -162,20 +172,53 @@ export function AppHeader({
             <span className="ml-2 hidden sm:inline">Donate</span>
           </Button>
         )}
-        <Button
-          onClick={onSaveClick}
-          disabled={isSaving || isDownloading || isUploading || isCalculatingAts}
-          variant="ghost"
-          size="icon"
-          aria-label="Save progress"
-        >
-          {isSaving ? (
-            <Loader2 className="h-5 w-5 animate-spin" />
-          ) : (
-            <Save className="h-5 w-5" />
-          )}
-        </Button>
-        <ThemeToggle />
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label="More options"
+              disabled={isDownloading || isUploading || isCalculatingAts}
+            >
+              <MoreVertical className="h-5 w-5" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={onSaveClick} disabled={isSaving}>
+              {isSaving ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <Save className="mr-2 h-4 w-4" />
+              )}
+              <span>Save Progress</span>
+            </DropdownMenuItem>
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger>
+                <Brush className="mr-2 h-4 w-4" />
+                <span>Theme</span>
+              </DropdownMenuSubTrigger>
+              <DropdownMenuSubContent>
+                <DropdownMenuItem onClick={() => setTheme('light')}>
+                  Light
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setTheme('dark')}>
+                  Dark
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setTheme('system')}>
+                  System
+                </DropdownMenuItem>
+              </DropdownMenuSubContent>
+            </DropdownMenuSub>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onClick={onDeleteClick}
+              className="text-destructive focus:bg-destructive/10 focus:text-destructive"
+            >
+              <Trash2 className="mr-2 h-4 w-4" />
+              <span>Delete All Data</span>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </header>
   );
