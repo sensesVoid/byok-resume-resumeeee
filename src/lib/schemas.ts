@@ -98,7 +98,7 @@ export const defaultResumeData: ResumeSchema = {
   aiConfig: {
     provider: 'google',
     apiKey: '',
-    model: 'gemini-1.5-flash-latest',
+    model: '',
   },
   aiPowered: false,
 };
