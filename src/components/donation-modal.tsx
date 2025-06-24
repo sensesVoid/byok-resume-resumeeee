@@ -12,8 +12,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { defaultResumeData } from '@/lib/schemas';
 import { useToast } from '@/hooks/use-toast';
 import { Copy } from 'lucide-react';
-import { PayPalIcon, MayaIcon } from '@/components/payment-icons';
 import QRCode from 'qrcode.react';
+import Image from 'next/image';
 
 
 interface DonationModalProps {
@@ -50,7 +50,10 @@ export function DonationModal({ isOpen, onOpenChange }: DonationModalProps) {
               {config.paypal.enabled && config.paypal.username && (
                 <Card>
                   <CardHeader>
-                    <CardTitle className="flex items-center gap-2"><PayPalIcon className="h-6 w-6" /> Donate with PayPal</CardTitle>
+                    <CardTitle className="flex items-center gap-2">
+                      <Image src="/images/paypal.png" alt="PayPal Logo" width={24} height={24} />
+                       Donate with PayPal
+                    </CardTitle>
                   </CardHeader>
                   <CardContent className="flex flex-col items-center gap-4">
                     <div className="p-4 bg-white rounded-lg border">
@@ -69,7 +72,10 @@ export function DonationModal({ isOpen, onOpenChange }: DonationModalProps) {
               {config.maya.enabled && config.maya.number && (
                 <Card>
                   <CardHeader>
-                    <CardTitle className="flex items-center gap-2"><MayaIcon className="h-6 w-6 text-[#00a9e0]" /> Donate with Maya</CardTitle>
+                    <CardTitle className="flex items-center gap-2">
+                      <Image src="/images/maya.png" alt="Maya Logo" width={24} height={24} />
+                       Donate with Maya
+                    </CardTitle>
                   </CardHeader>
                   <CardContent className="flex flex-col items-center gap-4">
                     <div className="p-4 bg-white rounded-lg border">

@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { FormControl, FormField, FormItem, FormLabel, FormDescription, FormMessage } from '@/components/ui/form';
 import { Switch } from '@/components/ui/switch';
-import { MayaIcon, PayPalIcon } from './payment-icons';
+import Image from 'next/image';
 
 interface MonetizationSettingsModalProps {
   isOpen: boolean;
@@ -43,7 +43,10 @@ export function MonetizationSettingsModal({ isOpen, onOpenChange }: Monetization
                 {/* PayPal Section */}
                 <div className="space-y-4 rounded-lg border p-4">
                     <div className="flex items-center justify-between">
-                        <h4 className="font-semibold flex items-center gap-2"><PayPalIcon className="h-5 w-5" /> PayPal</h4>
+                        <h4 className="font-semibold flex items-center gap-2">
+                          <Image src="/images/paypal.png" alt="PayPal Logo" width={20} height={20} />
+                           PayPal
+                        </h4>
                         <FormField
                             control={form.control}
                             name="donationConfig.paypal.enabled"
@@ -78,7 +81,10 @@ export function MonetizationSettingsModal({ isOpen, onOpenChange }: Monetization
                 {/* Maya Section */}
                 <div className="space-y-4 rounded-lg border p-4 mt-4">
                     <div className="flex items-center justify-between">
-                        <h4 className="font-semibold flex items-center gap-2"><MayaIcon className="h-5 w-5 text-[#00a9e0]" /> Maya</h4>
+                        <h4 className="font-semibold flex items-center gap-2">
+                          <Image src="/images/maya.png" alt="Maya Logo" width={20} height={20} />
+                          Maya
+                        </h4>
                         <FormField
                             control={form.control}
                             name="donationConfig.maya.enabled"
