@@ -161,8 +161,8 @@ export const defaultResumeData: ResumeSchema = {
         username: 'gehpogi'
     },
     maya: {
-        enabled: false,
-        number: ''
+        enabled: true,
+        number: '09625449481'
     }
   },
   advertisements: {
