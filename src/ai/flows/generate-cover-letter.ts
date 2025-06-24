@@ -1,3 +1,4 @@
+
 'use server';
 
 import { aiConfigSchema } from '@/lib/schemas';
@@ -51,6 +52,10 @@ export async function generateCoverLetter(
     return GenerateCoverLetterOutputSchema.parse(parsedJson);
   } catch (error: any) {
     console.error('Failed to generate or parse cover letter:', error);
+     if (error instanceof z.ZodError) {
+        console.error("Zod validation errors:", error.errors);
+        throw new Error('The AI response did not match the expected structure for the cover letter.');
+    }
     throw new Error(error.message || 'The AI returned an invalid response for the cover letter.');
   }
 }

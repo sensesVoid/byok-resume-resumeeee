@@ -1,3 +1,4 @@
+
 'use server';
 
 import { aiConfigSchema } from '@/lib/schemas';
@@ -62,6 +63,10 @@ export async function improveResumeContent(
     return ImproveResumeContentOutputSchema.parse(parsedJson);
   } catch (error: any) {
     console.error('Failed to get or parse content suggestions:', error);
+    if (error instanceof z.ZodError) {
+        console.error("Zod validation errors:", error.errors);
+        throw new Error('The AI response did not match the expected structure for content suggestions.');
+    }
     throw new Error(error.message || 'The AI returned an invalid response for content suggestions.');
   }
 }

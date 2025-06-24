@@ -1,3 +1,4 @@
+
 'use server';
 
 import type { AiConfig } from '@/lib/schemas';
@@ -15,6 +16,55 @@ function extractTextFromResponse(
   }
   return null;
 }
+
+/**
+ * Extracts a JSON object from a string. It can handle JSON wrapped in markdown code blocks
+ * or the first valid JSON object embedded within other text.
+ * @param text The string to extract JSON from.
+ * @returns A string containing the JSON object, or null if no valid JSON is found.
+ */
+function extractJson(text: string): string | null {
+    // 1. Try to find JSON within markdown code blocks first.
+    const markdownRegex = /```json\s*([\s\S]*?)\s*```/;
+    const markdownMatch = text.match(markdownRegex);
+    if (markdownMatch && markdownMatch[1]) {
+        try {
+            JSON.parse(markdownMatch[1]);
+            return markdownMatch[1]; // It's valid JSON.
+        } catch {
+            // Fall through if parsing fails, maybe the ``` was just text.
+        }
+    }
+
+    // 2. If no valid markdown, find the first potential JSON object using brace counting.
+    let braceCount = 0;
+    let startIndex = -1;
+    for (let i = 0; i < text.length; i++) {
+        if (text[i] === '{') {
+            if (startIndex === -1) {
+                startIndex = i;
+            }
+            braceCount++;
+        } else if (text[i] === '}') {
+            if (startIndex === -1) continue; // Skip closing braces before an opening one
+            braceCount--;
+            if (braceCount === 0) {
+                const potentialJson = text.substring(startIndex, i + 1);
+                try {
+                    JSON.parse(potentialJson);
+                    return potentialJson; // Found the first valid, complete JSON object.
+                } catch (e) {
+                    // This wasn't a valid JSON object. Reset and continue searching.
+                    startIndex = -1;
+                    braceCount = 0;
+                }
+            }
+        }
+    }
+
+    return null; // No valid JSON object found
+}
+
 
 // Universal API caller function that makes direct fetch requests
 export async function callApi({
@@ -97,24 +147,16 @@ export async function callApi({
     if (text === null) {
       throw new Error('No content received from the AI model.');
     }
+    
+    const jsonString = extractJson(text);
+    
+    if (!jsonString) {
+      console.error("AI returned non-JSON response:", text);
+      throw new Error("The AI returned a response in an unexpected format. Please try again.");
+    }
+    
+    return jsonString;
 
-    // Models sometimes wrap JSON in markdown. This extracts the JSON.
-    const jsonRegex = /```json\s*([\s\S]*?)\s*```/;
-    const match = text.match(jsonRegex);
-    if (match && match[1]) {
-      return match[1]; // Return only the content of the markdown block
-    }
-    
-    // If no markdown block is found, assume the model might have returned raw JSON
-    // potentially with some leading/trailing text. We find the main JSON object.
-    const startIndex = text.indexOf('{');
-    const endIndex = text.lastIndexOf('}');
-    if (startIndex > -1 && endIndex > startIndex) {
-        return text.substring(startIndex, endIndex + 1);
-    }
-    
-    // If no JSON object is found, return the raw text for the caller to handle.
-    return text;
   } catch (error: any) {
     console.error(`API call failed for ${provider}:`, error);
     if (error.message.includes('API key')) {

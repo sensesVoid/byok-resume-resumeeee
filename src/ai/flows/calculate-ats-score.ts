@@ -1,3 +1,4 @@
+
 'use server';
 
 import { aiConfigSchema } from '@/lib/schemas';
@@ -89,6 +90,10 @@ export async function calculateAtsScore(
     return CalculateAtsScoreOutputSchema.parse(parsedJson);
   } catch (error: any) {
     console.error('Failed to calculate or parse ATS score:', error);
+    if (error instanceof z.ZodError) {
+        console.error("Zod validation errors:", error.errors);
+        throw new Error('The AI response did not match the expected structure for the ATS score.');
+    }
     throw new Error(error.message || 'The AI returned an invalid response for the ATS score.');
   }
 }

@@ -1,3 +1,4 @@
+
 'use server';
 
 import { aiConfigSchema } from '@/lib/schemas';
@@ -76,7 +77,6 @@ export async function parseResume(input: ParseResumeInput): Promise<ParseResumeO
 
   try {
     const jsonString = await callApi({ prompt, aiConfig: input.aiConfig });
-    
     const parsedJson = JSON.parse(jsonString);
     return ParseResumeOutputSchema.parse(parsedJson);
   } catch (error: any) {
@@ -84,9 +84,7 @@ export async function parseResume(input: ParseResumeInput): Promise<ParseResumeO
     
     if (error instanceof z.ZodError) {
         console.error("Zod validation errors:", error.errors);
-        throw new Error('The AI response structure was unexpected. Please check the resume file or try again.');
-    } else if (error instanceof SyntaxError) {
-        throw new Error('The AI returned a malformed response. The document may not be a valid resume.');
+        throw new Error('The AI response did not match the expected resume structure. Please check the file or try another AI provider.');
     }
     
     throw new Error(error.message || 'An unexpected error occurred while parsing the resume.');
