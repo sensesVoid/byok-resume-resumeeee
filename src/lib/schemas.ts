@@ -28,7 +28,7 @@ export const educationSchema = z.object({
 });
 
 export const aiConfigSchema = z.object({
-  // Provider is implicitly Google AI now
+  provider: z.enum(['google', 'openai', 'openrouter']).default('google'),
   apiKey: z.string().optional(),
   model: z.string().optional(),
 });
@@ -95,6 +95,7 @@ export const defaultResumeData: ResumeSchema = {
   jobDescription: '',
   coverLetter: '',
   aiConfig: {
+    provider: 'google',
     apiKey: '',
     model: 'gemini-1.5-flash-latest',
   },

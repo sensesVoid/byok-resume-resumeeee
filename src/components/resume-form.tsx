@@ -232,11 +232,30 @@ export function ResumeForm() {
              <AccordionContent className="space-y-8">
                 <div>
                    <h3 className="font-semibold flex items-center gap-2 mb-2"><KeyRound/> API Configuration</h3>
-                   <p className="text-sm text-muted-foreground mb-4">Provide your Google AI API key to use the AI features. The key is sent with each request and not stored on any server.</p>
+                   <p className="text-sm text-muted-foreground mb-4">Provide your API key to use the AI features. The key is sent with each request and not stored on any server.</p>
                    <div className="space-y-4">
+                        <FormField control={form.control} name="aiConfig.provider" render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>AI Provider</FormLabel>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select a provider" />
+                                        </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                        <SelectItem value="google">Google AI</SelectItem>
+                                        <SelectItem value="openai">OpenAI</SelectItem>
+                                        <SelectItem value="openrouter">OpenRouter</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                <FormDescription>Select the AI provider you want to use.</FormDescription>
+                                <FormMessage />
+                            </FormItem>
+                        )} />
                        <FormField control={form.control} name="aiConfig.apiKey" render={({ field }) => (
                          <FormItem>
-                           <FormLabel>Google AI API Key</FormLabel>
+                           <FormLabel>API Key</FormLabel>
                            <FormControl><Input type="password" placeholder="Enter your API key" {...field} /></FormControl>
                            <FormMessage />
                          </FormItem>
