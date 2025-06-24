@@ -567,8 +567,8 @@ export function ResumeForm() {
             </AccordionContent>
           </AccordionItem>
 
-          <AccordionItem value="cover-letter">
-            <AccordionTrigger><FileText className="mr-3 text-primary" /> AI Cover Letter Generator</AccordionTrigger>
+          <AccordionItem value="job-tools">
+            <AccordionTrigger><FileText className="mr-3 text-primary" /> AI Job Tools</AccordionTrigger>
             <AccordionContent>
               <div className="space-y-4">
                 <FormField control={form.control} name="jobDescription" render={({ field }) => (
