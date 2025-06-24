@@ -56,7 +56,7 @@ export function CreativeTemplate({ data }: TemplateProps) {
                             <img src={personalInfo.photo} alt={personalInfo.name || ''} className="h-28 w-28 rounded-full object-cover border-4 border-gray-200 shadow-lg" />
                         </div>
                     )}
-                    <h1 className="text-3xl font-bold" style={headingStyle}>{personalInfo?.name || 'Your Name'}</h1>
+                    <h1 className="text-3xl font-bold break-words" style={headingStyle}>{personalInfo?.name || 'Your Name'}</h1>
                     <p className="text-md mt-1" style={{ color: bodyColor }}>Aspiring to be great</p>
                 </div>
                 
@@ -116,11 +116,10 @@ export function CreativeTemplate({ data }: TemplateProps) {
                                 <div key={exp.id}>
                                     <div className="flex items-baseline justify-between">
                                         <h3 className="text-lg font-semibold">{exp.jobTitle}</h3>
-                                        <div className="text-sm font-medium" style={{color: bodyColor}}>{exp.startDate} - {exp.endDate || 'Present'}</div>
+                                        <div className="text-sm font-medium shrink-0 whitespace-nowrap" style={{color: bodyColor}}>{exp.startDate} - {exp.endDate || 'Present'}</div>
                                     </div>
                                     <div className="flex items-baseline justify-between text-md font-medium">
-                                        <span className="text-gray-800">{exp.company || 'Company'}</span>
-                                        {exp.location && <span className="text-sm" style={{color: bodyColor}}>{exp.location}</span>}
+                                        <span className="text-gray-800">{exp.company || 'Company'}{exp.location ? `, ${exp.location}`: ''}</span>
                                     </div>
                                     <div className="mt-2">{renderDescription(exp.description)}</div>
                                 </div>

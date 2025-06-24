@@ -77,7 +77,7 @@ export function TechnicalTemplate({ data }: TemplateProps) {
                   <h3 className="text-md font-semibold">{exp.jobTitle || 'Job Title'}</h3>
                   <div className="text-sm text-gray-600 flex justify-between">
                     <span>{(exp.company || 'Company')}{exp.location ? ` / ${exp.location}` : ''}</span>
-                    <span>{exp.startDate} - {exp.endDate || 'Present'}</span>
+                    <span className="shrink-0 whitespace-nowrap">{exp.startDate} - {exp.endDate || 'Present'}</span>
                   </div>
                   <div className="mt-1">{renderDescription(exp.description)}</div>
                 </div>
@@ -95,7 +95,7 @@ export function TechnicalTemplate({ data }: TemplateProps) {
                   <h3 className="text-md font-semibold">{edu.degree || 'Degree'}</h3>
                    <div className="text-sm text-gray-600 flex justify-between">
                     <span>{(edu.institution || 'Institution')}{edu.location ? ` / ${edu.location}` : ''}</span>
-                    <span>{edu.graduationDate}</span>
+                    <span className="shrink-0 whitespace-nowrap">{edu.graduationDate}</span>
                   </div>
                   {edu.description && <p className="mt-1 text-sm italic text-gray-500">{edu.description}</p>}
                 </div>

@@ -132,7 +132,7 @@ export function MinimalistTemplate({ data }: TemplateProps) {
                     <h3 className="text-md font-semibold">
                       {exp.jobTitle || 'Job Title'}
                     </h3>
-                    <div className="text-xs text-gray-500">
+                    <div className="text-xs text-gray-500 shrink-0 whitespace-nowrap">
                       {exp.startDate} - {exp.endDate || 'Present'}
                     </div>
                   </div>
@@ -163,7 +163,7 @@ export function MinimalistTemplate({ data }: TemplateProps) {
                     <h3 className="text-md font-semibold">
                       {edu.degree || 'Degree'}
                     </h3>
-                    <div className="text-xs text-gray-500">
+                    <div className="text-xs text-gray-500 shrink-0 whitespace-nowrap">
                       {edu.graduationDate}
                     </div>
                   </div>

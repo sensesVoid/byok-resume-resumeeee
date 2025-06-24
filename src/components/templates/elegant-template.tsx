@@ -74,11 +74,10 @@ export function ElegantTemplate({ data }: TemplateProps) {
                     <div key={exp.id}>
                     <div className="flex justify-between items-baseline">
                         <h3 className="text-md font-bold">{exp.jobTitle || 'Job Title'}</h3>
-                        <div className="text-xs font-normal text-gray-500">{exp.startDate} - {exp.endDate || 'Present'}</div>
+                        <div className="text-xs font-normal text-gray-500 shrink-0 whitespace-nowrap">{exp.startDate} - {exp.endDate || 'Present'}</div>
                     </div>
                     <div className="flex justify-between items-baseline text-sm">
-                        <span className="font-semibold">{exp.company || 'Company'}</span>
-                        {exp.location && <span className="text-xs text-gray-500">{exp.location}</span>}
+                        <span className="font-semibold">{exp.company || 'Company'}{exp.location ? `, ${exp.location}`: ''}</span>
                     </div>
                     <div className="mt-2">{renderDescription(exp.description)}</div>
                     </div>

@@ -85,7 +85,7 @@ export function ProfessionalTemplate({ data }: TemplateProps) {
             {personalInfo?.photo && (
                 <img src={personalInfo.photo} alt={personalInfo.name || ''} className="h-32 w-32 rounded-full object-cover border-4 border-white shadow-md" />
             )}
-            <h1 className="text-3xl font-bold" style={headingStyle}>
+            <h1 className="text-3xl font-bold break-words" style={headingStyle}>
                 {personalInfo?.name || 'Your Name'}
             </h1>
         </div>
@@ -177,13 +177,12 @@ export function ProfessionalTemplate({ data }: TemplateProps) {
                   <div className="absolute -left-[33px] top-1.5 h-4 w-4 rounded-full bg-gray-300 border-4 border-white"></div>
                   <div className="flex items-baseline justify-between">
                     <h3 className="text-lg font-semibold">{exp.jobTitle}</h3>
-                    <div className="text-sm font-medium" style={{color: bodyColor}}>
+                    <div className="text-sm font-medium shrink-0 whitespace-nowrap" style={{color: bodyColor}}>
                       {exp.startDate} - {exp.endDate || 'Present'}
                     </div>
                   </div>
                   <div className="flex items-baseline justify-between text-md font-medium">
-                    <span style={{color: bodyColor}}>{exp.company || 'Company'}</span>
-                    {exp.location && <span className="text-sm" style={{color: bodyColor}}>{exp.location}</span>}
+                    <span style={{color: bodyColor}}>{exp.company || 'Company'}{exp.location ? `, ${exp.location}`: ''}</span>
                   </div>
                   <div className="mt-2">{renderDescription(exp.description)}</div>
                 </div>

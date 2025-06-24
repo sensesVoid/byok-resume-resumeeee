@@ -84,11 +84,10 @@ export function GeometricTemplate({ data }: TemplateProps) {
                         <div key={exp.id}>
                         <div className="flex items-baseline justify-between">
                             <h3 className="text-lg font-semibold">{exp.jobTitle || 'Job Title'}</h3>
-                            <div className="text-sm font-medium text-gray-500">{exp.startDate} - {exp.endDate || 'Present'}</div>
+                            <div className="text-sm font-medium text-gray-500 shrink-0 whitespace-nowrap">{exp.startDate} - {exp.endDate || 'Present'}</div>
                         </div>
                         <div className="flex items-baseline justify-between text-md font-medium text-gray-600">
-                            <span>{exp.company || 'Company'}</span>
-                            {exp.location && <span className="text-sm">{exp.location}</span>}
+                            <span>{exp.company || 'Company'}{exp.location ? `, ${exp.location}`: ''}</span>
                         </div>
                         <div className="mt-2">{renderDescription(exp.description)}</div>
                         </div>
@@ -108,11 +107,10 @@ export function GeometricTemplate({ data }: TemplateProps) {
                         <div key={edu.id}>
                         <div className="flex items-baseline justify-between">
                             <h3 className="text-lg font-semibold">{edu.degree || 'Degree'}</h3>
-                            <div className="text-sm font-medium text-gray-500">{edu.graduationDate}</div>
+                            <div className="text-sm font-medium text-gray-500 shrink-0 whitespace-nowrap">{edu.graduationDate}</div>
                         </div>
                         <div className="flex items-baseline justify-between text-md font-medium text-gray-600">
-                            <span>{edu.institution || 'Institution'}</span>
-                            {edu.location && <span className="text-sm">{edu.location}</span>}
+                            <span>{edu.institution || 'Institution'}{edu.location ? `, ${edu.location}`: ''}</span>
                         </div>
                         {edu.description && <p className="mt-1 text-sm">{edu.description}</p>}
                         </div>
