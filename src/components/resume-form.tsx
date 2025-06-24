@@ -412,11 +412,11 @@ export function ResumeForm() {
                       <FormControl>
                         <Input
                           {...field}
-                          placeholder="https://www.buymeacoffee.com/your-name"
+                          placeholder="https://your-donation-link.com"
                         />
                       </FormControl>
                       <FormDescription>
-                        Provide a link to your donation page (e.g., Buy Me a Coffee, Patreon). If provided, a "Donate" button will appear in the header.
+                        Provide a link to your donation page (e.g., Buy Me a Coffee, Patreon, Maya). If provided, a "Donate" button will appear in the header.
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
