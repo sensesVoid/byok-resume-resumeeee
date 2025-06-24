@@ -18,7 +18,6 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
-import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
 import { useState, useRef } from 'react';
 import type * as React from 'react';
@@ -87,6 +86,82 @@ const EditableField = ({
     />
   );
 };
+
+const DraggableWrapper = ({
+  name,
+  children,
+  className,
+  isPhoto = false
+}: {
+  name: DraggableItem;
+  children: React.ReactNode;
+  className?: string;
+  isPhoto?: boolean;
+}) => {
+  const { watch, setValue, trigger } = useFormContext<ResumeSchema>();
+  const position = watch(`diyLayout.${name}`);
+  const itemRef = useRef<HTMLDivElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [draggedItem, setDraggedItem] = useState<DraggableItem | null>(null);
+
+  const handleDragStart = (e: React.DragEvent<HTMLDivElement>, item: DraggableItem) => {
+    setDraggedItem(item);
+    const img = new Image();
+    img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+    e.dataTransfer.setDragImage(img, 0, 0);
+  };
+  
+  const handleResizeMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const startX = e.clientX;
+    const startWidth = itemRef.current?.offsetWidth || 0;
+
+    const handleMouseMove = (moveEvent: MouseEvent) => {
+      let newWidth = startWidth + (moveEvent.clientX - startX);
+      if (newWidth < 100) newWidth = 100;
+      setValue(`diyLayout.${name}.width`, newWidth, { shouldValidate: false });
+    };
+
+    const handleMouseUp = () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+      trigger(`diyLayout.${name}`);
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+  };
+
+  return (
+    <div
+      ref={itemRef}
+      data-drag-id={name}
+      draggable
+      onDragStart={(e) => handleDragStart(e, name)}
+      className={cn(
+        "group absolute cursor-grab p-2",
+        draggedItem === name && "opacity-50",
+        className
+      )}
+      style={{
+        left: `${position?.x ?? 0}px`,
+        top: `${position?.y ?? 0}px`,
+        width: position?.width ? `${position.width}px` : undefined,
+        height: isPhoto && position?.width ? `${position.width}px` : undefined,
+      }}
+    >
+      <div className="absolute inset-0 border-2 border-dashed border-transparent group-hover:border-primary/50 transition-colors pointer-events-none" />
+      {children}
+      <div
+        className="absolute -bottom-1 -right-1 h-4 w-4 rounded-full bg-primary border-2 border-white cursor-se-resize opacity-0 group-hover:opacity-100 transition-opacity"
+        onMouseDown={handleResizeMouseDown}
+      />
+    </div>
+  );
+};
+
 
 export function DiyTemplate({ data }: { data: ResumeSchema }) {
   const { control, watch, setValue } = useFormContext<ResumeSchema>();
@@ -187,18 +262,38 @@ export function DiyTemplate({ data }: { data: ResumeSchema }) {
     e.stopPropagation();
     setIsDragging(false);
 
-    if (e.dataTransfer.files && e.dataTransfer.files.length > 0 && draggedItem === 'photo') {
-      handleFile(e.dataTransfer.files[0]);
-    } else if (draggedItem) {
-      const dropZone = e.currentTarget.getBoundingClientRect();
-      // Adjust for the element's own dimensions to center it on the cursor
-      const element = (e.target as HTMLElement).querySelector(`[data-drag-id="${draggedItem}"]`) || e.target as HTMLElement;
-      const elRect = element.getBoundingClientRect();
-
-      const newX = e.clientX - dropZone.left - (elRect.width / 2);
-      const newY = e.clientY - dropZone.top - (elRect.height / 2);
-      setValue(`diyLayout.${draggedItem}.x`, newX, { shouldValidate: true });
-      setValue(`diyLayout.${draggedItem}.y`, newY, { shouldValidate: true });
+    const isFileDrop = e.dataTransfer.files && e.dataTransfer.files.length > 0;
+    const dropZone = e.currentTarget;
+    const dropZoneRect = dropZone.getBoundingClientRect();
+    const dropX = e.clientX - dropZoneRect.left;
+    const dropY = e.clientY - dropZoneRect.top;
+    
+    // Check if the drop is on the photo uploader
+    const photoElement = dropZone.querySelector('[data-drag-id="photo"]');
+    if (photoElement) {
+        const photoRect = photoElement.getBoundingClientRect();
+        const isOverPhoto = (
+            e.clientX >= photoRect.left &&
+            e.clientX <= photoRect.right &&
+            e.clientY >= photoRect.top &&
+            e.clientY <= photoRect.bottom
+        );
+        if (isFileDrop && isOverPhoto) {
+            handleFile(e.dataTransfer.files[0]);
+            setDraggedItem(null);
+            return;
+        }
+    }
+    
+    if (draggedItem) {
+      const draggedElement = dropZone.querySelector(`[data-drag-id="${draggedItem}"]`) as HTMLElement;
+      if (draggedElement) {
+        const elRect = draggedElement.getBoundingClientRect();
+        const newX = dropX - (elRect.width / 2);
+        const newY = dropY - (elRect.height / 2);
+        setValue(`diyLayout.${draggedItem}.x`, newX, { shouldValidate: true });
+        setValue(`diyLayout.${draggedItem}.y`, newY, { shouldValidate: true });
+      }
     }
     
     setDraggedItem(null);
@@ -223,46 +318,6 @@ export function DiyTemplate({ data }: { data: ResumeSchema }) {
     setIsDragging(false);
   };
 
-  const handleDragStart = (e: React.DragEvent<HTMLDivElement>, item: DraggableItem) => {
-    setDraggedItem(item);
-    // Use a transparent image as drag ghost to show the real element being dragged
-    const img = new Image();
-    img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
-    e.dataTransfer.setDragImage(img, 0, 0);
-  };
-
-
-  const DraggableWrapper = ({
-    name,
-    children,
-    className
-  }: {
-    name: DraggableItem;
-    children: React.ReactNode;
-    className?: string;
-  }) => {
-    const position = watch(`diyLayout.${name}`);
-    return (
-      <div
-        data-drag-id={name}
-        draggable
-        onDragStart={(e) => handleDragStart(e, name)}
-        className={cn(
-          "group absolute cursor-grab p-2",
-          draggedItem === name && "opacity-50",
-          className
-        )}
-        style={{
-          left: `${position?.x ?? 0}px`,
-          top: `${position?.y ?? 0}px`,
-        }}
-      >
-        <div className="absolute inset-0 border-2 border-dashed border-transparent group-hover:border-primary/50 transition-colors pointer-events-none" />
-        {children}
-      </div>
-    );
-  };
-
 
   return (
     <div 
@@ -273,7 +328,7 @@ export function DiyTemplate({ data }: { data: ResumeSchema }) {
       onDragEnter={handleDragEnter}
       onDragLeave={handleDragLeave}
     >
-      <DraggableWrapper name="photo" className="w-28 h-28 rounded-full">
+      <DraggableWrapper name="photo" className="rounded-full" isPhoto={true}>
           <div
             className={cn(
                 "relative w-full h-full rounded-full transition-all",
@@ -307,7 +362,7 @@ export function DiyTemplate({ data }: { data: ResumeSchema }) {
           className="hidden"
       />
 
-      <DraggableWrapper name="header" className="w-[calc(100%-3rem)]">
+      <DraggableWrapper name="header">
         <header className="text-center">
           <div style={headingStyle}>
             <EditableField
@@ -343,7 +398,7 @@ export function DiyTemplate({ data }: { data: ResumeSchema }) {
         </header>
       </DraggableWrapper>
 
-      <DraggableWrapper name="summary" className="w-[calc(100%-3rem)]">
+      <DraggableWrapper name="summary">
         <section>
           <EditableField
             name="summary"
@@ -354,7 +409,7 @@ export function DiyTemplate({ data }: { data: ResumeSchema }) {
         </section>
       </DraggableWrapper>
 
-      <DraggableWrapper name="experience" className="w-[calc(100%-3rem)]">
+      <DraggableWrapper name="experience">
         <section>
           <h2 className="mb-4 flex items-center gap-2 text-xl font-bold" style={headingStyle}>
             <Briefcase size={20} /> Work Experience
@@ -429,7 +484,7 @@ export function DiyTemplate({ data }: { data: ResumeSchema }) {
         </section>
       </DraggableWrapper>
 
-      <DraggableWrapper name="education" className="w-[calc(100%-3rem)]">
+      <DraggableWrapper name="education">
         <section>
           <h2 className="mb-4 flex items-center gap-2 text-xl font-bold" style={headingStyle}>
             <GraduationCap size={20} /> Education
@@ -492,7 +547,7 @@ export function DiyTemplate({ data }: { data: ResumeSchema }) {
         </section>
       </DraggableWrapper>
 
-      <DraggableWrapper name="skills" className="w-[calc(100%-3rem)]">
+      <DraggableWrapper name="skills">
         <section>
           <h2 className="mb-4 flex items-center gap-2 text-xl font-bold" style={headingStyle}>
             <Star size={20} /> Skills

@@ -44,9 +44,10 @@ export const donationConfigSchema = z.object({
   }),
 });
 
-const positionSchema = z.object({
+const diyLayoutItemSchema = z.object({
   x: z.number(),
   y: z.number(),
+  width: z.number(),
 });
 
 export const resumeSchema = z.object({
@@ -84,12 +85,12 @@ export const resumeSchema = z.object({
   coverLetter: z.string().optional(),
   donationConfig: donationConfigSchema,
   diyLayout: z.object({
-    photo: positionSchema,
-    header: positionSchema,
-    summary: positionSchema,
-    experience: positionSchema,
-    education: positionSchema,
-    skills: positionSchema,
+    photo: diyLayoutItemSchema,
+    header: diyLayoutItemSchema,
+    summary: diyLayoutItemSchema,
+    experience: diyLayoutItemSchema,
+    education: diyLayoutItemSchema,
+    skills: diyLayoutItemSchema,
   }),
 });
 
@@ -167,11 +168,11 @@ export const defaultResumeData: ResumeSchema = {
     }
   },
   diyLayout: {
-    photo: { x: 470, y: 20 },
-    header: { x: 0, y: 150 },
-    summary: { x: 0, y: 270 },
-    experience: { x: 0, y: 350 },
-    education: { x: 0, y: 600 },
-    skills: { x: 0, y: 800 },
+    photo: { x: 300, y: 20, width: 128 },
+    header: { x: 20, y: 170, width: 680 },
+    summary: { x: 20, y: 290, width: 680 },
+    experience: { x: 20, y: 370, width: 680 },
+    education: { x: 20, y: 620, width: 680 },
+    skills: { x: 20, y: 820, width: 680 },
   }
 };
