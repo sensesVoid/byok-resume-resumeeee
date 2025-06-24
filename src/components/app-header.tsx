@@ -19,7 +19,7 @@ import {
 interface AppHeaderProps {
   onUploadClick: () => void;
   isUploading: boolean;
-  onCalculateAtsScore: () => void;
+  onCalculateAtsScore: (type: 'resume' | 'cover-letter') => void;
   isCalculatingAts: boolean;
   isAiPowered: boolean;
   onDownloadResume: () => void;
@@ -82,19 +82,34 @@ export function AppHeader({
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <Button
-          onClick={onCalculateAtsScore}
-          disabled={
-            !isAiPowered || isCalculatingAts || isPrinting || isUploading
-          }
-        >
-          {isCalculatingAts ? (
-            <Loader2 className="animate-spin" />
-          ) : (
-            <ScanSearch />
-          )}
-          <span className="ml-2 hidden sm:inline">Calculate ATS</span>
-        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              disabled={
+                !isAiPowered || isCalculatingAts || isPrinting || isUploading
+              }
+            >
+              {isCalculatingAts ? (
+                <Loader2 className="animate-spin" />
+              ) : (
+                <ScanSearch />
+              )}
+              <span className="ml-2 hidden sm:inline">Calculate ATS</span>
+              <ChevronDown className="ml-1 h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuItem onClick={() => onCalculateAtsScore('resume')}>
+              For Resume
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => onCalculateAtsScore('cover-letter')}
+              disabled={isCoverLetterEmpty}
+            >
+              For Cover Letter
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </header>
   );

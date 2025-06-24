@@ -10,19 +10,24 @@ import { Skeleton } from '@/components/ui/skeleton';
 interface AtsCheckerProps {
   atsResult: CalculateAtsScoreOutput | null;
   isPending: boolean;
+  documentType: 'resume' | 'cover-letter';
 }
 
-export function AtsChecker({ atsResult, isPending }: AtsCheckerProps) {
+export function AtsChecker({
+  atsResult,
+  isPending,
+  documentType,
+}: AtsCheckerProps) {
   return (
     <div className="space-y-4">
       {isPending && (
          <Card>
             <CardHeader className="flex flex-row items-center gap-2">
                 <Loader2 className="h-5 w-5 animate-spin" />
-                <CardTitle>Analyzing your resume...</CardTitle>
+                <CardTitle>Analyzing your {documentType}...</CardTitle>
             </CardHeader>
             <CardContent>
-                <p className="text-sm text-muted-foreground">This may take a few moments. We're comparing your resume against the job description to calculate your ATS score.</p>
+                <p className="text-sm text-muted-foreground">This may take a few moments. We're comparing your {documentType} against the job description to calculate your ATS score.</p>
                 <Skeleton className="w-full h-8 mt-4" />
                 <Skeleton className="w-2/3 h-4 mt-2" />
             </CardContent>
@@ -34,7 +39,7 @@ export function AtsChecker({ atsResult, isPending }: AtsCheckerProps) {
             <Card>
                 <CardHeader>
                     <CardTitle>Your ATS Score</CardTitle>
-                    <CardDescription>This score estimates how well your resume matches the job description.</CardDescription>
+                    <CardDescription>This score estimates how well your {documentType} matches the job description.</CardDescription>
                 </CardHeader>
                 <CardContent className="flex flex-col sm:flex-row items-center gap-4">
                     <div className="relative h-24 w-24 shrink-0">
@@ -101,7 +106,7 @@ export function AtsChecker({ atsResult, isPending }: AtsCheckerProps) {
                             ))}
                         </div>
                     ) : (
-                        <p className="text-sm text-muted-foreground">Great job! We didn't find any major skills missing from your resume based on the job description.</p>
+                        <p className="text-sm text-muted-foreground">Great job! We didn't find any major skills missing from your {documentType} based on the job description.</p>
                     )}
                 </CardContent>
             </Card>

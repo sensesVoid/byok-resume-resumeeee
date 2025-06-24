@@ -52,6 +52,9 @@ export function ResumeBuilder() {
     useState<CalculateAtsScoreOutput | null>(null);
   const [isAtsModalOpen, setIsAtsModalOpen] = useState(false);
   const [isPrinting, setIsPrinting] = useState(false);
+  const [atsCheckType, setAtsCheckType] = useState<'resume' | 'cover-letter'>(
+    'resume'
+  );
 
   const aiPowered = form.watch('aiPowered');
   const coverLetter = form.watch('coverLetter');
@@ -184,7 +187,7 @@ export function ResumeBuilder() {
     }
   };
 
-  const handleCalculateAtsScore = () => {
+  const handleCalculateAtsScore = (type: 'resume' | 'cover-letter') => {
     const {
       personalInfo,
       summary,
@@ -193,6 +196,7 @@ export function ResumeBuilder() {
       skills,
       jobDescription,
       aiConfig,
+      coverLetter,
     } = form.getValues();
 
     if (!jobDescription) {
@@ -205,9 +209,22 @@ export function ResumeBuilder() {
       return;
     }
 
+    if (type === 'cover-letter' && !coverLetter) {
+      toast({
+        variant: 'destructive',
+        title: 'Cover Letter is Empty',
+        description:
+          'Please generate a cover letter before calculating its ATS score.',
+      });
+      return;
+    }
+
+    setAtsCheckType(type);
     setIsAtsModalOpen(true);
 
-    const resumeText = `
+    let documentText = '';
+    if (type === 'resume') {
+      documentText = `
       Name: ${personalInfo.name}
       Email: ${personalInfo.email}
       ${personalInfo.phone ? `Phone: ${personalInfo.phone}` : ''}
@@ -221,8 +238,8 @@ export function ResumeBuilder() {
         .map(
           (exp) => `
         - ${exp.jobTitle} at ${exp.company} (${exp.startDate} - ${
-          exp.endDate || 'Present'
-        })
+            exp.endDate || 'Present'
+          })
           ${exp.location ? `, ${exp.location}` : ''}
           Description: ${exp.description}
       `
@@ -234,8 +251,8 @@ export function ResumeBuilder() {
         .map(
           (edu) => `
         - ${edu.degree} from ${edu.institution} (Graduated: ${
-          edu.graduationDate
-        })
+            edu.graduationDate
+          })
           ${edu.location ? `, ${edu.location}` : ''}
           ${edu.description ? `Details: ${edu.description}` : ''}
       `
@@ -244,19 +261,23 @@ export function ResumeBuilder() {
 
       Skills: ${skills.map((s) => s.name).join(', ')}
     `;
+    } else {
+      documentText = coverLetter || '';
+    }
 
     startAtsTransition(async () => {
       try {
         setAtsResult(null); // Clear previous results
         const result = await calculateAtsScoreAction({
-          resumeText,
+          documentText,
+          documentType: type,
           jobDescription,
           aiConfig,
         });
         setAtsResult(result);
         toast({
           title: 'Success!',
-          description: 'Your ATS score has been calculated.',
+          description: `Your ${type} ATS score has been calculated.`,
         });
       } catch (error) {
         toast({
@@ -329,11 +350,15 @@ export function ResumeBuilder() {
           <DialogHeader>
             <DialogTitle>ATS Score Checker</DialogTitle>
             <DialogDescription>
-              Results of the analysis of your resume against the provided job
-              description.
+              Results of the analysis of your {atsCheckType} against the provided
+              job description.
             </DialogDescription>
           </DialogHeader>
-          <AtsChecker isPending={isCalculatingAts} atsResult={atsResult} />
+          <AtsChecker
+            isPending={isCalculatingAts}
+            atsResult={atsResult}
+            documentType={atsCheckType}
+          />
         </DialogContent>
       </Dialog>
     </FormProvider>

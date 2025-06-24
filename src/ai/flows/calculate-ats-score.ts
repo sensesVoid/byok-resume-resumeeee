@@ -5,10 +5,15 @@ import { z } from 'zod';
 import { callApi } from '@/ai/api-caller';
 
 const CalculateAtsScoreInputSchema = z.object({
-  resumeText: z.string().describe('The full text content of the resume.'),
+  documentText: z
+    .string()
+    .describe('The full text content of the document (resume or cover letter).'),
+  documentType: z
+    .enum(['resume', 'cover-letter'])
+    .describe('The type of document being analyzed.'),
   jobDescription: z
     .string()
-    .describe('The job description to compare the resume against.'),
+    .describe('The job description to compare the document against.'),
   aiConfig: aiConfigSchema,
 });
 
@@ -22,22 +27,22 @@ const CalculateAtsScoreOutputSchema = z.object({
     .min(0)
     .max(100)
     .describe(
-      'The overall ATS score from 0 to 100, representing the match between the resume and job description.'
+      'The overall ATS score from 0 to 100, representing the match between the document and job description.'
     ),
   keywordAnalysis: z
     .string()
     .describe(
-      'An analysis of how well the resume keywords match the job description.'
+      'An analysis of how well the document keywords match the job description.'
     ),
   formattingFeedback: z
     .string()
     .describe(
-      "Feedback on the resume's formatting, structure, and clarity from an ATS perspective."
+      "Feedback on the document's formatting, structure, and clarity from an ATS perspective."
     ),
   missingSkills: z
     .array(z.string())
     .describe(
-      'A list of key skills or qualifications from the job description that are missing from the resume.'
+      'A list of key skills or qualifications from the job description that are missing from the document.'
     ),
 });
 
@@ -45,14 +50,19 @@ export type CalculateAtsScoreOutput = z.infer<
   typeof CalculateAtsScoreOutputSchema
 >;
 
-function buildPrompt(resumeText: string, jobDescription: string): string {
-  return `You are an advanced Applicant Tracking System (ATS) simulator. Your task is to analyze the provided resume against the given job description and provide a detailed evaluation.
+function buildPrompt(
+  documentText: string,
+  jobDescription: string,
+  documentType: 'resume' | 'cover-letter'
+): string {
+  const documentName = documentType === 'resume' ? 'Resume' : 'Cover Letter';
+  return `You are an advanced Applicant Tracking System (ATS) simulator. Your task is to analyze the provided ${documentName.toLowerCase()} against the given job description and provide a detailed evaluation.
 
   **Job Description:**
   ${jobDescription}
 
-  **Resume Text:**
-  ${resumeText}
+  **${documentName} Text:**
+  ${documentText}
   
   Provide a response as a single, valid JSON object with the following keys: "score", "keywordAnalysis", "formattingFeedback", "missingSkills".
   - "score": A number from 0 to 100.
@@ -66,7 +76,11 @@ function buildPrompt(resumeText: string, jobDescription: string): string {
 export async function calculateAtsScore(
   input: CalculateAtsScoreInput
 ): Promise<CalculateAtsScoreOutput> {
-  const prompt = buildPrompt(input.resumeText, input.jobDescription);
+  const prompt = buildPrompt(
+    input.documentText,
+    input.jobDescription,
+    input.documentType
+  );
   
   try {
     const responseJsonString = await callApi({ prompt, aiConfig: input.aiConfig });
