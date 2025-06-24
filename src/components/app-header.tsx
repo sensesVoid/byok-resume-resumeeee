@@ -48,14 +48,16 @@ export function AppHeader({
         <h1 className="text-xl font-bold text-foreground">Resumeeee</h1>
       </div>
       <div className="flex items-center gap-2">
-        <Button
-          onClick={onUploadClick}
-          disabled={isUploading || isPrinting || isCalculatingAts}
-          variant="outline"
-        >
-          {isUploading ? <Loader2 className="animate-spin" /> : <Upload />}
-          <span className="ml-2 hidden sm:inline">Upload Resume</span>
-        </Button>
+        {isAiPowered && (
+          <Button
+            onClick={onUploadClick}
+            disabled={isUploading || isPrinting || isCalculatingAts}
+            variant="outline"
+          >
+            {isUploading ? <Loader2 className="animate-spin" /> : <Upload />}
+            <span className="ml-2 hidden sm:inline">Upload Resume</span>
+          </Button>
+        )}
         <Button onClick={handlePrint} disabled={isPrinting || isUploading || isCalculatingAts}>
           {isPrinting ? <Loader2 className="animate-spin" /> : <FileDown />}
           <span className="ml-2 hidden sm:inline">Download PDF</span>
