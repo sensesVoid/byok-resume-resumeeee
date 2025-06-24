@@ -6,7 +6,7 @@ import { ArrowLeft, Copy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { defaultResumeData } from '@/lib/schemas';
-import { QRCode } from 'qrcode.react';
+import QRCode from 'qrcode.react';
 import { useToast } from '@/hooks/use-toast';
 import { PayPalIcon, MayaIcon } from '@/components/payment-icons';
 
@@ -68,7 +68,7 @@ export default function DonatePage() {
                 </CardHeader>
                 <CardContent className="flex flex-col items-center gap-4">
                   <div className="p-4 bg-white rounded-lg border">
-                     <QRCode value={config.maya.number} size={192} />
+                     <QRCode value={String(config.maya.number)} size={192} />
                   </div>
                   <div className="text-center">
                     <p className="font-mono text-sm">{config.maya.number}</p>
