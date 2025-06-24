@@ -17,6 +17,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { ThemeToggle } from '@/components/theme-toggle';
 
 interface AppHeaderProps {
   onUploadClick: () => void;
@@ -137,6 +138,7 @@ export function AppHeader({
             <span className="ml-2 hidden sm:inline">Donate</span>
           </Button>
         )}
+        <ThemeToggle />
       </div>
     </header>
   );
