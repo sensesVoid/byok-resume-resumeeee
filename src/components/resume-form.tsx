@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useFormContext, useFieldArray } from 'react-hook-form';
@@ -323,6 +324,7 @@ export function ResumeForm() {
                           size="icon"
                           onClick={handlePowerToggle}
                           disabled={isValidating}
+                          aria-label={aiPowered ? 'Disable AI Features' : 'Enable AI Features'}
                           className={cn('transition-all shrink-0',
                               aiPowered
                               ? 'bg-gradient-to-r from-blue-400 via-sky-400 to-cyan-400 bg-[length:200%_200%] text-white animate-flow-glow animate-pulse-glow'
@@ -429,6 +431,7 @@ export function ResumeForm() {
                                                     type="button"
                                                     variant="ghost"
                                                     size="sm"
+                                                    aria-label="Remove photo"
                                                     className="text-muted-foreground hover:text-destructive"
                                                     onClick={() => form.setValue('personalInfo.photo', '', { shouldValidate: true })}
                                                 >
@@ -460,7 +463,7 @@ export function ResumeForm() {
                   <FormField control={form.control} name="personalInfo.location" render={({ field }) => (<FormItem className="sm:col-span-2"><FormLabel>Location</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
                 </div>
                  <div className="flex justify-end pt-2">
-                   <Button type="button" variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive" onClick={handleClearPersonalInfo}>
+                   <Button type="button" variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive" onClick={handleClearPersonalInfo} aria-label="Clear all personal information">
                       <Trash2 className="h-4 w-4" />
                    </Button>
                 </div>
@@ -490,6 +493,7 @@ export function ResumeForm() {
                         size="icon" 
                         className="text-muted-foreground hover:text-destructive" 
                         onClick={() => form.setValue('summary', '', { shouldValidate: true })}
+                        aria-label="Clear summary"
                       >
                           <Trash2 className="h-4 w-4" />
                       </Button>
@@ -527,7 +531,7 @@ export function ResumeForm() {
                         >
                             {isImproving && fieldToUpdate === `experience.${index}.description` ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />} Improve with AI
                         </Button>
-                        <Button type="button" variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive" onClick={() => removeExperience(index)}>
+                        <Button type="button" variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive" onClick={() => removeExperience(index)} aria-label="Remove experience entry">
                             <Trash2 className="h-4 w-4" />
                         </Button>
                     </div>
@@ -552,7 +556,7 @@ export function ResumeForm() {
                     </div>
                     <FormField control={form.control} name={`education.${index}.description`} render={({ field }) => (<FormItem><FormLabel>Description</FormLabel><FormControl><Textarea rows={3} {...field} /></FormControl><FormMessage /></FormItem>)} />
                     <div className="flex justify-end pt-2">
-                        <Button type="button" variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive" onClick={() => removeEducation(index)}>
+                        <Button type="button" variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive" onClick={() => removeEducation(index)} aria-label="Remove education entry">
                             <Trash2 className="h-4 w-4" />
                         </Button>
                     </div>
@@ -569,13 +573,13 @@ export function ResumeForm() {
               <div className="space-y-4">
                 <div className="flex gap-2">
                   <Input value={newSkill} onChange={e => setNewSkill(e.target.value)} placeholder="e.g. TypeScript" onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddSkill())} />
-                  <Button type="button" onClick={handleAddSkill}><Plus className="h-4 w-4" /> Add</Button>
+                  <Button type="button" onClick={handleAddSkill}><Plus className="mr-2 h-4 w-4" /> Add</Button>
                 </div>
                 <div className="flex min-h-[2.25rem] flex-wrap gap-2 rounded-lg border border-border/50 p-3 bg-background/30">
                   {skillFields.map((field, index) => (
                     <div key={field.id} className="flex items-center gap-2 rounded-full bg-secondary px-3 py-1 text-sm font-medium text-secondary-foreground">
                       <span>{form.watch(`skills.${index}.name`)}</span>
-                      <button type="button" onClick={() => removeSkill(index)} className="text-secondary-foreground/70 hover:text-secondary-foreground"><Trash2 className="h-3 w-3" /></button>
+                      <button type="button" onClick={() => removeSkill(index)} className="text-secondary-foreground/70 hover:text-secondary-foreground" aria-label={`Remove skill: ${form.watch(`skills.${index}.name`)}`}><Trash2 className="h-3 w-3" /></button>
                     </div>
                   ))}
                 </div>
