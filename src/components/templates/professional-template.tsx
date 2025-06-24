@@ -11,6 +11,7 @@ import {
   GraduationCap,
   Star,
   User,
+  KanbanSquare,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type * as React from 'react';
@@ -38,6 +39,7 @@ export function ProfessionalTemplate({ data }: TemplateProps) {
     education,
     skills,
     certifications,
+    projects,
     fontStyle,
     headingColor,
     bodyColor,
@@ -204,6 +206,26 @@ export function ProfessionalTemplate({ data }: TemplateProps) {
                     <span style={{color: bodyColor}}>{exp.company || 'Company'}{exp.location ? `, ${exp.location}`: ''}</span>
                   </div>
                   <div className="mt-2">{renderDescription(exp.description)}</div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {projects?.length > 0 && (
+          <section>
+            <h2 className="text-xl font-bold flex items-center gap-2 mb-4" style={headingStyle}>
+              <KanbanSquare size={20} /> Key Projects
+            </h2>
+            <div className="space-y-6 border-l-2 pl-6" style={{ borderColor: accentColor }}>
+              {projects.map((project) => (
+                <div key={project.id} className="relative">
+                  <div className="absolute -left-[33px] top-1.5 h-4 w-4 rounded-full border-4 border-white" style={{ backgroundColor: accentColor }}></div>
+                  <div className="flex items-baseline justify-between">
+                    <h3 className="text-lg font-semibold">{project.name}</h3>
+                    {project.link && <a href={project.link} target="_blank" rel="noopener noreferrer" className="text-sm font-medium shrink-0 whitespace-nowrap hover:underline" style={{color: bodyColor}}>View Project</a>}
+                  </div>
+                  <div className="mt-2">{renderDescription(project.description)}</div>
                 </div>
               ))}
             </div>

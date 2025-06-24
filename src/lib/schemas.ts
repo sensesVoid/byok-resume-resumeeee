@@ -36,6 +36,14 @@ export const certificationSchema = z.object({
   date: z.string().optional(),
 });
 
+export const projectSchema = z.object({
+  id: z.string(),
+  name: z.string().min(1, 'Project name is required'),
+  description: z.string().optional(),
+  link: z.string().url('Invalid URL').optional().or(z.literal('')),
+});
+
+
 const baseAiConfigSchema = z.object({
   provider: z.enum(['google', 'openai', 'openrouter']).default('google'),
   model: z.string().optional(),
@@ -96,6 +104,7 @@ export const resumeSchema = z.object({
   education: z.array(educationSchema),
   skills: z.array(z.object({ id: z.string(), name: z.string() })),
   certifications: z.array(certificationSchema),
+  projects: z.array(projectSchema),
   jobDescription: z.string().optional(),
   coverLetter: z.string().optional(),
   donationConfig: donationConfigSchema,
@@ -160,6 +169,7 @@ export const defaultResumeData: ResumeSchema = {
     { id: '6', name: 'Cloud Services (AWS, GCP)' },
   ],
   certifications: [],
+  projects: [],
   jobDescription: '',
   coverLetter: '',
   aiConfig: {

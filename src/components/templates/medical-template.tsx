@@ -29,6 +29,7 @@ export function MedicalTemplate({ data }: TemplateProps) {
     education,
     skills,
     certifications,
+    projects,
     fontStyle,
     headingColor,
     bodyColor,
@@ -186,6 +187,27 @@ export function MedicalTemplate({ data }: TemplateProps) {
                     </li>
                 ))}
             </ul>
+          </section>
+        )}
+
+        {projects?.length > 0 && (
+          <section>
+            <h2 className="text-md font-bold uppercase tracking-wider text-gray-600 mb-3" style={headingStyle}>
+              Projects & Research
+            </h2>
+             <div className="space-y-4">
+                {projects.map((project) => (
+                    <div key={project.id}>
+                    <div className="flex justify-between items-baseline">
+                        <h3 className="text-md font-semibold">
+                        {project.name}
+                        </h3>
+                        {project.link && <a href={project.link} target="_blank" rel="noopener noreferrer" className="text-xs text-gray-500 shrink-0 whitespace-nowrap hover:underline">View Project</a>}
+                    </div>
+                    <div className="mt-2">{renderDescription(project.description)}</div>
+                    </div>
+                ))}
+            </div>
           </section>
         )}
       </div>

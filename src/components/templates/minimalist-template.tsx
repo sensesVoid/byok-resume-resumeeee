@@ -29,6 +29,7 @@ export function MinimalistTemplate({ data }: TemplateProps) {
     education,
     skills,
     certifications,
+    projects,
     fontStyle,
     headingColor,
     bodyColor,
@@ -206,6 +207,27 @@ export function MinimalistTemplate({ data }: TemplateProps) {
                 <div key={cert.id}>
                   <h3 className="text-md font-semibold">{cert.name}</h3>
                   <p className="text-sm">{cert.issuer}{cert.date ? ` - ${cert.date}` : ''}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {projects?.length > 0 && (
+          <section>
+            <h2 className="text-base font-semibold tracking-widest uppercase text-gray-500 mb-3">
+              Projects
+            </h2>
+            <div className="space-y-4">
+              {projects.map((project) => (
+                <div key={project.id}>
+                  <div className="flex justify-between items-baseline">
+                    <h3 className="text-md font-semibold">
+                      {project.name}
+                    </h3>
+                    {project.link && <a href={project.link} target="_blank" rel="noopener noreferrer" className="text-xs text-gray-500 shrink-0 whitespace-nowrap hover:underline">View Project</a>}
+                  </div>
+                  <div className="mt-2">{renderDescription(project.description)}</div>
                 </div>
               ))}
             </div>

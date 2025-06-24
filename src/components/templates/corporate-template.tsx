@@ -29,6 +29,7 @@ export function CorporateTemplate({ data }: TemplateProps) {
     education,
     skills,
     certifications,
+    projects,
     fontStyle,
     headingColor,
     bodyColor,
@@ -166,6 +167,23 @@ export function CorporateTemplate({ data }: TemplateProps) {
                     <span>{exp.company || 'Company'}{exp.location ? `, ${exp.location}`: ''}</span>
                   </div>
                   <div className="mt-2">{renderDescription(exp.description)}</div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {projects?.length > 0 && (
+          <section>
+            <h2 className="text-xl font-bold border-b-2 pb-1 mb-3" style={{...headingStyle, borderColor: accentColor}}>Projects</h2>
+            <div className="space-y-5">
+              {projects.map((project) => (
+                <div key={project.id}>
+                  <div className="flex items-baseline justify-between">
+                    <h3 className="text-lg font-semibold">{project.name}</h3>
+                    {project.link && <a href={project.link} target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-gray-500 shrink-0 whitespace-nowrap hover:underline">View Project</a>}
+                  </div>
+                  <div className="mt-2">{renderDescription(project.description)}</div>
                 </div>
               ))}
             </div>

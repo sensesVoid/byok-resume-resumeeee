@@ -22,7 +22,7 @@ const fontClassMap: { [key: string]: string } = {
 };
 
 export function ClassicTemplate({ data }: TemplateProps) {
-  const { personalInfo, summary, experience, education, skills, certifications, fontStyle, headingColor, bodyColor, accentColor } = data;
+  const { personalInfo, summary, experience, education, skills, certifications, projects, fontStyle, headingColor, bodyColor, accentColor } = data;
   
   const rootStyle = {
     color: bodyColor || '#374151',
@@ -125,6 +125,23 @@ export function ClassicTemplate({ data }: TemplateProps) {
                 <div key={cert.id}>
                    <h3 className="text-md font-bold">{cert.name}</h3>
                    <p className="text-sm">{cert.issuer}{cert.date ? ` | ${cert.date}` : ''}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {projects?.length > 0 && (
+          <section>
+            <h2 className="text-sm font-bold uppercase tracking-widest border-b-2 pb-1 mb-2" style={headingWithAccentBorderStyle}>Projects</h2>
+            <div className="space-y-4">
+              {projects.map((project) => (
+                <div key={project.id}>
+                   <div className="flex justify-between items-baseline">
+                    <h3 className="text-md font-bold">{project.name}</h3>
+                    {project.link && <a href={project.link} target="_blank" rel="noopener noreferrer" className="text-xs font-normal text-gray-500 shrink-0 whitespace-nowrap hover:underline">View Project</a>}
+                   </div>
+                   <div className="mt-1">{renderDescription(project.description)}</div>
                 </div>
               ))}
             </div>

@@ -29,6 +29,7 @@ export function TwoToneTemplate({ data }: TemplateProps) {
     education,
     skills,
     certifications,
+    projects,
     fontStyle,
     headingColor,
     bodyColor,
@@ -179,6 +180,25 @@ export function TwoToneTemplate({ data }: TemplateProps) {
                     <h3 className="font-semibold text-md">{cert.name}</h3>
                     <p className="text-sm">{cert.issuer}</p>
                     <p className="text-xs text-gray-500">{cert.date}</p>
+                    </div>
+                ))}
+                </div>
+            </section>
+        )}
+
+        {projects?.length > 0 && (
+            <section>
+                <h2 className="text-xl font-bold mb-3" style={headingStyle}>
+                Projects
+                </h2>
+                <div className="space-y-3">
+                {projects.map((project) => (
+                    <div key={project.id}>
+                        <div className="flex items-baseline justify-between">
+                            <h3 className="font-semibold text-md">{project.name}</h3>
+                            {project.link && <a href={project.link} target="_blank" rel="noopener noreferrer" className="text-sm text-gray-500 hover:underline">View Project</a>}
+                        </div>
+                        <div className="mt-1">{renderDescription(project.description)}</div>
                     </div>
                 ))}
                 </div>

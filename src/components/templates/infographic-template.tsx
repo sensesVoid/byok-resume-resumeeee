@@ -2,7 +2,7 @@
 'use client';
 
 import { type ResumeSchema } from '@/lib/schemas';
-import { AtSign, Globe, MapPin, Phone, Briefcase, GraduationCap, Star, User, Award } from 'lucide-react';
+import { AtSign, Globe, MapPin, Phone, Briefcase, GraduationCap, Star, User, Award, KanbanSquare } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type * as React from 'react';
 
@@ -22,7 +22,7 @@ const fontClassMap: { [key: string]: string } = {
 };
 
 export function InfographicTemplate({ data }: TemplateProps) {
-  const { personalInfo, summary, experience, education, skills, certifications, fontStyle, headingColor, bodyColor, accentColor } = data;
+  const { personalInfo, summary, experience, education, skills, certifications, projects, fontStyle, headingColor, bodyColor, accentColor } = data;
   
   const rootStyle = {
     color: bodyColor || '#374151',
@@ -135,6 +135,23 @@ export function InfographicTemplate({ data }: TemplateProps) {
               <div key={cert.id}>
                 <h3 className="text-lg font-semibold">{cert.name}</h3>
                 <p className="text-md font-medium text-gray-600">{cert.issuer}{cert.date ? ` - ${cert.date}` : ''}</p>
+              </div>
+            ))}
+            </div>
+          </section>
+        )}
+
+        {projects?.length > 0 && (
+          <section>
+            <h2 className="flex items-center gap-2 text-xl font-bold mb-4" style={headingStyle}><KanbanSquare style={accentTextStyle} /> Projects</h2>
+            <div className="space-y-4">
+            {projects.map((project) => (
+              <div key={project.id}>
+                <div className="flex justify-between items-baseline">
+                    <h3 className="text-lg font-semibold">{project.name}</h3>
+                    {project.link && <a href={project.link} target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-gray-500 shrink-0 whitespace-nowrap hover:underline">View Project</a>}
+                </div>
+                <div className="mt-1">{renderDescription(project.description)}</div>
               </div>
             ))}
             </div>

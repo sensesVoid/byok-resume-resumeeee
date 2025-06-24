@@ -29,6 +29,7 @@ export function CompactTemplate({ data }: TemplateProps) {
     education,
     skills,
     certifications,
+    projects,
     fontStyle,
     headingColor,
     bodyColor,
@@ -190,6 +191,25 @@ export function CompactTemplate({ data }: TemplateProps) {
                 <div key={cert.id}>
                   <h3 className="text-sm font-semibold">{cert.name}</h3>
                   <p className="text-xs font-medium">{cert.issuer}{cert.date ? ` | ${cert.date}` : ''}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {projects?.length > 0 && (
+          <section>
+            <h2 className="text-sm font-bold uppercase tracking-wider border-b" style={{...headingStyle, borderColor: accentColor}}>
+              Projects
+            </h2>
+            <div className="space-y-2 mt-1.5">
+              {projects.map((project) => (
+                <div key={project.id}>
+                  <div className="flex justify-between items-baseline">
+                    <h3 className="text-sm font-semibold">{project.name}</h3>
+                    {project.link && <a href={project.link} target="_blank" rel="noopener noreferrer" className="text-xs text-gray-500 shrink-0 whitespace-nowrap hover:underline">View</a>}
+                  </div>
+                  <div className="mt-1">{renderDescription(project.description)}</div>
                 </div>
               ))}
             </div>

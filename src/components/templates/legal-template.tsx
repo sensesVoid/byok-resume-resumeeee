@@ -22,7 +22,7 @@ const fontClassMap: { [key: string]: string } = {
 };
 
 export function LegalTemplate({ data }: TemplateProps) {
-  const { personalInfo, summary, experience, education, skills, certifications, fontStyle, headingColor, bodyColor, accentColor } = data;
+  const { personalInfo, summary, experience, education, skills, certifications, projects, fontStyle, headingColor, bodyColor, accentColor } = data;
   
   const rootStyle = {
     color: bodyColor || '#000000',
@@ -129,6 +129,26 @@ export function LegalTemplate({ data }: TemplateProps) {
                 <div key={cert.id}>
                   <h3 className="text-md font-bold">{cert.name}</h3>
                   <p className="text-sm italic">{cert.issuer}{cert.date ? ` - ${cert.date}` : ''}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+          </>
+        )}
+
+        {projects?.length > 0 && (
+          <>
+          <hr className="my-6" style={separatorStyle} />
+          <section>
+            <h2 className="text-sm font-bold uppercase tracking-[0.2em] mb-3" style={headingStyle}>Projects</h2>
+            <div className="space-y-4">
+              {projects.map((project) => (
+                <div key={project.id}>
+                  <div className="flex justify-between items-center">
+                      <h3 className="text-md font-bold">{project.name}</h3>
+                      {project.link && <a href={project.link} target="_blank" rel="noopener noreferrer" className="text-sm font-normal shrink-0 whitespace-nowrap hover:underline">View Project</a>}
+                  </div>
+                  <div className="mt-2">{renderDescription(project.description)}</div>
                 </div>
               ))}
             </div>

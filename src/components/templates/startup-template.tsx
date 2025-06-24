@@ -29,6 +29,7 @@ export function StartupTemplate({ data }: TemplateProps) {
     education,
     skills,
     certifications,
+    projects,
     fontStyle,
     headingColor,
     bodyColor,
@@ -108,6 +109,23 @@ export function StartupTemplate({ data }: TemplateProps) {
                         <span>{exp.company || 'Company'}{exp.location ? ` | ${exp.location}`: ''}</span>
                         </div>
                         <div className="mt-2">{renderDescription(exp.description)}</div>
+                    </div>
+                ))}
+                </div>
+            </section>
+            )}
+            {projects?.length > 0 && (
+            <section>
+                <h2 className="text-sm font-bold tracking-widest uppercase mb-4" style={headingStyle}>Projects</h2>
+                <div className="space-y-6">
+                {projects.map((project, index) => (
+                    <div key={project.id} className="relative pl-6">
+                        <div className="absolute left-0 top-1.5 h-3 w-3 rounded-full" style={{...accentBgStyle, opacity: 1 - (index * 0.2)}}></div>
+                        <div className="flex items-baseline justify-between">
+                        <h3 className="text-lg font-semibold">{project.name}</h3>
+                        {project.link && <a href={project.link} target="_blank" rel="noopener noreferrer" className="text-xs font-medium text-gray-500 shrink-0 whitespace-nowrap hover:underline">View Project</a>}
+                        </div>
+                        <div className="mt-2">{renderDescription(project.description)}</div>
                     </div>
                 ))}
                 </div>

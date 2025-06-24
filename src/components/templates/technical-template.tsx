@@ -22,7 +22,7 @@ const fontClassMap: { [key: string]: string } = {
 };
 
 export function TechnicalTemplate({ data }: TemplateProps) {
-  const { personalInfo, summary, experience, education, skills, certifications, fontStyle, headingColor, bodyColor } = data;
+  const { personalInfo, summary, experience, education, skills, certifications, projects, fontStyle, headingColor, bodyColor } = data;
 
   const rootStyle = {
     color: bodyColor || '#374151',
@@ -123,6 +123,21 @@ export function TechnicalTemplate({ data }: TemplateProps) {
                     <span>{cert.issuer}</span>
                     <span className="shrink-0 whitespace-nowrap">{cert.date}</span>
                     </div>
+                </div>
+                ))}
+            </div>
+          </section>
+        )}
+
+        {projects?.length > 0 && (
+          <section>
+            <h2 className="text-xs uppercase font-bold tracking-widest text-gray-500 mb-3" style={headingStyle}>Projects</h2>
+            <div className="space-y-5">
+                {projects.map((project) => (
+                <div key={project.id}>
+                    <h3 className="text-md font-semibold">{project.name}</h3>
+                    {project.link && <a href={project.link} target="_blank" rel="noopener noreferrer" className="text-sm text-gray-600 hover:underline">{project.link}</a>}
+                    <div className="mt-1">{renderDescription(project.description)}</div>
                 </div>
                 ))}
             </div>

@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
-import { Bot, Brush, GraduationCap, Info, Loader2, Plus, Trash2, User, Wand2, Briefcase, Star, KeyRound, Power, PowerOff, HelpCircle, Upload, ScanSearch, Mail, Award } from 'lucide-react';
+import { Bot, Brush, GraduationCap, Info, Loader2, Plus, Trash2, User, Wand2, Briefcase, Star, KeyRound, Power, PowerOff, HelpCircle, Upload, ScanSearch, Mail, Award, KanbanSquare } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { generateCoverLetterAction, improveContentAction, validateApiKeyAction } from '@/app/actions';
 import { useState, useTransition, useRef } from 'react';
@@ -50,6 +50,7 @@ export function ResumeForm() {
   const { fields: educationFields, append: appendEducation, remove: removeEducation } = useFieldArray({ control: form.control, name: 'education' });
   const { fields: skillFields, append: appendSkill, remove: removeSkill } = useFieldArray({ control: form.control, name: 'skills' });
   const { fields: certificationFields, append: appendCertification, remove: removeCertification } = useFieldArray({ control: form.control, name: 'certifications' });
+  const { fields: projectFields, append: appendProject, remove: removeProject } = useFieldArray({ control: form.control, name: 'projects' });
   const [newSkill, setNewSkill] = useState('');
 
   const aiPowered = form.watch('aiPowered');
@@ -607,6 +608,29 @@ export function ResumeForm() {
                   </div>
                 ))}
                 <Button type="button" variant="secondary" onClick={() => appendCertification({ id: crypto.randomUUID(), name: '', issuer: '', date: '' })}><Plus className="mr-2 h-4 w-4" /> Add Certification</Button>
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+
+          <AccordionItem value="projects">
+            <AccordionTrigger><h2 className="text-lg font-semibold flex items-center"><KanbanSquare className="mr-3 text-primary" /> Projects (Optional)</h2></AccordionTrigger>
+            <AccordionContent>
+              <div className="space-y-6 pt-4">
+                {projectFields.map((field, index) => (
+                  <div key={field.id} className="rounded-lg border border-border/50 p-4 space-y-4 bg-background/30">
+                    <div className="grid grid-cols-1 gap-4">
+                       <FormField control={form.control} name={`projects.${index}.name`} render={({ field }) => (<FormItem><FormLabel>Project Name</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                       <FormField control={form.control} name={`projects.${index}.link`} render={({ field }) => (<FormItem><FormLabel>Project Link</FormLabel><FormControl><Input placeholder="https://github.com/user/repo" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                    </div>
+                    <FormField control={form.control} name={`projects.${index}.description`} render={({ field }) => (<FormItem><FormLabel>Description</FormLabel><FormControl><Textarea rows={4} {...field} /></FormControl><FormMessage /></FormItem>)} />
+                    <div className="flex justify-end pt-2">
+                        <Button type="button" variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive" onClick={() => removeProject(index)} aria-label="Remove project entry">
+                            <Trash2 className="h-4 w-4" />
+                        </Button>
+                    </div>
+                  </div>
+                ))}
+                <Button type="button" variant="secondary" onClick={() => appendProject({ id: crypto.randomUUID(), name: '', description: '', link: '' })}><Plus className="mr-2 h-4 w-4" /> Add Project</Button>
               </div>
             </AccordionContent>
           </AccordionItem>

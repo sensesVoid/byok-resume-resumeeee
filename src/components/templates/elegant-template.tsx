@@ -22,7 +22,7 @@ const fontClassMap: { [key: string]: string } = {
 };
 
 export function ElegantTemplate({ data }: TemplateProps) {
-  const { personalInfo, summary, experience, education, skills, certifications, fontStyle, headingColor, bodyColor, accentColor } = data;
+  const { personalInfo, summary, experience, education, skills, certifications, projects, fontStyle, headingColor, bodyColor, accentColor } = data;
   
   const rootStyle = {
     color: bodyColor || '#374151',
@@ -81,6 +81,22 @@ export function ElegantTemplate({ data }: TemplateProps) {
                 ))}
                 </div>
             </section>
+            )}
+            {projects?.length > 0 && (
+                <section>
+                    <h2 className="text-lg font-semibold uppercase tracking-wider mb-4" style={headingStyle}>Projects</h2>
+                    <div className="space-y-6">
+                    {projects.map((project) => (
+                        <div key={project.id}>
+                        <div className="flex justify-between items-baseline">
+                            <h3 className="text-md font-bold">{project.name}</h3>
+                            {project.link && <a href={project.link} target="_blank" rel="noopener noreferrer" className="text-xs font-normal text-gray-500 shrink-0 whitespace-nowrap hover:underline">View Project</a>}
+                        </div>
+                        <div className="mt-2">{renderDescription(project.description)}</div>
+                        </div>
+                    ))}
+                    </div>
+                </section>
             )}
         </div>
         <div className="col-span-1 space-y-8">

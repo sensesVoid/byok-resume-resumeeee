@@ -2,7 +2,7 @@
 'use client';
 
 import { type ResumeSchema } from '@/lib/schemas';
-import { AtSign, Globe, MapPin, Phone, Briefcase, GraduationCap, Star } from 'lucide-react';
+import { AtSign, Globe, MapPin, Phone, Briefcase, GraduationCap, Star, KanbanSquare } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type * as React from 'react';
 
@@ -22,7 +22,7 @@ const fontClassMap: { [key: string]: string } = {
 };
 
 export function CreativeTemplate({ data }: TemplateProps) {
-    const { personalInfo, summary, experience, education, skills, certifications, fontStyle, headingColor, bodyColor } = data;
+    const { personalInfo, summary, experience, education, skills, certifications, projects, fontStyle, headingColor, bodyColor } = data;
 
     const rootStyle = {
       color: bodyColor || '#374151',
@@ -134,6 +134,23 @@ export function CreativeTemplate({ data }: TemplateProps) {
                                         <span className="text-gray-800">{exp.company || 'Company'}{exp.location ? `, ${exp.location}`: ''}</span>
                                     </div>
                                     <div className="mt-2">{renderDescription(exp.description)}</div>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+                )}
+
+                {projects?.length > 0 && (
+                    <section>
+                        <h2 className="text-xl font-bold flex items-center gap-2 mb-4" style={headingStyle}><KanbanSquare size={20} /> Projects</h2>
+                        <div className="space-y-6">
+                            {projects.map((project) => (
+                                <div key={project.id}>
+                                    <div className="flex items-baseline justify-between">
+                                        <h3 className="text-lg font-semibold">{project.name}</h3>
+                                        {project.link && <a href={project.link} target="_blank" rel="noopener noreferrer" className="text-sm font-medium shrink-0 whitespace-nowrap hover:underline" style={{color: bodyColor}}>View Project</a>}
+                                    </div>
+                                    <div className="mt-2">{renderDescription(project.description)}</div>
                                 </div>
                             ))}
                         </div>

@@ -3,7 +3,7 @@
 
 import { type ResumeSchema } from '@/lib/schemas';
 import { Separator } from '@/components/ui/separator';
-import { AtSign, Globe, MapPin, Phone, Briefcase, GraduationCap, Star, Award } from 'lucide-react';
+import { AtSign, Globe, MapPin, Phone, Briefcase, GraduationCap, Star, Award, KanbanSquare } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type * as React from 'react';
 
@@ -23,7 +23,7 @@ const fontClassMap: { [key: string]: string } = {
 };
 
 export function ModernTemplate({ data }: TemplateProps) {
-  const { personalInfo, summary, experience, education, skills, certifications, fontStyle, headingColor, bodyColor, accentColor } = data;
+  const { personalInfo, summary, experience, education, skills, certifications, projects, fontStyle, headingColor, bodyColor, accentColor } = data;
 
   const rootStyle = {
     color: bodyColor || '#374151',
@@ -131,6 +131,27 @@ export function ModernTemplate({ data }: TemplateProps) {
                 <div key={cert.id}>
                   <h3 className="text-lg font-semibold">{cert.name}</h3>
                   <p className="text-md font-medium text-gray-600">{cert.issuer}{cert.date ? ` - ${cert.date}`: ''}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {projects?.length > 0 && (
+          <section>
+            <h2 className="mb-4 flex items-center gap-2 text-xl font-bold" style={headingStyle}><KanbanSquare size={20} /> Projects</h2>
+            <div className="space-y-6">
+              {projects.map((project) => (
+                <div key={project.id}>
+                  <div className="flex items-baseline justify-between">
+                    <h3 className="text-lg font-semibold">{project.name || 'Project Name'}</h3>
+                    {project.link && (
+                        <a href={project.link} target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-gray-500 hover:underline shrink-0">
+                            View Project
+                        </a>
+                    )}
+                  </div>
+                  <div className="mt-2">{renderDescription(project.description)}</div>
                 </div>
               ))}
             </div>
