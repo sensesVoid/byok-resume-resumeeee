@@ -8,6 +8,7 @@ const ImproveResumeContentInputSchema = z.object({
   content: z
     .string()
     .describe('The content of the resume or cover letter to be improved.'),
+  fieldType: z.enum(['summary', 'description']).describe('The type of field being improved, e.g., a paragraph summary or a list of bullet points for a job description.'),
   jobDescription: z
     .string()
     .optional()
@@ -30,7 +31,7 @@ export type ImproveResumeContentOutput = z.infer<
 >;
 
 
-function buildPrompt(content: string, jobDescription?: string): string {
+function buildPrompt(content: string, fieldType: 'summary' | 'description', jobDescription?: string): string {
   const basePrompt = `You are an expert resume writer. Your task is to rewrite and improve the provided resume content. Make it more professional, impactful, and concise. Use strong action verbs and quantify achievements where possible.
 
 Original Content:
@@ -40,7 +41,11 @@ ${content}`;
     ? `\n\nTailor the rewritten content to this job description:\n${jobDescription}`
     : '';
   
-  const formatInstruction = `\n\nProvide a response as a single, valid JSON object with one key: "suggestions". The value should be ONLY the rewritten, improved content as a single string. If the original content used bullet points (lines starting with '-'), maintain that format in your response. Do not add any extra explanations, introductory phrases like "Here is the revised version:", or markdown formatting unless it was in the original content.`;
+  const formatStyle = fieldType === 'summary'
+    ? 'The rewritten content should be a single, cohesive paragraph. Do not use bullet points or multiple paragraphs.'
+    : 'The rewritten content should be a series of bullet points. Each bullet point should start on a new line with a hyphen and a space (e.g., "- Achieved X...").';
+
+  const formatInstruction = `\n\n${formatStyle}\n\nProvide a response as a single, valid JSON object with one key: "suggestions". The value should be ONLY the rewritten, improved content as a single string. Do not add any extra explanations, introductory phrases, or markdown formatting.`;
 
   return basePrompt + jobDescPrompt + formatInstruction;
 }
@@ -49,7 +54,7 @@ ${content}`;
 export async function improveResumeContent(
   input: ImproveResumeContentInput
 ): Promise<ImproveResumeContentOutput> {
-  const prompt = buildPrompt(input.content, input.jobDescription);
+  const prompt = buildPrompt(input.content, input.fieldType, input.jobDescription);
 
   try {
     // The callApi function now directly returns the JSON string from the AI

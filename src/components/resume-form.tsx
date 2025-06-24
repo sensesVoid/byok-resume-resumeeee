@@ -100,8 +100,9 @@ export function ResumeForm() {
     startImprovingTransition(async () => {
       setFieldToUpdate(fieldName);
       const { jobDescription, aiConfig } = form.getValues();
+      const fieldType = typeof fieldName === 'string' && fieldName.startsWith('experience.') ? 'description' : 'summary';
       try {
-        const result = await improveContentAction({ content, jobDescription, aiConfig });
+        const result = await improveContentAction({ content, fieldType, jobDescription, aiConfig });
         setSuggestion(result.suggestions);
         setIsSuggestionModalOpen(true);
       } catch (error) {
