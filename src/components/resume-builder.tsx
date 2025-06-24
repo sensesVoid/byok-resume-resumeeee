@@ -122,7 +122,7 @@ export function ResumeBuilder() {
         toast({
           variant: 'destructive',
           title: 'Parsing Failed',
-          description: "The uploaded file does not appear to be a valid resume. Please check the file and try again.",
+          description: (error as Error).message || "An unknown error occurred during parsing.",
         });
       }
     });

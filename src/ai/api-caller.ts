@@ -104,11 +104,25 @@ export async function callApi({
       throw new Error('No content received from the AI model.');
     }
 
-    // The text should be a JSON string, but sometimes models wrap it in markdown.
-    // This regex will extract the JSON content if it's wrapped.
+    // The text can be a JSON string, but sometimes models wrap it in markdown
+    // or add conversational text. This logic finds and extracts the JSON object.
+    
+    // First, check for a markdown code block
     const jsonRegex = /```json\s*([\s\S]*?)\s*```/;
     const match = text.match(jsonRegex);
-    const jsonString = match ? match[1] : text;
+    
+    let jsonString = text;
+    if (match && match[1]) {
+      jsonString = match[1];
+    } else {
+      // If no markdown, find the first '{' and last '}' to extract the object
+      const startIndex = text.indexOf('{');
+      const endIndex = text.lastIndexOf('}');
+      
+      if (startIndex !== -1 && endIndex !== -1 && endIndex > startIndex) {
+        jsonString = text.substring(startIndex, endIndex + 1);
+      }
+    }
 
     return jsonString;
   } catch (error: any) {
