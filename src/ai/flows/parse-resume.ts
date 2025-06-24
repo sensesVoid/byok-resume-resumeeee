@@ -74,19 +74,52 @@ function buildPrompt(resumeText: string): string {
 
 **CRITICAL INSTRUCTIONS:**
 1.  Thoroughly analyze the entire resume text provided.
-2.  Extract the information for each section: personal info, summary, experience, education, skills, certifications, and projects.
-3.  For 'description' fields, capture responsibilities and achievements as a single string, using the newline character (\\n) for bullet points or line breaks.
-4.  If a value for an optional field (like phone, website, or summary) is not found, OMIT THE KEY from the JSON output. Do not use placeholders like "N/A".
-5.  For the 'certifications' and 'projects' fields: if they are not present in the resume, you can either omit the key entirely or return an empty array '[]'. Both are acceptable.
-6.  Your response MUST BE ONLY the JSON object, starting with '{' and ending with '}'. Do not include any other text, explanations, or markdown formatting.
+2.  For 'description' fields, capture responsibilities and achievements as a single string, using the newline character (\\n) for bullet points or line breaks.
+3.  If a value for an optional field (like phone, website, or summary) is not found, OMIT THE KEY from the JSON output. Do not use placeholders like "N/A".
+4.  For the 'certifications' and 'projects' sections: if they are not present in the resume, you MUST return an empty array, for example: "certifications": [].
+5.  Your response MUST BE ONLY the JSON object, starting with '{' and ending with '}'. Do not include any other text, explanations, or markdown formatting.
+
+**EXAMPLE JSON OUTPUT:**
+{
+  "personalInfo": {
+    "name": "Jane Doe",
+    "email": "jane.doe@email.com",
+    "phone": "555-123-4567",
+    "location": "New York, NY"
+  },
+  "summary": "A brief professional summary.",
+  "experience": [
+    {
+      "jobTitle": "Software Engineer",
+      "company": "Tech Solutions Inc.",
+      "startDate": "Jan 2020",
+      "endDate": "Present",
+      "description": "- Developed feature A.\\n- Fixed bug B."
+    }
+  ],
+  "education": [
+    {
+      "degree": "B.S. Computer Science",
+      "institution": "University of Example",
+      "graduationDate": "May 2020"
+    }
+  ],
+  "skills": [
+    { "name": "TypeScript" },
+    { "name": "React" }
+  ],
+  "certifications": [],
+  "projects": []
+}
 
 **Resume Text to Parse:**
 ---
 ${resumeText}
 ---
 
-Now, provide ONLY the JSON object.`;
+Now, provide ONLY the JSON object based on the resume text.`;
 }
+
 
 export async function parseResume(input: ParseResumeInput): Promise<ParseResumeOutput> {
   const prompt = buildPrompt(input.resumeText);
