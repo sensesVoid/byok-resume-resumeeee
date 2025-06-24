@@ -721,6 +721,9 @@ export function ResumeForm() {
                 <ScrollArea className="max-h-[50vh] rounded-md border p-4 bg-background/50">
                   <pre className="whitespace-pre-wrap font-body text-sm">{suggestion}</pre>
                 </ScrollArea>
+                <p className="text-xs text-muted-foreground text-center px-4 pt-2">
+                    Disclaimer: AI-generated content can sometimes be inaccurate. Please review it carefully.
+                </p>
                 <DialogFooter>
                     <Button onClick={() => {
                       form.setValue(fieldToUpdate, suggestion, { shouldValidate: true });

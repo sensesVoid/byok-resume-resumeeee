@@ -645,6 +645,11 @@ export function ResumeBuilder() {
             <DialogDescription>
               Results of the analysis of your {atsCheckType} against the provided
               job description.
+              <br />
+              <span className="italic text-xs">
+                Disclaimer: This is an AI simulation. Scores and feedback are
+                estimates and may not reflect real-world ATS performance.
+              </span>
             </DialogDescription>
           </DialogHeader>
           <ScrollArea className="pr-6">
