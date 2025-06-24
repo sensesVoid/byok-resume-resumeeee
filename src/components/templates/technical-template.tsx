@@ -26,8 +26,11 @@ const fontClassMap: { [key: string]: string } = {
 export function TechnicalTemplate({ data }: TemplateProps) {
   const { personalInfo, summary, experience, education, skills, fontStyle, fontColor } = data;
 
-  const style = {
+  const rootStyle = {
     fontFamily: fontMap[fontStyle] || fontMap.inter,
+  } as React.CSSProperties;
+
+  const headingStyle = {
     color: fontColor || '#111827',
   } as React.CSSProperties;
 
@@ -45,9 +48,9 @@ export function TechnicalTemplate({ data }: TemplateProps) {
   };
   
   return (
-    <div className={cn("p-8 bg-white", fontClassMap[fontStyle] || 'font-sans')} style={style}>
+    <div className={cn("p-8 bg-white", fontClassMap[fontStyle] || 'font-sans')} style={rootStyle}>
       <header className="space-y-2 mb-6">
-        <h1 className="text-3xl font-bold">{personalInfo?.name || 'Your Name'}</h1>
+        <h1 className="text-3xl font-bold" style={headingStyle}>{personalInfo?.name || 'Your Name'}</h1>
         <div className="flex flex-wrap items-center gap-x-4 text-sm text-gray-500">
             {personalInfo?.email && <a href={`mailto:${personalInfo.email}`} className="hover:underline">{personalInfo.email}</a>}
             {personalInfo?.phone && <span>{personalInfo.phone}</span>}
@@ -58,7 +61,7 @@ export function TechnicalTemplate({ data }: TemplateProps) {
 
       {summary && (
         <section className="mb-6">
-            <h2 className="text-xs uppercase font-bold tracking-widest text-gray-500 mb-2">About</h2>
+            <h2 className="text-xs uppercase font-bold tracking-widest text-gray-500 mb-2" style={headingStyle}>About</h2>
             <p className="text-sm text-gray-700">{summary}</p>
         </section>
       )}
@@ -66,7 +69,7 @@ export function TechnicalTemplate({ data }: TemplateProps) {
       <div className="space-y-6">
         {experience?.length > 0 && (
           <section>
-            <h2 className="text-xs uppercase font-bold tracking-widest text-gray-500 mb-3">Experience</h2>
+            <h2 className="text-xs uppercase font-bold tracking-widest text-gray-500 mb-3" style={headingStyle}>Experience</h2>
             <div className="space-y-5">
               {experience.map((exp) => (
                 <div key={exp.id}>
@@ -84,7 +87,7 @@ export function TechnicalTemplate({ data }: TemplateProps) {
 
         {education?.length > 0 && (
           <section>
-            <h2 className="text-xs uppercase font-bold tracking-widest text-gray-500 mb-3">Education</h2>
+            <h2 className="text-xs uppercase font-bold tracking-widest text-gray-500 mb-3" style={headingStyle}>Education</h2>
             <div className="space-y-3">
               {education.map((edu) => (
                 <div key={edu.id}>
@@ -102,10 +105,10 @@ export function TechnicalTemplate({ data }: TemplateProps) {
 
         {skills?.length > 0 && (
           <section>
-            <h2 className="text-xs uppercase font-bold tracking-widest text-gray-500 mb-3">Skills</h2>
-            <div className="flex flex-wrap gap-x-4 gap-y-1">
+            <h2 className="text-xs uppercase font-bold tracking-widest text-gray-500 mb-3" style={headingStyle}>Skills</h2>
+            <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-700">
               {skills.map((skill) => (
-                <span key={skill.id} className="text-sm">{skill.name}</span>
+                <span key={skill.id}>{skill.name}</span>
               ))}
             </div>
           </section>

@@ -26,8 +26,11 @@ const fontClassMap: { [key: string]: string } = {
 export function ElegantTemplate({ data }: TemplateProps) {
   const { personalInfo, summary, experience, education, skills, fontStyle, fontColor } = data;
   
-  const style = {
+  const rootStyle = {
     fontFamily: fontMap[fontStyle] || fontMap.inter,
+  } as React.CSSProperties;
+
+  const headingStyle = {
     color: fontColor || '#111827',
   } as React.CSSProperties;
 
@@ -43,9 +46,9 @@ export function ElegantTemplate({ data }: TemplateProps) {
   };
   
   return (
-    <div className={cn("p-8 bg-white", fontClassMap[fontStyle] || 'font-sans')} style={style}>
+    <div className={cn("p-8 bg-white", fontClassMap[fontStyle] || 'font-sans')} style={rootStyle}>
       <header className="mb-8 border-b-2 border-gray-200 pb-4">
-        <h1 className="text-4xl font-bold tracking-tight text-center">{personalInfo?.name || 'Your Name'}</h1>
+        <h1 className="text-4xl font-bold tracking-tight text-center" style={headingStyle}>{personalInfo?.name || 'Your Name'}</h1>
         <div className="mt-3 flex justify-center flex-wrap gap-x-6 gap-y-1 text-xs text-gray-500">
           {personalInfo?.location && <span className="inline-flex items-center"><MapPin size={12} className="mr-1.5" />{personalInfo.location}</span>}
           {personalInfo?.phone && <a href={`tel:${personalInfo.phone}`} className="inline-flex items-center hover:underline"><Phone size={12} className="mr-1.5" />{personalInfo.phone}</a>}
@@ -64,7 +67,7 @@ export function ElegantTemplate({ data }: TemplateProps) {
         <div className="col-span-2 space-y-8">
             {experience?.length > 0 && (
             <section>
-                <h2 className="text-lg font-semibold uppercase tracking-wider mb-4">Experience</h2>
+                <h2 className="text-lg font-semibold uppercase tracking-wider mb-4" style={headingStyle}>Experience</h2>
                 <div className="space-y-6">
                 {experience.map((exp) => (
                     <div key={exp.id}>
@@ -86,7 +89,7 @@ export function ElegantTemplate({ data }: TemplateProps) {
         <div className="col-span-1 space-y-8">
             {education?.length > 0 && (
                 <section>
-                    <h2 className="text-lg font-semibold uppercase tracking-wider mb-4">Education</h2>
+                    <h2 className="text-lg font-semibold uppercase tracking-wider mb-4" style={headingStyle}>Education</h2>
                     <div className="space-y-4">
                     {education.map((edu) => (
                         <div key={edu.id}>
@@ -102,10 +105,10 @@ export function ElegantTemplate({ data }: TemplateProps) {
 
             {skills?.length > 0 && (
                 <section>
-                    <h2 className="text-lg font-semibold uppercase tracking-wider mb-4">Skills</h2>
+                    <h2 className="text-lg font-semibold uppercase tracking-wider mb-4" style={headingStyle}>Skills</h2>
                     <ul className="space-y-1">
                         {skills.map((skill) => (
-                            <li key={skill.id} className="text-sm">{skill.name}</li>
+                            <li key={skill.id} className="text-sm text-gray-700">{skill.name}</li>
                         ))}
                     </ul>
                 </section>

@@ -27,8 +27,11 @@ const fontClassMap: { [key: string]: string } = {
 export function ModernTemplate({ data }: TemplateProps) {
   const { personalInfo, summary, experience, education, skills, fontStyle, fontColor } = data;
 
-  const style = {
+  const rootStyle = {
     fontFamily: fontMap[fontStyle] || fontMap.inter,
+  } as React.CSSProperties;
+
+  const headingStyle = {
     color: fontColor || '#111827',
   } as React.CSSProperties;
 
@@ -44,9 +47,9 @@ export function ModernTemplate({ data }: TemplateProps) {
   };
 
   return (
-    <div className={cn("p-6 sm:p-8 bg-white", fontClassMap[fontStyle] || 'font-sans')} style={style}>
+    <div className={cn("p-6 sm:p-8 bg-white", fontClassMap[fontStyle] || 'font-sans')} style={rootStyle}>
       <header className="text-center">
-        <h1 className="text-4xl font-bold tracking-tight">{personalInfo?.name || 'Your Name'}</h1>
+        <h1 className="text-4xl font-bold tracking-tight" style={headingStyle}>{personalInfo?.name || 'Your Name'}</h1>
         <div className="mt-2 flex flex-wrap justify-center gap-x-4 gap-y-1 text-sm text-gray-500">
           {personalInfo?.email && <a href={`mailto:${personalInfo.email}`} className="flex items-center gap-1.5 hover:text-primary"><AtSign size={14} />{personalInfo.email}</a>}
           {personalInfo?.phone && <span className="flex items-center gap-1.5"><Phone size={14} />{personalInfo.phone}</span>}
@@ -66,7 +69,7 @@ export function ModernTemplate({ data }: TemplateProps) {
       <div className="space-y-8">
         {experience?.length > 0 && (
           <section>
-            <h2 className="mb-4 flex items-center gap-2 text-xl font-bold"><Briefcase size={20} /> Work Experience</h2>
+            <h2 className="mb-4 flex items-center gap-2 text-xl font-bold" style={headingStyle}><Briefcase size={20} /> Work Experience</h2>
             <div className="space-y-6">
               {experience.map((exp) => (
                 <div key={exp.id}>
@@ -87,7 +90,7 @@ export function ModernTemplate({ data }: TemplateProps) {
 
         {education?.length > 0 && (
           <section>
-            <h2 className="mb-4 flex items-center gap-2 text-xl font-bold"><GraduationCap size={20} /> Education</h2>
+            <h2 className="mb-4 flex items-center gap-2 text-xl font-bold" style={headingStyle}><GraduationCap size={20} /> Education</h2>
             <div className="space-y-4">
               {education.map((edu) => (
                 <div key={edu.id}>
@@ -108,10 +111,10 @@ export function ModernTemplate({ data }: TemplateProps) {
 
         {skills?.length > 0 && (
           <section>
-            <h2 className="mb-4 flex items-center gap-2 text-xl font-bold"><Star size={20} /> Skills</h2>
+            <h2 className="mb-4 flex items-center gap-2 text-xl font-bold" style={headingStyle}><Star size={20} /> Skills</h2>
             <div className="flex flex-wrap gap-2">
               {skills.map((skill) => (
-                <span key={skill.id} className="rounded-md bg-secondary px-3 py-1 text-sm font-medium text-secondary-foreground">{skill.name}</span>
+                <span key={skill.id} className="rounded-md bg-gray-100 px-3 py-1 text-sm font-medium text-gray-800">{skill.name}</span>
               ))}
             </div>
           </section>

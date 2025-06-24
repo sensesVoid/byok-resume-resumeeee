@@ -34,8 +34,11 @@ export function MinimalistTemplate({ data }: TemplateProps) {
     fontColor,
   } = data;
 
-  const style = {
+  const rootStyle = {
     fontFamily: fontMap[fontStyle] || fontMap.inter,
+  } as React.CSSProperties;
+
+  const headingStyle = {
     color: fontColor || '#111827',
   } as React.CSSProperties;
 
@@ -60,10 +63,10 @@ export function MinimalistTemplate({ data }: TemplateProps) {
   return (
     <div
       className={cn('p-8 bg-white', fontClassMap[fontStyle] || 'font-sans')}
-      style={style}
+      style={rootStyle}
     >
       <header className="mb-8 text-left border-b pb-4">
-        <h1 className="text-4xl font-bold">
+        <h1 className="text-4xl font-bold" style={headingStyle}>
           {personalInfo?.name || 'Your Name'}
         </h1>
         <div className="mt-2 flex flex-wrap gap-x-6 gap-y-1 text-xs text-gray-500">
@@ -108,7 +111,7 @@ export function MinimalistTemplate({ data }: TemplateProps) {
       <div className="space-y-6">
         {summary && (
           <section>
-            <h2 className="text-base font-semibold tracking-widest uppercase text-gray-500 mb-2">
+            <h2 className="text-base font-semibold tracking-widest uppercase text-gray-500 mb-2" style={{ color: fontColor ? 'hsl(var(--muted-foreground))' : undefined }}>
               Summary
             </h2>
             <p className="text-sm text-gray-700">{summary}</p>
@@ -117,7 +120,7 @@ export function MinimalistTemplate({ data }: TemplateProps) {
 
         {experience?.length > 0 && (
           <section>
-            <h2 className="text-base font-semibold tracking-widest uppercase text-gray-500 mb-3">
+            <h2 className="text-base font-semibold tracking-widest uppercase text-gray-500 mb-3" style={{ color: fontColor ? 'hsl(var(--muted-foreground))' : undefined }}>
               Experience
             </h2>
             <div className="space-y-4">
@@ -148,7 +151,7 @@ export function MinimalistTemplate({ data }: TemplateProps) {
 
         {education?.length > 0 && (
           <section>
-            <h2 className="text-base font-semibold tracking-widest uppercase text-gray-500 mb-3">
+            <h2 className="text-base font-semibold tracking-widest uppercase text-gray-500 mb-3" style={{ color: fontColor ? 'hsl(var(--muted-foreground))' : undefined }}>
               Education
             </h2>
             <div className="space-y-3">
@@ -183,7 +186,7 @@ export function MinimalistTemplate({ data }: TemplateProps) {
 
         {skills?.length > 0 && (
           <section>
-            <h2 className="text-base font-semibold tracking-widest uppercase text-gray-500 mb-3">
+            <h2 className="text-base font-semibold tracking-widest uppercase text-gray-500 mb-3" style={{ color: fontColor ? 'hsl(var(--muted-foreground))' : undefined }}>
               Skills
             </h2>
             <p className="text-sm text-gray-700">

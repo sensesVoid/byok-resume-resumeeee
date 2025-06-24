@@ -43,8 +43,11 @@ export function ProfessionalTemplate({ data }: TemplateProps) {
     fontColor,
   } = data;
 
-  const style = {
+  const rootStyle = {
     fontFamily: fontMap[fontStyle] || fontMap.inter,
+  } as React.CSSProperties;
+
+  const headingStyle = {
     color: fontColor || '#111827',
   } as React.CSSProperties;
 
@@ -57,7 +60,7 @@ export function ProfessionalTemplate({ data }: TemplateProps) {
           .map(
             (line, index) =>
               line.trim() && (
-                <li key={index} className="text-sm">
+                <li key={index} className="text-sm text-gray-700">
                   {line.replace(/^-/, '').trim()}
                 </li>
               )
@@ -72,22 +75,22 @@ export function ProfessionalTemplate({ data }: TemplateProps) {
         'p-0 bg-white flex',
         fontClassMap[fontStyle] || 'font-sans'
       )}
-      style={style}
+      style={rootStyle}
     >
       {/* Left Column (Sidebar) */}
-      <div className="w-1/3 bg-gray-100 p-8 space-y-8">
+      <div className="w-1/3 bg-gray-100 p-8 space-y-8 text-gray-800">
         <div>
-          <h1 className="text-3xl font-bold">
+          <h1 className="text-3xl font-bold" style={headingStyle}>
             {personalInfo?.name || 'Your Name'}
           </h1>
         </div>
 
         <div className="space-y-6">
           <div>
-            <h2 className="font-bold uppercase tracking-wider text-sm mb-2 border-b border-gray-300 pb-1">
+            <h2 className="font-bold uppercase tracking-wider text-sm mb-2 border-b border-gray-300 pb-1" style={headingStyle}>
               Contact
             </h2>
-            <div className="space-y-2 text-xs">
+            <div className="space-y-2 text-xs text-gray-600">
               {personalInfo?.phone && (
                 <div className="flex items-start gap-2">
                   <Phone size={14} className="mt-0.5 shrink-0" />
@@ -117,7 +120,7 @@ export function ProfessionalTemplate({ data }: TemplateProps) {
 
           {education?.length > 0 && (
             <div>
-              <h2 className="font-bold uppercase tracking-wider text-sm mb-2 border-b border-gray-300 pb-1">
+              <h2 className="font-bold uppercase tracking-wider text-sm mb-2 border-b border-gray-300 pb-1" style={headingStyle}>
                 Education
               </h2>
               <div className="space-y-3">
@@ -134,10 +137,10 @@ export function ProfessionalTemplate({ data }: TemplateProps) {
 
           {skills?.length > 0 && (
             <div>
-              <h2 className="font-bold uppercase tracking-wider text-sm mb-2 border-b border-gray-300 pb-1">
+              <h2 className="font-bold uppercase tracking-wider text-sm mb-2 border-b border-gray-300 pb-1" style={headingStyle}>
                 Skills
               </h2>
-              <div className="flex flex-col space-y-1 text-sm">
+              <div className="flex flex-col space-y-1 text-sm text-gray-700">
                 {skills.map((skill) => (
                   <span key={skill.id}>{skill.name}</span>
                 ))}
@@ -151,7 +154,7 @@ export function ProfessionalTemplate({ data }: TemplateProps) {
       <div className="w-2/3 p-8 space-y-8">
         {summary && (
           <section>
-            <h2 className="text-xl font-bold flex items-center gap-2 mb-2">
+            <h2 className="text-xl font-bold flex items-center gap-2 mb-2" style={headingStyle}>
               <User size={20} /> Professional Summary
             </h2>
             <p className="text-sm text-gray-700">{summary}</p>
@@ -160,7 +163,7 @@ export function ProfessionalTemplate({ data }: TemplateProps) {
 
         {experience?.length > 0 && (
           <section>
-            <h2 className="text-xl font-bold flex items-center gap-2 mb-4">
+            <h2 className="text-xl font-bold flex items-center gap-2 mb-4" style={headingStyle}>
               <Briefcase size={20} /> Work Experience
             </h2>
             <div className="space-y-6 border-l-2 border-gray-200 pl-6">

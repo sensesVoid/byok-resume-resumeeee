@@ -26,10 +26,12 @@ const fontClassMap: { [key: string]: string } = {
 export function GeometricTemplate({ data }: TemplateProps) {
     const { personalInfo, summary, experience, education, skills, fontStyle, fontColor } = data;
 
-    const style = {
+    const rootStyle = {
       fontFamily: fontMap[fontStyle] || fontMap.inter,
+    } as React.CSSProperties;
+
+    const headingStyle = {
       color: fontColor || '#111827',
-      '--primary-color': 'hsl(var(--primary))',
     } as React.CSSProperties;
 
     const renderDescription = (text?: string) => {
@@ -39,7 +41,7 @@ export function GeometricTemplate({ data }: TemplateProps) {
             {text.split('\n').map((line, index) => (
               line.trim() && (
                 <li key={index} className="relative pl-4 text-sm text-gray-700">
-                    <span className="absolute left-0 top-2 h-1 w-1 bg-current rounded-full"></span>
+                    <span className="absolute left-0 top-2 h-1 w-1 bg-current rounded-full" style={headingStyle}></span>
                     {line.replace(/^-/, '').trim()}
                 </li>
               )
@@ -49,11 +51,11 @@ export function GeometricTemplate({ data }: TemplateProps) {
       };
 
     return (
-        <div className={cn("p-8 bg-white", fontClassMap[fontStyle] || 'font-sans')} style={style}>
+        <div className={cn("p-8 bg-white", fontClassMap[fontStyle] || 'font-sans')} style={rootStyle}>
             <header className="relative mb-8 text-left p-6 bg-gray-50">
-                <div className="absolute top-0 right-0 h-16 w-16 bg-primary opacity-20"></div>
+                <div className="absolute top-0 right-0 h-16 w-16 opacity-20" style={{ backgroundColor: fontColor || 'hsl(var(--primary))' }}></div>
                 <div className="relative z-10">
-                    <h1 className="text-4xl font-extrabold tracking-tighter">{personalInfo?.name || 'Your Name'}</h1>
+                    <h1 className="text-4xl font-extrabold tracking-tighter" style={headingStyle}>{personalInfo?.name || 'Your Name'}</h1>
                     <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-600">
                         {personalInfo?.email && <a href={`mailto:${personalInfo.email}`} className="flex items-center gap-1.5 hover:text-primary"><AtSign size={14} />{personalInfo.email}</a>}
                         {personalInfo?.phone && <span className="flex items-center gap-1.5"><Phone size={14} />{personalInfo.phone}</span>}
@@ -72,8 +74,8 @@ export function GeometricTemplate({ data }: TemplateProps) {
                 
                 {experience?.length > 0 && (
                 <section>
-                    <h2 className="mb-4 flex items-center gap-3 text-xl font-bold">
-                        <span className="h-3 w-3 bg-primary rotate-45"></span>
+                    <h2 className="mb-4 flex items-center gap-3 text-xl font-bold" style={headingStyle}>
+                        <span className="h-3 w-3 rotate-45" style={{ backgroundColor: fontColor || 'hsl(var(--primary))' }}></span>
                         Work Experience
                     </h2>
                     <div className="space-y-6">
@@ -96,8 +98,8 @@ export function GeometricTemplate({ data }: TemplateProps) {
 
                 {education?.length > 0 && (
                 <section>
-                    <h2 className="mb-4 flex items-center gap-3 text-xl font-bold">
-                        <span className="h-3 w-3 bg-primary rotate-45"></span>
+                    <h2 className="mb-4 flex items-center gap-3 text-xl font-bold" style={headingStyle}>
+                        <span className="h-3 w-3 rotate-45" style={{ backgroundColor: fontColor || 'hsl(var(--primary))' }}></span>
                         Education
                     </h2>
                     <div className="space-y-4">
@@ -120,13 +122,13 @@ export function GeometricTemplate({ data }: TemplateProps) {
 
                 {skills?.length > 0 && (
                 <section>
-                    <h2 className="mb-4 flex items-center gap-3 text-xl font-bold">
-                        <span className="h-3 w-3 bg-primary rotate-45"></span>
+                    <h2 className="mb-4 flex items-center gap-3 text-xl font-bold" style={headingStyle}>
+                        <span className="h-3 w-3 rotate-45" style={{ backgroundColor: fontColor || 'hsl(var(--primary))' }}></span>
                         Skills
                     </h2>
                     <div className="flex flex-wrap gap-2">
                     {skills.map((skill) => (
-                        <span key={skill.id} className="rounded-sm bg-gray-100 px-3 py-1 text-sm font-medium">{skill.name}</span>
+                        <span key={skill.id} className="rounded-sm bg-gray-100 px-3 py-1 text-sm font-medium text-gray-800">{skill.name}</span>
                     ))}
                     </div>
                 </section>
