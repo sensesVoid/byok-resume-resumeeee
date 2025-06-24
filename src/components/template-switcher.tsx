@@ -8,7 +8,13 @@ import {
   FormItem,
   FormLabel,
 } from '@/components/ui/form';
-import { Button } from '@/components/ui/button';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 const templates = [
   { name: 'modern', label: 'Modern' },
@@ -29,25 +35,22 @@ export function TemplateSwitcher() {
       control={form.control}
       name="template"
       render={({ field }) => (
-        <FormItem className="space-y-3">
+        <FormItem>
           <FormLabel>Choose a template</FormLabel>
-          <FormControl>
-            <div className="flex flex-wrap gap-2">
+          <Select onValueChange={field.onChange} defaultValue={field.value}>
+            <FormControl>
+              <SelectTrigger>
+                <SelectValue placeholder="Select a template" />
+              </SelectTrigger>
+            </FormControl>
+            <SelectContent>
               {templates.map((template) => (
-                <Button
-                  key={template.name}
-                  type="button"
-                  variant={
-                    field.value === template.name ? 'default' : 'outline'
-                  }
-                  size="sm"
-                  onClick={() => field.onChange(template.name)}
-                >
+                <SelectItem key={template.name} value={template.name}>
                   {template.label}
-                </Button>
+                </SelectItem>
               ))}
-            </div>
-          </FormControl>
+            </SelectContent>
+          </Select>
         </FormItem>
       )}
     />
