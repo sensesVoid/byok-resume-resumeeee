@@ -102,13 +102,41 @@ const DraggableWrapper = ({
   const position = watch(`diyLayout.${name}`);
   const itemRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
-  const [draggedItem, setDraggedItem] = useState<DraggableItem | null>(null);
 
-  const handleDragStart = (e: React.DragEvent<HTMLDivElement>, item: DraggableItem) => {
-    setDraggedItem(item);
-    const img = new Image();
-    img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
-    e.dataTransfer.setDragImage(img, 0, 0);
+  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    const target = e.target as HTMLElement;
+    // Only drag with left mouse button, and not on the resize handle or input fields
+    if (e.button !== 0 || target.dataset.resizeHandle === 'true' || target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') {
+        return;
+    }
+    
+    e.preventDefault();
+    e.stopPropagation();
+
+    setIsDragging(true);
+
+    const startX = e.clientX;
+    const startY = e.clientY;
+    const initialX = position.x;
+    const initialY = position.y;
+
+    const handleMouseMove = (moveEvent: MouseEvent) => {
+      const dx = moveEvent.clientX - startX;
+      const dy = moveEvent.clientY - startY;
+
+      setValue(`diyLayout.${name}.x`, initialX + dx, { shouldValidate: false });
+      setValue(`diyLayout.${name}.y`, initialY + dy, { shouldValidate: false });
+    };
+
+    const handleMouseUp = () => {
+      setIsDragging(false);
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+      trigger(`diyLayout.${name}`);
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
   };
   
   const handleResizeMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -137,12 +165,10 @@ const DraggableWrapper = ({
   return (
     <div
       ref={itemRef}
-      data-drag-id={name}
-      draggable
-      onDragStart={(e) => handleDragStart(e, name)}
+      onMouseDown={handleMouseDown}
       className={cn(
-        "group absolute cursor-grab p-2",
-        draggedItem === name && "opacity-50",
+        "group absolute p-2",
+        isDragging ? "cursor-grabbing z-10" : "cursor-grab",
         className
       )}
       style={{
@@ -152,9 +178,13 @@ const DraggableWrapper = ({
         height: isPhoto && position?.width ? `${position.width}px` : undefined,
       }}
     >
-      <div className="absolute inset-0 border-2 border-dashed border-transparent group-hover:border-primary/50 transition-colors pointer-events-none" />
+      <div className={cn(
+        "absolute inset-0 border-2 border-dashed border-transparent transition-colors pointer-events-none",
+         isDragging ? "border-primary/50" : "group-hover:border-primary/50"
+      )} />
       {children}
       <div
+        data-resize-handle="true"
         className="absolute -bottom-1 -right-1 h-4 w-4 rounded-full bg-primary border-2 border-white cursor-se-resize opacity-0 group-hover:opacity-100 transition-opacity"
         onMouseDown={handleResizeMouseDown}
       />
@@ -167,8 +197,7 @@ export function DiyTemplate({ data }: { data: ResumeSchema }) {
   const { control, watch, setValue } = useFormContext<ResumeSchema>();
   const { toast } = useToast();
   const photoInputRef = useRef<HTMLInputElement>(null);
-  const [isDragging, setIsDragging] = useState(false);
-  const [draggedItem, setDraggedItem] = useState<DraggableItem | null>(null);
+  const [isFileDragging, setIsFileDragging] = useState(false);
 
   const {
     fields: experienceFields,
@@ -260,15 +289,12 @@ export function DiyTemplate({ data }: { data: ResumeSchema }) {
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    setIsDragging(false);
+    setIsFileDragging(false);
 
     const isFileDrop = e.dataTransfer.files && e.dataTransfer.files.length > 0;
-    const dropZone = e.currentTarget;
-    const dropZoneRect = dropZone.getBoundingClientRect();
-    const dropX = e.clientX - dropZoneRect.left;
-    const dropY = e.clientY - dropZoneRect.top;
+    if (!isFileDrop) return;
     
-    // Check if the drop is on the photo uploader
+    const dropZone = e.currentTarget;
     const photoElement = dropZone.querySelector('[data-drag-id="photo"]');
     if (photoElement) {
         const photoRect = photoElement.getBoundingClientRect();
@@ -278,25 +304,11 @@ export function DiyTemplate({ data }: { data: ResumeSchema }) {
             e.clientY >= photoRect.top &&
             e.clientY <= photoRect.bottom
         );
-        if (isFileDrop && isOverPhoto) {
+        if (isOverPhoto) {
             handleFile(e.dataTransfer.files[0]);
-            setDraggedItem(null);
             return;
         }
     }
-    
-    if (draggedItem) {
-      const draggedElement = dropZone.querySelector(`[data-drag-id="${draggedItem}"]`) as HTMLElement;
-      if (draggedElement) {
-        const elRect = draggedElement.getBoundingClientRect();
-        const newX = dropX - (elRect.width / 2);
-        const newY = dropY - (elRect.height / 2);
-        setValue(`diyLayout.${draggedItem}.x`, newX, { shouldValidate: true });
-        setValue(`diyLayout.${draggedItem}.y`, newY, { shouldValidate: true });
-      }
-    }
-    
-    setDraggedItem(null);
   };
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
@@ -307,15 +319,17 @@ export function DiyTemplate({ data }: { data: ResumeSchema }) {
   const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    if ((e.dataTransfer.items && e.dataTransfer.items.length > 0) || draggedItem) {
-      setIsDragging(true);
+    if (e.dataTransfer.items && e.dataTransfer.items.length > 0 && e.dataTransfer.types.includes('Files')) {
+      setIsFileDragging(true);
     }
   };
   
   const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    setIsDragging(false);
+    if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+      setIsFileDragging(false);
+    }
   };
 
 
@@ -332,7 +346,7 @@ export function DiyTemplate({ data }: { data: ResumeSchema }) {
           <div
             className={cn(
                 "relative w-full h-full rounded-full transition-all",
-                isDragging && "ring-4 ring-primary ring-offset-2 scale-105"
+                isFileDragging && "ring-4 ring-primary ring-offset-2 scale-105"
             )}
             >
             <Avatar className="h-full w-full pointer-events-none">
