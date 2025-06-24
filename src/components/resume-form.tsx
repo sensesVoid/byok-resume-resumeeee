@@ -46,6 +46,10 @@ export function ResumeForm() {
 
   const aiPowered = form.watch('aiPowered');
   const aiProvider = form.watch('aiConfig.provider');
+  const selectedTemplate = form.watch('template');
+  const templatesWithPhoto: ResumeSchema['template'][] = ['professional', 'creative'];
+  const showPhotoUpload = templatesWithPhoto.includes(selectedTemplate);
+
 
   const getApiKeyHelpText = (provider: 'google' | 'openai' | 'openrouter') => {
     switch (provider) {
@@ -364,49 +368,53 @@ export function ResumeForm() {
             <AccordionTrigger><User className="mr-3 text-primary" /> Personal Information</AccordionTrigger>
             <AccordionContent>
               <div className="space-y-4">
-                 <FormField
-                    control={form.control}
-                    name="personalInfo.photo"
-                    render={({ field }) => (
-                        <FormItem>
-                        <FormLabel>Photo</FormLabel>
-                        <FormControl>
-                            <div className="flex items-center gap-4">
-                                <Avatar className="h-20 w-20">
-                                    <AvatarImage src={field.value || undefined} alt="User Photo" />
-                                    <AvatarFallback>
-                                        <User className="h-10 w-10 text-muted-foreground" />
-                                    </AvatarFallback>
-                                </Avatar>
-                                <div className="flex flex-col gap-2">
-                                    <Button type="button" variant="outline" size="sm" onClick={() => photoInputRef.current?.click()}>
-                                        <Upload className="mr-2 h-4 w-4" /> Upload
-                                    </Button>
-                                    {field.value && (
-                                        <Button
-                                            type="button"
-                                            variant="ghost"
-                                            size="sm"
-                                            className="text-muted-foreground hover:text-destructive"
-                                            onClick={() => form.setValue('personalInfo.photo', '', { shouldValidate: true })}
-                                        >
-                                            <Trash2 className="mr-2 h-4 w-4" /> Remove
-                                        </Button>
-                                    )}
-                                </div>
-                            </div>
-                        </FormControl>
-                        <FormMessage />
-                        </FormItem>
-                    )}
-                    />
-                    <input
-                        type="file"
-                        ref={photoInputRef}
-                        onChange={handlePhotoUpload}
-                        accept="image/png, image/jpeg"
-                        className="hidden"
-                    />
+                 {showPhotoUpload && (
+                    <>
+                        <FormField
+                            control={form.control}
+                            name="personalInfo.photo"
+                            render={({ field }) => (
+                                <FormItem>
+                                <FormLabel>Photo</FormLabel>
+                                <FormControl>
+                                    <div className="flex items-center gap-4">
+                                        <Avatar className="h-20 w-20">
+                                            <AvatarImage src={field.value || undefined} alt="User Photo" />
+                                            <AvatarFallback>
+                                                <User className="h-10 w-10 text-muted-foreground" />
+                                            </AvatarFallback>
+                                        </Avatar>
+                                        <div className="flex flex-col gap-2">
+                                            <Button type="button" variant="outline" size="sm" onClick={() => photoInputRef.current?.click()}>
+                                                <Upload className="mr-2 h-4 w-4" /> Upload
+                                            </Button>
+                                            {field.value && (
+                                                <Button
+                                                    type="button"
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    className="text-muted-foreground hover:text-destructive"
+                                                    onClick={() => form.setValue('personalInfo.photo', '', { shouldValidate: true })}
+                                                >
+                                                    <Trash2 className="mr-2 h-4 w-4" /> Remove
+                                                </Button>
+                                            )}
+                                        </div>
+                                    </div>
+                                </FormControl>
+                                <FormMessage />
+                                </FormItem>
+                            )}
+                            />
+                            <input
+                                type="file"
+                                ref={photoInputRef}
+                                onChange={handlePhotoUpload}
+                                accept="image/png, image/jpeg"
+                                className="hidden"
+                            />
+                    </>
+                 )}
 
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <FormField control={form.control} name="personalInfo.name" render={({ field }) => (<FormItem><FormLabel>Full Name</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
