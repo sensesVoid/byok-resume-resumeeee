@@ -10,6 +10,7 @@ import {
   HelpCircle,
   Gift,
   Eye,
+  Save,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/icons';
@@ -36,6 +37,8 @@ interface AppHeaderProps {
   isDonationEnabled: boolean;
   onAboutClick: () => void;
   onDonateClick: () => void;
+  onSaveClick: () => void;
+  isSaving: boolean;
 }
 
 export function AppHeader({
@@ -52,6 +55,8 @@ export function AppHeader({
   isDonationEnabled,
   onAboutClick,
   onDonateClick,
+  onSaveClick,
+  isSaving,
 }: AppHeaderProps) {
   return (
     <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center justify-between border-b bg-background/80 px-4 backdrop-blur-sm sm:px-8 print:hidden">
@@ -71,7 +76,7 @@ export function AppHeader({
         {isAiPowered && (
           <Button
             onClick={onUploadClick}
-            disabled={isUploading || isDownloading || isCalculatingAts}
+            disabled={isUploading || isDownloading || isCalculatingAts || isSaving}
             variant="outline"
           >
             {isUploading ? <Loader2 className="animate-spin" /> : <Upload />}
@@ -81,7 +86,7 @@ export function AppHeader({
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button disabled={isDownloading || isUploading || isCalculatingAts}>
+            <Button disabled={isDownloading || isUploading || isCalculatingAts || isSaving}>
               {isDownloading ? (
                 <Loader2 className="animate-spin" />
               ) : (
@@ -122,7 +127,7 @@ export function AppHeader({
           <DropdownMenuTrigger asChild>
             <Button
               disabled={
-                !isAiPowered || isCalculatingAts || isDownloading || isUploading
+                !isAiPowered || isCalculatingAts || isDownloading || isUploading || isSaving
               }
             >
               {isCalculatingAts ? (
@@ -151,12 +156,25 @@ export function AppHeader({
           <Button
             onClick={onDonateClick}
             variant="outline"
-            disabled={isDownloading || isUploading || isCalculatingAts}
+            disabled={isDownloading || isUploading || isCalculatingAts || isSaving}
           >
             <Gift className="mr-2 h-4 w-4" />
             <span className="ml-2 hidden sm:inline">Donate</span>
           </Button>
         )}
+        <Button
+          onClick={onSaveClick}
+          disabled={isSaving || isDownloading || isUploading || isCalculatingAts}
+          variant="ghost"
+          size="icon"
+          aria-label="Save progress"
+        >
+          {isSaving ? (
+            <Loader2 className="h-5 w-5 animate-spin" />
+          ) : (
+            <Save className="h-5 w-5" />
+          )}
+        </Button>
         <ThemeToggle />
       </div>
     </header>

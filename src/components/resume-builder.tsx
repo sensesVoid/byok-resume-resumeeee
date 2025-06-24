@@ -96,6 +96,7 @@ export function ResumeBuilder() {
   const [isUploading, startUploadingTransition] = useTransition();
   const [isCalculatingAts, startAtsTransition] = useTransition();
   const [isDownloading, startDownloadingTransition] = useTransition();
+  const [isSaving, startSavingTransition] = useTransition();
 
   // State to track if data has been loaded from localStorage
   const [isDataLoaded, setIsDataLoaded] = useState(false);
@@ -507,6 +508,26 @@ export function ResumeBuilder() {
     setPreviewTarget(type);
     setIsPreviewModalOpen(true);
   };
+  
+  const handleSaveClick = () => {
+    startSavingTransition(() => {
+      try {
+        const currentData = form.getValues();
+        localStorage.setItem('resumeeee-data', JSON.stringify(currentData));
+        toast({
+          title: 'Progress Saved!',
+          description: 'Your resume data has been manually saved to your browser.',
+        });
+      } catch (error) {
+        console.error('Failed to manually save data to localStorage', error);
+        toast({
+          variant: 'destructive',
+          title: 'Save Failed',
+          description: 'Could not save your data. Please try again.',
+        });
+      }
+    });
+  };
 
 
   return (
@@ -533,6 +554,8 @@ export function ResumeBuilder() {
           isDonationEnabled={isDonationEnabled}
           onAboutClick={() => setIsAboutModalOpen(true)}
           onDonateClick={() => setIsDonationModalOpen(true)}
+          onSaveClick={handleSaveClick}
+          isSaving={isSaving}
         />
         <main className="overflow-hidden">
           {isDesktop ? (
