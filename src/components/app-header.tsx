@@ -7,6 +7,7 @@ import {
   ScanSearch,
   ChevronDown,
   Heart,
+  HelpCircle,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/icons';
@@ -28,6 +29,7 @@ interface AppHeaderProps {
   isCoverLetterEmpty: boolean;
   isDownloading: boolean;
   donationUrl?: string;
+  onAboutClick: () => void;
 }
 
 export function AppHeader({
@@ -41,6 +43,7 @@ export function AppHeader({
   isCoverLetterEmpty,
   isDownloading,
   donationUrl,
+  onAboutClick,
 }: AppHeaderProps) {
   return (
     <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center justify-between border-b bg-background/80 px-4 backdrop-blur-sm sm:px-8 print:hidden">
@@ -49,6 +52,14 @@ export function AppHeader({
         <h1 className="text-xl font-bold text-foreground">Resumeeee</h1>
       </div>
       <div className="flex items-center gap-2">
+        <Button
+          onClick={onAboutClick}
+          variant="ghost"
+          size="icon"
+          aria-label="About"
+        >
+          <HelpCircle className="h-5 w-5" />
+        </Button>
         {donationUrl && (
           <Button asChild variant="outline">
             <a href={donationUrl} target="_blank" rel="noopener noreferrer">
