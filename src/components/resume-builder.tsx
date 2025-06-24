@@ -30,16 +30,10 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 import { AtsChecker } from '@/components/ats-checker';
-import * as pdfjs from 'pdfjs-dist/build/pdf';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
 import { AboutModal } from '@/components/about-modal';
 import { DonationModal } from './donation-modal';
 import { AppFooter } from './app-footer';
-
-// Set worker source for pdfjs-dist
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.mjs`;
 
 export function ResumeBuilder() {
   const form = useForm<ResumeSchema>({
@@ -154,6 +148,11 @@ export function ResumeBuilder() {
       document.body.classList.add(`printing-${target}`);
 
       try {
+          const [{ default: jsPDF }, { default: html2canvas }] = await Promise.all([
+            import('jspdf'),
+            import('html2canvas'),
+          ]);
+
           const canvas = await html2canvas(clone, {
               scale: 2,
               useCORS: true,
@@ -237,6 +236,10 @@ export function ResumeBuilder() {
       let text = '';
       try {
         if (file.type === 'application/pdf' || file.name.endsWith('.pdf')) {
+          const pdfjs = await import('pdfjs-dist/build/pdf');
+          // Set worker source dynamically
+          pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.mjs`;
+
           const arrayBuffer = await file.arrayBuffer();
           const pdf = await pdfjs.getDocument({ data: arrayBuffer }).promise;
           const numPages = pdf.numPages;
