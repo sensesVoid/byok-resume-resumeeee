@@ -14,12 +14,14 @@ import {
   Star,
   Trash2,
   User,
-  Upload
+  Upload,
+  Square,
+  Slash,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import type * as React from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { useToast } from '@/hooks/use-toast';
@@ -38,8 +40,6 @@ const fontClassMap: { [key: string]: string } = {
   merriweather: 'font-serif',
 }
 
-type DraggableItem = 'photo' | 'header' | 'summary' | 'experience' | 'education' | 'skills';
-
 const EditableField = ({
   name,
   placeholder,
@@ -51,32 +51,49 @@ const EditableField = ({
   className?: string;
   as?: 'input' | 'textarea';
 }) => {
-  const { control } = useFormContext();
+  const { control, trigger } = useFormContext();
+  const [isEditing, setIsEditing] = useState(false);
+  const elementRef = useRef<HTMLInputElement | HTMLTextAreaElement>(null);
+
+  const autoResize = (target: HTMLTextAreaElement) => {
+    target.style.height = 'auto';
+    target.style.height = `${target.scrollHeight}px`;
+  };
+
+  useEffect(() => {
+    if (as === 'textarea' && elementRef.current) {
+        autoResize(elementRef.current as HTMLTextAreaElement);
+    }
+  }, [as, isEditing]);
+
 
   return (
     <Controller
       name={name}
       control={control}
       render={({ field }) => {
+        const handleInput = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+            field.onChange(e);
+            if (as === 'textarea') {
+                autoResize(e.target as HTMLTextAreaElement);
+            }
+        };
+
         if (as === 'textarea') {
           return (
             <textarea
+              ref={elementRef as React.Ref<HTMLTextAreaElement>}
               placeholder={placeholder}
               className={cn('inline-edit-textarea', className)}
               {...field}
+              onInput={handleInput}
               rows={1}
-              onInput={(e) => {
-                const target = e.target as HTMLTextAreaElement;
-                // Important: Update form state before calculating height
-                field.onChange(e);
-                target.style.height = 'auto';
-                target.style.height = `${target.scrollHeight}px`;
-              }}
             />
           );
         }
         return (
           <input
+            ref={elementRef as React.Ref<HTMLInputElement>}
             placeholder={placeholder}
             className={cn('inline-edit-input', className)}
             {...field}
@@ -87,26 +104,30 @@ const EditableField = ({
   );
 };
 
-const DraggableWrapper = ({
-  name,
+
+const DraggableResizableItem = ({
+  path,
   children,
   className,
-  isPhoto = false
+  onRemove,
+  isPhoto = false,
 }: {
-  name: DraggableItem;
+  path: string;
   children: React.ReactNode;
   className?: string;
+  onRemove?: () => void;
   isPhoto?: boolean;
 }) => {
   const { watch, setValue, trigger } = useFormContext<ResumeSchema>();
-  const position = watch(`diyLayout.${name}`);
+  const itemData = watch(path as any); // Using 'as any' here because path is dynamic
   const itemRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
 
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
     const target = e.target as HTMLElement;
-    // Only drag with left mouse button, and not on the resize handle or input fields
-    if (e.button !== 0 || target.dataset.resizeHandle === 'true' || target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') {
+    // Only drag with left mouse button, and not on interactive elements
+    const isInteractive = target.dataset.interactive === 'true' || target.closest('[data-interactive="true"]');
+    if (e.button !== 0 || isInteractive || target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') {
         return;
     }
     
@@ -117,22 +138,22 @@ const DraggableWrapper = ({
 
     const startX = e.clientX;
     const startY = e.clientY;
-    const initialX = position.x;
-    const initialY = position.y;
+    const initialX = itemData.x;
+    const initialY = itemData.y;
 
     const handleMouseMove = (moveEvent: MouseEvent) => {
       const dx = moveEvent.clientX - startX;
       const dy = moveEvent.clientY - startY;
 
-      setValue(`diyLayout.${name}.x`, initialX + dx, { shouldValidate: false });
-      setValue(`diyLayout.${name}.y`, initialY + dy, { shouldValidate: false });
+      setValue(`${path}.x` as any, initialX + dx, { shouldValidate: false });
+      setValue(`${path}.y` as any, initialY + dy, { shouldValidate: false });
     };
 
     const handleMouseUp = () => {
       setIsDragging(false);
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
-      trigger(`diyLayout.${name}`);
+      trigger(path as any);
     };
 
     window.addEventListener('mousemove', handleMouseMove);
@@ -144,18 +165,26 @@ const DraggableWrapper = ({
     e.stopPropagation();
 
     const startX = e.clientX;
+    const startY = e.clientY;
     const startWidth = itemRef.current?.offsetWidth || 0;
+    const startHeight = itemRef.current?.offsetHeight || 0;
 
     const handleMouseMove = (moveEvent: MouseEvent) => {
       let newWidth = startWidth + (moveEvent.clientX - startX);
-      if (newWidth < 100) newWidth = 100;
-      setValue(`diyLayout.${name}.width`, newWidth, { shouldValidate: false });
+      if (newWidth < 50) newWidth = 50;
+      setValue(`${path}.width` as any, newWidth, { shouldValidate: false });
+      
+      if (!isPhoto) { // Photos are square, height is derived from width
+        let newHeight = startHeight + (moveEvent.clientY - startY);
+        if (newHeight < 20) newHeight = 20;
+        setValue(`${path}.height` as any, newHeight, { shouldValidate: false });
+      }
     };
 
     const handleMouseUp = () => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
-      trigger(`diyLayout.${name}`);
+      trigger(path as any);
     };
 
     window.addEventListener('mousemove', handleMouseMove);
@@ -172,10 +201,10 @@ const DraggableWrapper = ({
         className
       )}
       style={{
-        left: `${position?.x ?? 0}px`,
-        top: `${position?.y ?? 0}px`,
-        width: position?.width ? `${position.width}px` : undefined,
-        height: isPhoto && position?.width ? `${position.width}px` : undefined,
+        left: `${itemData?.x ?? 0}px`,
+        top: `${itemData?.y ?? 0}px`,
+        width: itemData?.width ? `${itemData.width}px` : 'auto',
+        height: isPhoto && itemData?.width ? `${itemData.width}px` : (itemData?.height ? `${itemData.height}px` : 'auto'),
       }}
     >
       <div className={cn(
@@ -183,8 +212,20 @@ const DraggableWrapper = ({
          isDragging ? "border-primary/50" : "group-hover:border-primary/50"
       )} />
       {children}
+      {onRemove && (
+         <Button
+            data-interactive="true"
+            variant="ghost"
+            size="icon"
+            className="absolute -top-3 -right-3 h-6 w-6 rounded-full bg-destructive text-destructive-foreground opacity-0 group-hover:opacity-100 transition-opacity"
+            onClick={onRemove}
+            aria-label="Remove element"
+        >
+            <Trash2 className="h-3 w-3" />
+        </Button>
+      )}
       <div
-        data-resize-handle="true"
+        data-interactive="true"
         className="absolute -bottom-1 -right-1 h-4 w-4 rounded-full bg-primary border-2 border-white cursor-se-resize opacity-0 group-hover:opacity-100 transition-opacity"
         onMouseDown={handleResizeMouseDown}
       />
@@ -192,11 +233,26 @@ const DraggableWrapper = ({
   );
 };
 
+const DiyToolbar = ({ onAddElement }: { onAddElement: (type: 'line' | 'rectangle') => void }) => {
+    return (
+      <div className="absolute top-4 left-4 z-20 flex gap-2 rounded-lg bg-background p-2 shadow-md border" data-interactive="true">
+        <Button variant="ghost" size="icon" onClick={() => onAddElement('rectangle')} aria-label="Add rectangle">
+          <Square className="h-5 w-5" />
+        </Button>
+        <Button variant="ghost" size="icon" onClick={() => onAddElement('line')} aria-label="Add line">
+          <Slash className="h-5 w-5" />
+        </Button>
+      </div>
+    );
+};
+
 
 export function DiyTemplate({ data }: { data: ResumeSchema }) {
   const { control, watch, setValue } = useFormContext<ResumeSchema>();
   const { toast } = useToast();
   const photoInputRef = useRef<HTMLInputElement>(null);
+  const dropZoneRef = useRef<HTMLDivElement>(null);
+  const [isPhotoDragging, setIsPhotoDragging] = useState(false);
   const [isFileDragging, setIsFileDragging] = useState(false);
 
   const {
@@ -214,12 +270,19 @@ export function DiyTemplate({ data }: { data: ResumeSchema }) {
     append: appendSkill,
     remove: removeSkill,
   } = useFieldArray({ control, name: 'skills' });
+  const {
+    fields: decorationFields,
+    append: appendDecoration,
+    remove: removeDecoration,
+  } = useFieldArray({ control, name: 'decorations' });
   const [newSkill, setNewSkill] = useState('');
 
   const {
     fontStyle,
     headingColor,
     bodyColor,
+    accentColor,
+    personalInfo,
   } = data;
 
   const rootStyle = {
@@ -230,7 +293,6 @@ export function DiyTemplate({ data }: { data: ResumeSchema }) {
   const headingStyle = {
     color: headingColor || '#111827',
   } as React.CSSProperties;
-
 
   const handleAddSkill = () => {
     if (newSkill.trim()) {
@@ -278,44 +340,41 @@ export function DiyTemplate({ data }: { data: ResumeSchema }) {
     reader.readAsDataURL(file);
   };
 
-
   const handlePhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     handleFile(event.target.files?.[0]);
     if (event.target) {
         event.target.value = '';
     }
   };
-
+  
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
     setIsFileDragging(false);
 
     const isFileDrop = e.dataTransfer.files && e.dataTransfer.files.length > 0;
-    if (!isFileDrop) return;
-    
-    const dropZone = e.currentTarget;
-    const photoElement = dropZone.querySelector('[data-drag-id="photo"]');
-    if (photoElement) {
-        const photoRect = photoElement.getBoundingClientRect();
-        const isOverPhoto = (
-            e.clientX >= photoRect.left &&
-            e.clientX <= photoRect.right &&
-            e.clientY >= photoRect.top &&
-            e.clientY <= photoRect.bottom
-        );
-        if (isOverPhoto) {
-            handleFile(e.dataTransfer.files[0]);
-            return;
-        }
+    if (isFileDrop) {
+      handleFile(e.dataTransfer.files[0]);
+    } else if (isPhotoDragging) {
+      // This is a component drop, not a file drop
+      const dropZoneRect = dropZoneRef.current!.getBoundingClientRect();
+      const newX = e.clientX - dropZoneRect.left - (personalInfo.photoX ? 64 : 0); // half width approx
+      const newY = e.clientY - dropZoneRect.top - (personalInfo.photoY ? 64 : 0); // half height approx
+      setValue('personalInfo.photoX', newX, { shouldValidate: true });
+      setValue('personalInfo.photoY', newY, { shouldValidate: true });
     }
+    setIsPhotoDragging(false);
   };
-
+  
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
   };
-  
+
+  const handleDragStart = (e: React.DragEvent<HTMLImageElement>) => {
+    setIsPhotoDragging(true);
+  };
+
   const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
@@ -327,27 +386,61 @@ export function DiyTemplate({ data }: { data: ResumeSchema }) {
   const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+    // Check if the relatedTarget is outside the dropzone
+    if (e.relatedTarget && !e.currentTarget.contains(e.relatedTarget as Node)) {
       setIsFileDragging(false);
     }
   };
-
+  
+  const handleAddElement = (type: 'line' | 'rectangle') => {
+    appendDecoration({
+      id: crypto.randomUUID(),
+      type,
+      x: 50,
+      y: 50,
+      width: 200,
+      height: type === 'line' ? 2 : 100, // Line height is stroke-width
+      color: headingColor,
+    });
+  };
 
   return (
     <div 
-      className={cn("p-6 sm:p-8 bg-white relative min-h-[1123px]", fontClassMap[fontStyle] || 'font-sans')}
+      ref={dropZoneRef}
+      className={cn(
+        "p-6 sm:p-8 bg-white relative min-h-[1123px] transition-all", 
+        fontClassMap[fontStyle] || 'font-sans',
+        isFileDragging && "ring-4 ring-primary ring-offset-2"
+        )}
       style={rootStyle}
       onDrop={handleDrop}
       onDragOver={handleDragOver}
       onDragEnter={handleDragEnter}
       onDragLeave={handleDragLeave}
     >
-      <DraggableWrapper name="photo" className="rounded-full" isPhoto={true}>
-          <div
-            className={cn(
-                "relative w-full h-full rounded-full transition-all",
-                isFileDragging && "ring-4 ring-primary ring-offset-2 scale-105"
+      <DiyToolbar onAddElement={handleAddElement} />
+      
+      {/* Decorations rendered first to be in the background */}
+      {decorationFields.map((field, index) => {
+        const path = `decorations.${index}`;
+        const decoration = watch(path as any);
+        return (
+          <DraggableResizableItem key={field.id} path={path} onRemove={() => removeDecoration(index)}>
+            {decoration.type === 'rectangle' ? (
+                <div className="w-full h-full" style={{ backgroundColor: decoration.color }} />
+            ) : (
+                <svg className="w-full h-full overflow-visible" preserveAspectRatio="none">
+                    <line x1="0" y1="0" x2="100%" y2="100%" style={{ stroke: decoration.color, strokeWidth: decoration.height }} />
+                </svg>
             )}
+          </DraggableResizableItem>
+        )
+      })}
+
+      <DraggableResizableItem path="diyLayout.photo" isPhoto={true}>
+          <div
+            className="relative w-full h-full rounded-full"
+            data-interactive="true"
             >
             <Avatar className="h-full w-full pointer-events-none">
                 <AvatarImage src={watch('personalInfo.photo') || undefined} alt={watch('personalInfo.name') || 'User photo'} />
@@ -367,16 +460,17 @@ export function DiyTemplate({ data }: { data: ResumeSchema }) {
                 )}
             </div>
           </div>
-      </DraggableWrapper>
+      </DraggableResizableItem>
       <input
           type="file"
           ref={photoInputRef}
           onChange={handlePhotoUpload}
           accept="image/png, image/jpeg"
           className="hidden"
+          data-interactive="true"
       />
 
-      <DraggableWrapper name="header">
+      <DraggableResizableItem path="diyLayout.header">
         <header className="text-center">
           <div style={headingStyle}>
             <EditableField
@@ -410,9 +504,9 @@ export function DiyTemplate({ data }: { data: ResumeSchema }) {
             </span>
           </div>
         </header>
-      </DraggableWrapper>
+      </DraggableResizableItem>
 
-      <DraggableWrapper name="summary">
+      <DraggableResizableItem path="diyLayout.summary">
         <section>
           <EditableField
             name="summary"
@@ -421,9 +515,9 @@ export function DiyTemplate({ data }: { data: ResumeSchema }) {
             className="text-center text-sm"
           />
         </section>
-      </DraggableWrapper>
+      </DraggableResizableItem>
 
-      <DraggableWrapper name="experience">
+      <DraggableResizableItem path="diyLayout.experience">
         <section>
           <h2 className="mb-4 flex items-center gap-2 text-xl font-bold" style={headingStyle}>
             <Briefcase size={20} /> Work Experience
@@ -432,6 +526,7 @@ export function DiyTemplate({ data }: { data: ResumeSchema }) {
             {experienceFields.map((field, index) => (
               <div key={field.id} className="group relative">
                 <Button
+                  data-interactive="true"
                   variant="ghost"
                   size="icon"
                   className="absolute -top-2 right-0 h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
@@ -458,7 +553,6 @@ export function DiyTemplate({ data }: { data: ResumeSchema }) {
                       placeholder="End"
                       className="w-24"
                     />
-
                   </div>
                 </div>
                 <div className="flex items-baseline justify-between text-md font-medium text-gray-600">
@@ -478,6 +572,7 @@ export function DiyTemplate({ data }: { data: ResumeSchema }) {
               </div>
             ))}
             <Button
+              data-interactive="true"
               variant="outline"
               size="sm"
               onClick={() =>
@@ -496,9 +591,9 @@ export function DiyTemplate({ data }: { data: ResumeSchema }) {
             </Button>
           </div>
         </section>
-      </DraggableWrapper>
+      </DraggableResizableItem>
 
-      <DraggableWrapper name="education">
+      <DraggableResizableItem path="diyLayout.education">
         <section>
           <h2 className="mb-4 flex items-center gap-2 text-xl font-bold" style={headingStyle}>
             <GraduationCap size={20} /> Education
@@ -507,6 +602,7 @@ export function DiyTemplate({ data }: { data: ResumeSchema }) {
             {educationFields.map((field, index) => (
               <div key={field.id} className="group relative">
                 <Button
+                  data-interactive="true"
                   variant="ghost"
                   size="icon"
                   className="absolute -top-2 right-0 h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
@@ -542,6 +638,7 @@ export function DiyTemplate({ data }: { data: ResumeSchema }) {
               </div>
             ))}
             <Button
+              data-interactive="true"
               variant="outline"
               size="sm"
               onClick={() =>
@@ -559,9 +656,9 @@ export function DiyTemplate({ data }: { data: ResumeSchema }) {
             </Button>
           </div>
         </section>
-      </DraggableWrapper>
+      </DraggableResizableItem>
 
-      <DraggableWrapper name="skills">
+      <DraggableResizableItem path="diyLayout.skills">
         <section>
           <h2 className="mb-4 flex items-center gap-2 text-xl font-bold" style={headingStyle}>
             <Star size={20} /> Skills
@@ -574,6 +671,7 @@ export function DiyTemplate({ data }: { data: ResumeSchema }) {
               >
                 <span>{watch(`skills.${index}.name`)}</span>
                 <button
+                  data-interactive="true"
                   type="button"
                   onClick={() => removeSkill(index)}
                   className="text-gray-400 hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
@@ -583,7 +681,7 @@ export function DiyTemplate({ data }: { data: ResumeSchema }) {
                 </button>
               </div>
             ))}
-            <div className="flex gap-2">
+            <div className="flex gap-2" data-interactive="true">
               <Input
                 value={newSkill}
                 onChange={(e) => setNewSkill(e.target.value)}
@@ -599,7 +697,7 @@ export function DiyTemplate({ data }: { data: ResumeSchema }) {
             </div>
           </div>
         </section>
-      </DraggableWrapper>
+      </DraggableResizableItem>
     </div>
   );
 }
