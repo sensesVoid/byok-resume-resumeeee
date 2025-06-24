@@ -104,8 +104,6 @@ export function ResumeBuilder() {
               logging: false,
               width: clone.offsetWidth,
               height: clone.offsetHeight,
-              windowWidth: clone.scrollWidth,
-              windowHeight: clone.scrollHeight,
           });
           
           const imgData = canvas.toDataURL('image/png');
