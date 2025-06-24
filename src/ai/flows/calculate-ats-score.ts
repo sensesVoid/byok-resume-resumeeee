@@ -10,9 +10,9 @@
  */
 
 import {ai} from '@/ai/genkit';
-import {googleAI} from '@genkit-ai/googleai';
 import {aiConfigSchema} from '@/lib/schemas';
 import {z} from 'genkit';
+import { getModel } from '@/ai/model-factory';
 
 const CalculateAtsScoreInputSchema = z.object({
   resumeText: z.string().describe('The full text content of the resume.'),
@@ -83,14 +83,7 @@ const calculateAtsScoreFlow = ai.defineFlow(
     outputSchema: CalculateAtsScoreOutputSchema,
   },
   async input => {
-    const {provider, apiKey, model: modelName} = input.aiConfig;
-    if (provider !== 'Google AI') {
-      throw new Error('Only the Google AI provider is supported at this time.');
-    }
-    if (!apiKey) {
-      throw new Error('An API key is required for the selected provider.');
-    }
-    const model = googleAI({apiKey}).model(modelName || 'gemini-2.0-flash');
+    const model = getModel(input.aiConfig);
 
     const prompt = promptText
       .replace('{{{jobDescription}}}', input.jobDescription)

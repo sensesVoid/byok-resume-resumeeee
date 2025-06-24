@@ -1,7 +1,7 @@
 'use client';
 
 import { useFormContext, useFieldArray } from 'react-hook-form';
-import { type ResumeSchema } from '@/lib/schemas';
+import { type ResumeSchema, type AiConfig } from '@/lib/schemas';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -232,32 +232,20 @@ export function ResumeForm() {
              <AccordionContent className="space-y-8">
                 <div>
                    <h3 className="font-semibold flex items-center gap-2 mb-2"><KeyRound/> API Configuration</h3>
-                   <p className="text-sm text-muted-foreground mb-4">Bring your own API key to use the AI features. The key is sent with each request and not stored on any server.</p>
+                   <p className="text-sm text-muted-foreground mb-4">Provide your Google AI API key to use the AI features. The key is sent with each request and not stored on any server.</p>
                    <div className="space-y-4">
-                     <FormField control={form.control} name="aiConfig.provider" render={({ field }) => (
-                         <FormItem>
-                           <FormLabel>Provider</FormLabel>
-                           <Select onValueChange={field.onChange} defaultValue={field.value}>
-                             <FormControl><SelectTrigger><SelectValue/></SelectTrigger></FormControl>
-                             <SelectContent>
-                               <SelectItem value="Google AI">Google AI</SelectItem>
-                               <SelectItem value="OpenAI" disabled>OpenAI (Coming Soon)</SelectItem>
-                             </SelectContent>
-                           </Select>
-                           <FormMessage />
-                         </FormItem>
-                       )} />
                        <FormField control={form.control} name="aiConfig.apiKey" render={({ field }) => (
                          <FormItem>
-                           <FormLabel>API Key</FormLabel>
+                           <FormLabel>Google AI API Key</FormLabel>
                            <FormControl><Input type="password" placeholder="Enter your API key" {...field} /></FormControl>
                            <FormMessage />
                          </FormItem>
                        )} />
                        <FormField control={form.control} name="aiConfig.model" render={({ field }) => (
                          <FormItem>
-                           <FormLabel>Model Name</FormLabel>
-                           <FormControl><Input placeholder="e.g., gemini-2.0-flash" {...field} /></FormControl>
+                           <FormLabel>Model Name (Optional)</FormLabel>
+                           <FormControl><Input placeholder="e.g., gemini-1.5-flash-latest" {...field} /></FormControl>
+                           <FormDescription>If left blank, a default model will be used.</FormDescription>
                            <FormMessage />
                          </FormItem>
                        )} />

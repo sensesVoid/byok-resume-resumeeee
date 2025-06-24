@@ -8,9 +8,9 @@
  */
 
 import {ai} from '@/ai/genkit';
-import {googleAI} from '@genkit-ai/googleai';
 import {aiConfigSchema} from '@/lib/schemas';
 import {z} from 'genkit';
+import { getModel } from '@/ai/model-factory';
 
 // Schemas for what the AI should output. These omit IDs.
 const ParsedPersonalInfoSchema = z.object({
@@ -80,14 +80,7 @@ const parseResumeFlow = ai.defineFlow(
     outputSchema: ParseResumeOutputSchema,
   },
   async input => {
-    const {provider, apiKey, model: modelName} = input.aiConfig;
-    if (provider !== 'Google AI') {
-      throw new Error('Only the Google AI provider is supported at this time.');
-    }
-    if (!apiKey) {
-      throw new Error('An API key is required for the selected provider.');
-    }
-    const model = googleAI({apiKey}).model(modelName || 'gemini-2.0-flash');
+    const model = getModel(input.aiConfig);
 
     const prompt = promptText.replace('{{{resumeText}}}', input.resumeText);
 

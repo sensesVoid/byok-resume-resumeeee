@@ -28,10 +28,11 @@ export const educationSchema = z.object({
 });
 
 export const aiConfigSchema = z.object({
-  provider: z.string().default('Google AI'),
+  // Provider is implicitly Google AI now
   apiKey: z.string().optional(),
   model: z.string().optional(),
 });
+export type AiConfig = z.infer<typeof aiConfigSchema>;
 
 export const resumeSchema = z.object({
   template: z.enum(['modern', 'classic', 'creative']).default('modern'),
@@ -94,8 +95,7 @@ export const defaultResumeData: ResumeSchema = {
   jobDescription: '',
   coverLetter: '',
   aiConfig: {
-    provider: 'Google AI',
     apiKey: '',
-    model: 'gemini-2.0-flash',
+    model: 'gemini-1.5-flash-latest',
   },
 };
