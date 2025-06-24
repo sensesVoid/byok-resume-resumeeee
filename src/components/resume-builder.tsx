@@ -337,13 +337,12 @@ export function ResumeBuilder() {
           aiConfig: originalValues.aiConfig,
         });
 
-        // If successful, populate the form with extracted details
+        // Safely merge the parsed data with the original data
         const finalData = {
           ...originalValues,
-          ...parsedData,
           personalInfo: {
-            ...parsedData.personalInfo,
-            photo: originalValues.personalInfo.photo, // Explicitly preserve photo
+            ...originalValues.personalInfo, // Keep original info like photo
+            ...parsedData.personalInfo,     // Overwrite with parsed text fields
           },
           experience: parsedData.experience.map((exp) => ({
             ...exp,
@@ -366,6 +365,11 @@ export function ResumeBuilder() {
             id: crypto.randomUUID(),
           })),
         };
+
+        // Only update summary if the parser found one
+        if ('summary' in parsedData) {
+          finalData.summary = parsedData.summary;
+        }
 
         form.reset(finalData);
         toast({
