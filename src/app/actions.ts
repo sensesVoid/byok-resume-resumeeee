@@ -1,3 +1,4 @@
+
 'use server';
 
 import {
@@ -34,7 +35,7 @@ export async function calculateAtsScoreAction(
     return await calculateAtsScore(input);
   } catch (error) {
     console.error('Error calculating ATS score:', error);
-    throw new Error('Failed to calculate ATS score. Please try again.');
+    throw new Error((error as Error).message || 'Failed to calculate ATS score. Please try again.');
   }
 }
 
@@ -45,7 +46,7 @@ export async function generateCoverLetterAction(
     return await generateCoverLetter(input);
   } catch (error) {
     console.error('Error generating cover letter:', error);
-    throw new Error('Failed to generate cover letter. Please try again.');
+    throw new Error((error as Error).message || 'Failed to generate cover letter. Please try again.');
   }
 }
 
@@ -56,7 +57,7 @@ export async function improveContentAction(
     return await improveResumeContent(input);
   } catch (error) {
     console.error('Error improving content:', error);
-    throw new Error('Failed to get suggestions. Please try again.');
+    throw new Error((error as Error).message || 'Failed to get suggestions. Please try again.');
   }
 }
 
@@ -68,7 +69,7 @@ export async function parseResumeAction(
   } catch (error) {
     console.error('Error parsing resume:', error);
     throw new Error(
-      'Failed to parse resume. Please check the file and try again.'
+      (error as Error).message || 'Failed to parse resume. Please check the file and try again.'
     );
   }
 }
@@ -80,6 +81,6 @@ export async function validateApiKeyAction(
     return await validateApiKey(aiConfig);
   } catch (error) {
     console.error('Error validating API key:', error);
-    throw new Error('An unexpected error occurred during API key validation.');
+    throw new Error((error as Error).message || 'An unexpected error occurred during API key validation.');
   }
 }
