@@ -18,6 +18,21 @@ import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
+import type * as React from 'react';
+
+const fontMap: { [key: string]: string } = {
+  inter: "'Inter', sans-serif",
+  roboto: "'Roboto', sans-serif",
+  lato: "'Lato', sans-serif",
+  merriweather: "'Merriweather', serif",
+};
+
+const fontClassMap: { [key: string]: string } = {
+  inter: 'font-sans',
+  roboto: 'font-sans',
+  lato: 'font-sans',
+  merriweather: 'font-serif',
+}
 
 const EditableField = ({
   name,
@@ -85,6 +100,22 @@ export function DiyTemplate({ data }: { data: ResumeSchema }) {
   } = useFieldArray({ control, name: 'skills' });
   const [newSkill, setNewSkill] = useState('');
 
+  const {
+    fontStyle,
+    headingColor,
+    bodyColor,
+  } = data;
+
+  const rootStyle = {
+    fontFamily: fontMap[fontStyle] || fontMap.inter,
+    color: bodyColor || '#374151',
+  } as React.CSSProperties;
+
+  const headingStyle = {
+    color: headingColor || '#111827',
+  } as React.CSSProperties;
+
+
   const handleAddSkill = () => {
     if (newSkill.trim()) {
       appendSkill({ id: crypto.randomUUID(), name: newSkill.trim() });
@@ -93,13 +124,18 @@ export function DiyTemplate({ data }: { data: ResumeSchema }) {
   };
 
   return (
-    <div className="p-6 sm:p-8 bg-white font-sans text-gray-800">
+    <div 
+      className={cn("p-6 sm:p-8 bg-white", fontClassMap[fontStyle] || 'font-sans')}
+      style={rootStyle}
+    >
       <header className="text-center">
-        <EditableField
-          name="personalInfo.name"
-          placeholder="Your Name"
-          className="text-4xl font-bold tracking-tight text-center"
-        />
+        <div style={headingStyle}>
+          <EditableField
+            name="personalInfo.name"
+            placeholder="Your Name"
+            className="text-4xl font-bold tracking-tight text-center"
+          />
+        </div>
         <div className="mt-2 flex flex-wrap justify-center gap-x-4 gap-y-1 text-sm text-gray-500">
           <span className="inline-flex items-center gap-1.5">
             <AtSign size={14} />
@@ -139,7 +175,7 @@ export function DiyTemplate({ data }: { data: ResumeSchema }) {
 
       <div className="space-y-8">
         <section>
-          <h2 className="mb-4 flex items-center gap-2 text-xl font-bold text-gray-800">
+          <h2 className="mb-4 flex items-center gap-2 text-xl font-bold" style={headingStyle}>
             <Briefcase size={20} /> Work Experience
           </h2>
           <div className="space-y-6">
@@ -211,7 +247,7 @@ export function DiyTemplate({ data }: { data: ResumeSchema }) {
         </section>
 
         <section>
-          <h2 className="mb-4 flex items-center gap-2 text-xl font-bold text-gray-800">
+          <h2 className="mb-4 flex items-center gap-2 text-xl font-bold" style={headingStyle}>
             <GraduationCap size={20} /> Education
           </h2>
           <div className="space-y-4">
@@ -271,7 +307,7 @@ export function DiyTemplate({ data }: { data: ResumeSchema }) {
         </section>
 
         <section>
-          <h2 className="mb-4 flex items-center gap-2 text-xl font-bold text-gray-800">
+          <h2 className="mb-4 flex items-center gap-2 text-xl font-bold" style={headingStyle}>
             <Star size={20} /> Skills
           </h2>
           <div className="flex flex-wrap gap-2 items-center">
