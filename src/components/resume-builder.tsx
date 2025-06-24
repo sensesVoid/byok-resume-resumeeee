@@ -70,9 +70,9 @@ export function ResumeBuilder() {
           ? '.resume-content-wrapper'
           : '.cover-letter-content-wrapper';
       
-      const element = document.querySelector(selector) as HTMLElement | null;
+      const originalContent = document.querySelector(selector)?.firstElementChild as HTMLElement | null;
   
-      if (!element) {
+      if (!originalContent) {
         toast({
           variant: 'destructive',
           title: 'Error',
@@ -83,23 +83,38 @@ export function ResumeBuilder() {
       
       toast({ title: 'Preparing PDF...', description: 'Please wait while we generate your document.' });
   
+      const clone = originalContent.cloneNode(true) as HTMLElement;
+
+      const printContainer = document.createElement('div');
+      printContainer.style.position = 'absolute';
+      printContainer.style.left = '-9999px';
+      printContainer.style.top = '0';
+      printContainer.style.width = '210mm';
+      printContainer.style.height = 'auto';
+      printContainer.style.backgroundColor = 'white';
+
+      printContainer.appendChild(clone);
+      document.body.appendChild(printContainer);
+      document.body.classList.add(`printing-${target}`);
+
       try {
-          document.body.classList.add(`printing-${target}`);
-  
-          const canvas = await html2canvas(element, {
+          const canvas = await html2canvas(clone, {
               scale: 2, 
               useCORS: true,
               logging: false,
+              width: clone.offsetWidth,
+              height: clone.offsetHeight,
+              windowWidth: clone.scrollWidth,
+              windowHeight: clone.scrollHeight,
           });
           
-          document.body.classList.remove(`printing-${target}`);
-  
           const imgData = canvas.toDataURL('image/png');
           
           const pdf = new jsPDF({
               orientation: 'p',
               unit: 'mm',
               format: 'a4',
+              compress: true,
           });
   
           const pdfWidth = pdf.internal.pageSize.getWidth();
@@ -132,7 +147,9 @@ export function ResumeBuilder() {
               title: 'PDF Generation Failed',
               description: 'An unexpected error occurred. Please try again.',
           });
-          document.body.classList.remove(`printing-${target}`);
+      } finally {
+        document.body.removeChild(printContainer);
+        document.body.classList.remove(`printing-${target}`);
       }
     });
   };
