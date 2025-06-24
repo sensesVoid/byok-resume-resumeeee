@@ -254,7 +254,7 @@ export function ResumeForm() {
     <Form {...form}>
       <div className="space-y-4">
         <div className="my-4 flex h-24 items-center justify-center rounded-lg border border-dashed bg-muted/50 text-sm text-muted-foreground">
-          Ad Placement (Top)
+          Place your ad here!
         </div>
 
         <Accordion type="multiple" defaultValue={['ai-tools', 'design', 'personal', 'ats-tools']} className="w-full">
@@ -648,7 +648,7 @@ export function ResumeForm() {
         </Accordion>
 
         <div className="my-4 flex h-24 items-center justify-center rounded-lg border border-dashed bg-muted/50 text-sm text-muted-foreground">
-          Ad Placement (Bottom)
+          Place your ad here!
         </div>
 
         <Dialog open={isSuggestionModalOpen} onOpenChange={setIsSuggestionModalOpen}>
