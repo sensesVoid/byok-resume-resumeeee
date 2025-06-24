@@ -118,6 +118,20 @@ export function AboutModal({ isOpen, onOpenChange }: AboutModalProps) {
               </p>
             </AccordionContent>
           </AccordionItem>
+          <AccordionItem value="item-6">
+            <AccordionTrigger>How can I support this app?</AccordionTrigger>
+            <AccordionContent className="space-y-2 text-sm">
+              <p>
+                If you find this app helpful, thank you for considering
+                supporting its development!
+              </p>
+              <p>
+                The creator of this app may have added a donation link. If so,
+                you will see a "Donate" button in the header. Clicking it will
+                take you to their preferred donation page.
+              </p>
+            </AccordionContent>
+          </AccordionItem>
         </Accordion>
       </DialogContent>
     </Dialog>
