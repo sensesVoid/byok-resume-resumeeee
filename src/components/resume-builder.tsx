@@ -217,6 +217,7 @@ export function ResumeBuilder() {
       title: 'Skills Added!',
       description: `${newSkills.length} new skill(s) have been added to your resume.`,
     });
+    setIsAtsModalOpen(false); // Close modal after adding skills
   };
 
   const handleCalculateAtsScore = (type: 'resume' | 'cover-letter') => {
@@ -386,7 +387,7 @@ export function ResumeBuilder() {
               job description.
             </DialogDescription>
           </DialogHeader>
-          <ScrollArea>
+          <ScrollArea className="pr-6">
             <AtsChecker
               isPending={isCalculatingAts}
               atsResult={atsResult}
