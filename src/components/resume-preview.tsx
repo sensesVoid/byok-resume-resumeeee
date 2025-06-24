@@ -10,6 +10,9 @@ import { ClassicTemplate } from '@/components/templates/classic-template';
 import { CreativeTemplate } from '@/components/templates/creative-template';
 import { MinimalistTemplate } from '@/components/templates/minimalist-template';
 import { ProfessionalTemplate } from '@/components/templates/professional-template';
+import { ElegantTemplate } from '@/components/templates/elegant-template';
+import { GeometricTemplate } from '@/components/templates/geometric-template';
+import { TechnicalTemplate } from '@/components/templates/technical-template';
 
 const templates = {
   modern: ModernTemplate,
@@ -17,6 +20,9 @@ const templates = {
   creative: CreativeTemplate,
   minimalist: MinimalistTemplate,
   professional: ProfessionalTemplate,
+  elegant: ElegantTemplate,
+  geometric: GeometricTemplate,
+  technical: TechnicalTemplate,
 };
 
 export function ResumePreview() {

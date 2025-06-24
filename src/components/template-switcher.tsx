@@ -16,6 +16,9 @@ const templates = [
   { name: 'creative', label: 'Creative' },
   { name: 'minimalist', label: 'Minimalist' },
   { name: 'professional', label: 'Professional' },
+  { name: 'elegant', label: 'Elegant' },
+  { name: 'geometric', label: 'Geometric' },
+  { name: 'technical', label: 'Technical' },
 ] as const;
 
 export function TemplateSwitcher() {

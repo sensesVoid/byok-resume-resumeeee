@@ -36,7 +36,16 @@ export type AiConfig = z.infer<typeof aiConfigSchema>;
 
 export const resumeSchema = z.object({
   template: z
-    .enum(['modern', 'classic', 'creative', 'minimalist', 'professional'])
+    .enum([
+      'modern',
+      'classic',
+      'creative',
+      'minimalist',
+      'professional',
+      'elegant',
+      'geometric',
+      'technical',
+    ])
     .default('modern'),
   fontStyle: z
     .enum(['inter', 'roboto', 'lato', 'merriweather'])
