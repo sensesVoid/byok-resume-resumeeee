@@ -8,6 +8,7 @@ import {
   ChevronDown,
   Heart,
   HelpCircle,
+  Gift,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/icons';
@@ -31,6 +32,7 @@ interface AppHeaderProps {
   isDownloading: boolean;
   isDonationEnabled: boolean;
   onAboutClick: () => void;
+  onMonetizationClick: () => void;
 }
 
 export function AppHeader({
@@ -45,6 +47,7 @@ export function AppHeader({
   isDownloading,
   isDonationEnabled,
   onAboutClick,
+  onMonetizationClick,
 }: AppHeaderProps) {
   return (
     <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center justify-between border-b bg-background/80 px-4 backdrop-blur-sm sm:px-8 print:hidden">
@@ -133,6 +136,15 @@ export function AppHeader({
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+
+        <Button
+          onClick={onMonetizationClick}
+          variant="outline"
+          disabled={isDownloading || isUploading || isCalculatingAts}
+        >
+          <Gift />
+          <span className="ml-2 hidden sm:inline">Monetization</span>
+        </Button>
       </div>
     </header>
   );
