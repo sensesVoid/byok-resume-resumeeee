@@ -55,10 +55,8 @@ export function ResumePreview() {
               >
                 <div className="p-6 sm:p-8">
                   {coverLetter ? (
-                    <div className="prose prose-sm max-w-full">
-                      <pre className="whitespace-pre-wrap font-body text-sm">
-                        {coverLetter}
-                      </pre>
+                    <div className="whitespace-pre-wrap font-body text-sm">
+                      {coverLetter}
                     </div>
                   ) : (
                     <div className="flex h-96 items-center justify-center text-center text-gray-500">
