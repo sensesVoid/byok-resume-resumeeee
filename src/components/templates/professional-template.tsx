@@ -182,8 +182,8 @@ export function ProfessionalTemplate({ data }: TemplateProps) {
                     </div>
                   </div>
                   <div className="flex items-baseline justify-between text-md font-medium">
-                    <span style={{color: bodyColor}}>{exp.company}</span>
-                    <span className="text-sm" style={{color: bodyColor}}>{exp.location}</span>
+                    <span style={{color: bodyColor}}>{exp.company || 'Company'}</span>
+                    {exp.location && <span className="text-sm" style={{color: bodyColor}}>{exp.location}</span>}
                   </div>
                   <div className="mt-2">{renderDescription(exp.description)}</div>
                 </div>

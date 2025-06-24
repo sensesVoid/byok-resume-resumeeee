@@ -76,7 +76,7 @@ export function TechnicalTemplate({ data }: TemplateProps) {
                 <div key={exp.id}>
                   <h3 className="text-md font-semibold">{exp.jobTitle || 'Job Title'}</h3>
                   <div className="text-sm text-gray-600 flex justify-between">
-                    <span>{exp.company || 'Company'} / {exp.location || 'Location'}</span>
+                    <span>{(exp.company || 'Company')}{exp.location ? ` / ${exp.location}` : ''}</span>
                     <span>{exp.startDate} - {exp.endDate || 'Present'}</span>
                   </div>
                   <div className="mt-1">{renderDescription(exp.description)}</div>
@@ -94,7 +94,7 @@ export function TechnicalTemplate({ data }: TemplateProps) {
                 <div key={edu.id}>
                   <h3 className="text-md font-semibold">{edu.degree || 'Degree'}</h3>
                    <div className="text-sm text-gray-600 flex justify-between">
-                    <span>{edu.institution || 'Institution'} / {edu.location || 'Location'}</span>
+                    <span>{(edu.institution || 'Institution')}{edu.location ? ` / ${edu.location}` : ''}</span>
                     <span>{edu.graduationDate}</span>
                   </div>
                   {edu.description && <p className="mt-1 text-sm italic text-gray-500">{edu.description}</p>}

@@ -80,7 +80,7 @@ export function ModernTemplate({ data }: TemplateProps) {
                   </div>
                   <div className="flex items-baseline justify-between text-md font-medium text-gray-600">
                     <span>{exp.company || 'Company'}</span>
-                    <span className="text-sm">{exp.location || 'Location'}</span>
+                    {exp.location && <span className="text-sm">{exp.location}</span>}
                   </div>
                   <div className="mt-2">{renderDescription(exp.description)}</div>
                 </div>
@@ -101,7 +101,7 @@ export function ModernTemplate({ data }: TemplateProps) {
                   </div>
                    <div className="flex items-baseline justify-between text-md font-medium text-gray-600">
                     <span>{edu.institution || 'Institution'}</span>
-                    <span className="text-sm">{edu.location || 'Location'}</span>
+                    {edu.location && <span className="text-sm">{edu.location}</span>}
                   </div>
                   {edu.description && <p className="mt-1 text-sm">{edu.description}</p>}
                 </div>

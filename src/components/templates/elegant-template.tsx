@@ -78,7 +78,7 @@ export function ElegantTemplate({ data }: TemplateProps) {
                     </div>
                     <div className="flex justify-between items-baseline text-sm">
                         <span className="font-semibold">{exp.company || 'Company'}</span>
-                        <span className="text-xs text-gray-500">{exp.location || 'Location'}</span>
+                        {exp.location && <span className="text-xs text-gray-500">{exp.location}</span>}
                     </div>
                     <div className="mt-2">{renderDescription(exp.description)}</div>
                     </div>

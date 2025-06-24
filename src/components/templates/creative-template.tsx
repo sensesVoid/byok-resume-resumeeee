@@ -119,8 +119,8 @@ export function CreativeTemplate({ data }: TemplateProps) {
                                         <div className="text-sm font-medium" style={{color: bodyColor}}>{exp.startDate} - {exp.endDate || 'Present'}</div>
                                     </div>
                                     <div className="flex items-baseline justify-between text-md font-medium">
-                                        <span className="text-gray-800">{exp.company}</span>
-                                        <span className="text-sm" style={{color: bodyColor}}>{exp.location}</span>
+                                        <span className="text-gray-800">{exp.company || 'Company'}</span>
+                                        {exp.location && <span className="text-sm" style={{color: bodyColor}}>{exp.location}</span>}
                                     </div>
                                     <div className="mt-2">{renderDescription(exp.description)}</div>
                                 </div>

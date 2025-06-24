@@ -78,7 +78,7 @@ export function ClassicTemplate({ data }: TemplateProps) {
                   </div>
                   <div className="flex justify-between items-baseline text-sm">
                     <span className="font-semibold">{exp.company || 'Company'}</span>
-                    <span className="text-xs text-gray-500">{exp.location || 'Location'}</span>
+                    {exp.location && <span className="text-xs text-gray-500">{exp.location}</span>}
                   </div>
                   <div className="mt-1">{renderDescription(exp.description)}</div>
                 </div>
@@ -99,7 +99,7 @@ export function ClassicTemplate({ data }: TemplateProps) {
                   </div>
                    <div className="flex justify-between items-baseline text-sm">
                     <span className="font-semibold">{edu.institution || 'Institution'}</span>
-                    <span className="text-xs text-gray-500">{edu.location || 'Location'}</span>
+                    {edu.location && <span className="text-xs text-gray-500">{edu.location}</span>}
                   </div>
                   {edu.description && <p className="mt-1 text-xs italic text-gray-600">{edu.description}</p>}
                 </div>
