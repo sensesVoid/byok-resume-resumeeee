@@ -237,7 +237,7 @@ export function ResumeForm() {
                                         <HelpCircle className="h-4 w-4 text-muted-foreground hover:text-foreground" />
                                       </button>
                                     </TooltipTrigger>
-                                    <TooltipContent>
+                                    <TooltipContent side="right">
                                         {getApiKeyHelpText(aiProvider)}
                                     </TooltipContent>
                                 </Tooltip>
