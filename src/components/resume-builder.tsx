@@ -188,6 +188,37 @@ export function ResumeBuilder() {
     }
   };
 
+  const handleAddMissingSkills = (skillsToAdd: string[]) => {
+    const currentSkills = form.getValues('skills');
+    const currentSkillNames = new Set(currentSkills.map(s => s.name.toLowerCase()));
+
+    const newSkills = skillsToAdd.filter(
+      (skill) => !currentSkillNames.has(skill.toLowerCase())
+    );
+
+    if (newSkills.length === 0) {
+      toast({
+        title: 'No new skills to add',
+        description: 'All suggested skills are already in your resume.',
+      });
+      return;
+    }
+
+    const skillsToAppend = newSkills.map(name => ({
+      id: crypto.randomUUID(),
+      name,
+    }));
+
+    form.setValue('skills', [...currentSkills, ...skillsToAppend], {
+      shouldValidate: true,
+    });
+
+    toast({
+      title: 'Skills Added!',
+      description: `${newSkills.length} new skill(s) have been added to your resume.`,
+    });
+  };
+
   const handleCalculateAtsScore = (type: 'resume' | 'cover-letter') => {
     const {
       personalInfo,
@@ -360,6 +391,7 @@ export function ResumeBuilder() {
               isPending={isCalculatingAts}
               atsResult={atsResult}
               documentType={atsCheckType}
+              onAddMissingSkills={atsCheckType === 'resume' ? handleAddMissingSkills : undefined}
             />
           </ScrollArea>
         </DialogContent>

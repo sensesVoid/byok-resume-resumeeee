@@ -1,22 +1,25 @@
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Loader2, FileText, AlertTriangle } from 'lucide-react';
+import { Loader2, FileText, AlertTriangle, Plus } from 'lucide-react';
 import type { CalculateAtsScoreOutput } from '@/ai/flows/calculate-ats-score';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from './ui/button';
 
 interface AtsCheckerProps {
   atsResult: CalculateAtsScoreOutput | null;
   isPending: boolean;
   documentType: 'resume' | 'cover-letter';
+  onAddMissingSkills?: (skills: string[]) => void;
 }
 
 export function AtsChecker({
   atsResult,
   isPending,
   documentType,
+  onAddMissingSkills,
 }: AtsCheckerProps) {
   return (
     <div className="space-y-4">
@@ -100,10 +103,20 @@ export function AtsChecker({
                 </CardHeader>
                 <CardContent>
                     {atsResult.missingSkills.length > 0 ? (
-                        <div className="flex flex-wrap gap-2">
-                            {atsResult.missingSkills.map((skill, index) => (
-                                <Badge key={index} variant="secondary">{skill}</Badge>
-                            ))}
+                        <div className="space-y-4">
+                            <div className="flex flex-wrap gap-2">
+                                {atsResult.missingSkills.map((skill, index) => (
+                                    <Badge key={index} variant="secondary">{skill}</Badge>
+                                ))}
+                            </div>
+                            {onAddMissingSkills && documentType === 'resume' && (
+                                <div className="pt-2">
+                                    <Button onClick={() => onAddMissingSkills(atsResult.missingSkills)} size="sm" variant="outline">
+                                        <Plus className="mr-2 h-4 w-4" />
+                                        Add Missing Skills to Resume
+                                    </Button>
+                                </div>
+                            )}
                         </div>
                     ) : (
                         <p className="text-sm text-muted-foreground">Great job! We didn't find any major skills missing from your {documentType} based on the job description.</p>
