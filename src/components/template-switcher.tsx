@@ -11,7 +11,6 @@ import {
 import { Button } from '@/components/ui/button';
 
 const templates = [
-  { name: 'diy', label: 'DIY' },
   { name: 'modern', label: 'Modern' },
   { name: 'classic', label: 'Classic' },
   { name: 'creative', label: 'Creative' },

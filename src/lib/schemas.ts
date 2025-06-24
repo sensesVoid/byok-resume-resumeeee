@@ -7,8 +7,6 @@ export const personalInfoSchema = z.object({
   website: z.string().url('Invalid URL').optional(),
   location: z.string().optional(),
   photo: z.string().optional(),
-  photoX: z.number().default(300),
-  photoY: z.number().default(20),
 });
 
 export const experienceSchema = z.object({
@@ -46,22 +44,6 @@ export const donationConfigSchema = z.object({
   }),
 });
 
-const diyLayoutItemSchema = z.object({
-  x: z.number(),
-  y: z.number(),
-  width: z.number(),
-});
-
-export const diyDecorationSchema = z.object({
-  id: z.string(),
-  type: z.enum(['line', 'rectangle']),
-  x: z.number(),
-  y: z.number(),
-  width: z.number(),
-  height: z.number(), // For lines, this is stroke width. For rectangles, it's box height.
-  color: z.string(),
-});
-
 export const resumeSchema = z.object({
   aiPowered: z.boolean().default(false),
   aiConfig: baseAiConfigSchema.extend({
@@ -71,7 +53,6 @@ export const resumeSchema = z.object({
 
   template: z
     .enum([
-      'diy',
       'modern',
       'classic',
       'creative',
@@ -96,15 +77,6 @@ export const resumeSchema = z.object({
   jobDescription: z.string().optional(),
   coverLetter: z.string().optional(),
   donationConfig: donationConfigSchema,
-  decorations: z.array(diyDecorationSchema).default([]),
-  diyLayout: z.object({
-    photo: diyLayoutItemSchema,
-    header: diyLayoutItemSchema,
-    summary: diyLayoutItemSchema,
-    experience: diyLayoutItemSchema,
-    education: diyLayoutItemSchema,
-    skills: diyLayoutItemSchema,
-  }),
 });
 
 export const aiConfigSchema = resumeSchema.shape.aiConfig;
@@ -132,8 +104,6 @@ export const defaultResumeData: ResumeSchema = {
     website: 'https://johndoe.dev',
     location: 'San Francisco, CA',
     photo: '',
-    photoX: 300,
-    photoY: 20,
   },
   summary:
     'Innovative and deadline-driven Software Engineer with 5+ years of experience designing and developing user-centered digital products from initial concept to final, polished deliverable.',
@@ -184,14 +154,5 @@ export const defaultResumeData: ResumeSchema = {
       enabled: true,
       number: '09625449481',
     },
-  },
-  decorations: [],
-  diyLayout: {
-    photo: { x: 300, y: 20, width: 128 },
-    header: { x: 20, y: 170, width: 680 },
-    summary: { x: 20, y: 290, width: 680 },
-    experience: { x: 20, y: 370, width: 680 },
-    education: { x: 20, y: 620, width: 680 },
-    skills: { x: 20, y: 820, width: 680 },
   },
 };
