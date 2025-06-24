@@ -2,37 +2,24 @@
 
 import { useFormContext } from 'react-hook-form';
 import { type ResumeSchema } from '@/lib/schemas';
-import { FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { cn } from '@/lib/utils';
-import { Card, CardContent } from '@/components/ui/card';
-
-import { ModernTemplate } from '@/components/templates/modern-template';
-import { ClassicTemplate } from '@/components/templates/classic-template';
-import { CreativeTemplate } from '@/components/templates/creative-template';
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+} from '@/components/ui/form';
+import { Button } from '@/components/ui/button';
 
 const templates = [
-  {
-    name: 'modern',
-    label: 'Modern',
-    component: ModernTemplate,
-  },
-  {
-    name: 'classic',
-    label: 'Classic',
-    component: ClassicTemplate,
-  },
-  {
-    name: 'creative',
-    label: 'Creative',
-    component: CreativeTemplate,
-  },
+  { name: 'modern', label: 'Modern' },
+  { name: 'classic', label: 'Classic' },
+  { name: 'creative', label: 'Creative' },
+  { name: 'minimalist', label: 'Minimalist' },
+  { name: 'professional', label: 'Professional' },
 ] as const;
-
 
 export function TemplateSwitcher() {
   const form = useFormContext<ResumeSchema>();
-  const data = form.watch();
 
   return (
     <FormField
@@ -42,42 +29,21 @@ export function TemplateSwitcher() {
         <FormItem className="space-y-3">
           <FormLabel>Choose a template</FormLabel>
           <FormControl>
-            <RadioGroup
-              onValueChange={field.onChange}
-              defaultValue={field.value}
-              className="grid grid-cols-2 gap-4 md:grid-cols-3"
-            >
-              {templates.map((template) => {
-                const TemplateComponent = template.component;
-                return (
-                  <FormItem key={template.name}>
-                    <FormControl>
-                      <RadioGroupItem value={template.name} className="sr-only" />
-                    </FormControl>
-                    <FormLabel className="cursor-pointer">
-                      <Card
-                        className={cn(
-                          'transition-all',
-                          field.value === template.name &&
-                            'ring-2 ring-primary ring-offset-2 ring-offset-background'
-                        )}
-                      >
-                        <CardContent className="flex flex-col items-center gap-2 p-2">
-                          <div className="h-[210px] w-[150px] overflow-hidden rounded-md border bg-white">
-                            <div className="origin-top-left scale-[0.25] transform">
-                               <div className="h-[840px] w-[600px]">
-                                <TemplateComponent data={data} />
-                               </div>
-                            </div>
-                          </div>
-                          <span className="font-semibold">{template.label}</span>
-                        </CardContent>
-                      </Card>
-                    </FormLabel>
-                  </FormItem>
-                )
-              })}
-            </RadioGroup>
+            <div className="flex flex-wrap gap-2">
+              {templates.map((template) => (
+                <Button
+                  key={template.name}
+                  type="button"
+                  variant={
+                    field.value === template.name ? 'default' : 'outline'
+                  }
+                  size="sm"
+                  onClick={() => field.onChange(template.name)}
+                >
+                  {template.label}
+                </Button>
+              ))}
+            </div>
           </FormControl>
         </FormItem>
       )}

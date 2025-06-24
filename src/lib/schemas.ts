@@ -35,8 +35,12 @@ export const aiConfigSchema = z.object({
 export type AiConfig = z.infer<typeof aiConfigSchema>;
 
 export const resumeSchema = z.object({
-  template: z.enum(['modern', 'classic', 'creative']).default('modern'),
-  fontStyle: z.enum(['inter', 'roboto', 'lato', 'merriweather']).default('inter'),
+  template: z
+    .enum(['modern', 'classic', 'creative', 'minimalist', 'professional'])
+    .default('modern'),
+  fontStyle: z
+    .enum(['inter', 'roboto', 'lato', 'merriweather'])
+    .default('inter'),
   fontColor: z.string().default('#111827'),
   personalInfo: personalInfoSchema,
   summary: z.string().optional(),
@@ -72,7 +76,8 @@ export const defaultResumeData: ResumeSchema = {
       location: 'Palo Alto, CA',
       startDate: 'Jan 2022',
       endDate: 'Present',
-      description: '- Led a team of 5 engineers to develop a new e-commerce platform, resulting in a 30% increase in sales.\n- Optimized application performance, reducing page load times by 40%.\n- Mentored junior engineers and conducted code reviews.',
+      description:
+        '- Led a team of 5 engineers to develop a new e-commerce platform, resulting in a 30% increase in sales.\n- Optimized application performance, reducing page load times by 40%.\n- Mentored junior engineers and conducted code reviews.',
     },
   ],
   education: [
