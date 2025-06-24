@@ -1,94 +1,23 @@
 'use client';
 
-import { useState, useTransition } from 'react';
-import { useFormContext } from 'react-hook-form';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Loader2, ScanSearch, FileText, AlertTriangle } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
-import { calculateAtsScoreAction } from '@/app/actions';
+import { Loader2, FileText, AlertTriangle } from 'lucide-react';
 import type { CalculateAtsScoreOutput } from '@/ai/flows/calculate-ats-score';
-import type { ResumeSchema } from '@/lib/schemas';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 
 interface AtsCheckerProps {
-  isAiPowered: boolean;
+  atsResult: CalculateAtsScoreOutput | null;
+  isPending: boolean;
 }
 
-export function AtsChecker({ isAiPowered }: AtsCheckerProps) {
-  const { getValues } = useFormContext<ResumeSchema>();
-  const { toast } = useToast();
-  const [isPending, startTransition] = useTransition();
-  const [atsResult, setAtsResult] = useState<CalculateAtsScoreOutput | null>(null);
-
-  const handleCalculateAtsScore = () => {
-    const { personalInfo, summary, experience, education, skills, jobDescription, aiConfig } = getValues();
-    
-    if (!jobDescription) {
-      toast({
-        variant: 'destructive',
-        title: 'Job Description Missing',
-        description: 'Please provide a job description to calculate the ATS score.',
-      });
-      return;
-    }
-
-    const resumeText = `
-      Name: ${personalInfo.name}
-      Email: ${personalInfo.email}
-      ${personalInfo.phone ? `Phone: ${personalInfo.phone}`: ''}
-      ${personalInfo.website ? `Website: ${personalInfo.website}`: ''}
-      ${personalInfo.location ? `Location: ${personalInfo.location}`: ''}
-
-      Summary: ${summary}
-
-      Experience:
-      ${experience.map(exp => `
-        - ${exp.jobTitle} at ${exp.company} (${exp.startDate} - ${exp.endDate || 'Present'})
-          ${exp.location ? `, ${exp.location}`: ''}
-          Description: ${exp.description}
-      `).join('\n')}
-
-      Education:
-      ${education.map(edu => `
-        - ${edu.degree} from ${edu.institution} (Graduated: ${edu.graduationDate})
-          ${edu.location ? `, ${edu.location}`: ''}
-          ${edu.description ? `Details: ${edu.description}`: ''}
-      `).join('\n')}
-
-      Skills: ${skills.map(s => s.name).join(', ')}
-    `;
-
-    startTransition(async () => {
-      try {
-        setAtsResult(null);
-        const result = await calculateAtsScoreAction({ resumeText, jobDescription, aiConfig });
-        setAtsResult(result);
-        toast({
-          title: 'Success!',
-          description: 'Your ATS score has been calculated.',
-        });
-      } catch (error) {
-        toast({
-          variant: 'destructive',
-          title: 'Error',
-          description: (error as Error).message,
-        });
-      }
-    });
-  };
-
+export function AtsChecker({ atsResult, isPending }: AtsCheckerProps) {
   return (
     <div className="space-y-4">
       <p className="text-sm text-muted-foreground">
-        Analyze your resume against a job description to see how well it matches and get suggestions for improvement.
+        Click the "Calculate ATS" button in the header to analyze your resume against a job description.
       </p>
-      <Button onClick={handleCalculateAtsScore} disabled={isPending || !isAiPowered}>
-        {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ScanSearch className="mr-2 h-4 w-4" />}
-        Calculate ATS Score
-      </Button>
 
       {isPending && (
          <Card>
@@ -104,7 +33,7 @@ export function AtsChecker({ isAiPowered }: AtsCheckerProps) {
          </Card>
       )}
 
-      {atsResult && (
+      {!isPending && atsResult && (
         <div className="space-y-6 pt-4">
             <Card>
                 <CardHeader>
@@ -181,6 +110,14 @@ export function AtsChecker({ isAiPowered }: AtsCheckerProps) {
                 </CardContent>
             </Card>
         </div>
+      )}
+      
+      {!isPending && !atsResult && (
+        <Card className="flex items-center justify-center p-8">
+            <div className="text-center text-muted-foreground">
+                <p>Your ATS analysis results will appear here.</p>
+            </div>
+        </Card>
       )}
     </div>
   );

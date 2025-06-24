@@ -20,6 +20,7 @@ import { AtsChecker } from '@/components/ats-checker';
 import { Label } from './ui/label';
 import { Separator } from './ui/separator';
 import { cn } from '@/lib/utils';
+import type { CalculateAtsScoreOutput } from '@/ai/flows/calculate-ats-score';
 
 const fontColors = [
   { value: '#111827', name: 'Dark Gray' },
@@ -35,7 +36,12 @@ const fontStyles = [
   { value: 'merriweather', label: 'Merriweather (Serif)' },
 ];
 
-export function ResumeForm() {
+interface ResumeFormProps {
+  atsResult: CalculateAtsScoreOutput | null;
+  isCalculatingAts: boolean;
+}
+
+export function ResumeForm({ atsResult, isCalculatingAts }: ResumeFormProps) {
   const form = useFormContext<ResumeSchema>();
   const { toast } = useToast();
   const [isGenerating, startGeneratingTransition] = useTransition();
@@ -311,7 +317,7 @@ export function ResumeForm() {
                 <Separator className="my-6" />
                 <div>
                   <h3 className="font-semibold mb-2">ATS Score Checker</h3>
-                  <AtsChecker isAiPowered={aiPowered} />
+                  <AtsChecker atsResult={atsResult} isPending={isCalculatingAts} />
                 </div>
                 <Separator className="my-6" />
                 <div>

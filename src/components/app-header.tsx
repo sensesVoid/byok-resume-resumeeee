@@ -1,6 +1,6 @@
 'use client';
 
-import { FileDown, Loader2, Upload } from 'lucide-react';
+import { FileDown, Loader2, Upload, ScanSearch } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/icons';
 import { useState, useEffect } from 'react';
@@ -8,9 +8,18 @@ import { useState, useEffect } from 'react';
 interface AppHeaderProps {
   onUploadClick: () => void;
   isUploading: boolean;
+  onCalculateAtsScore: () => void;
+  isCalculatingAts: boolean;
+  isAiPowered: boolean;
 }
 
-export function AppHeader({ onUploadClick, isUploading }: AppHeaderProps) {
+export function AppHeader({ 
+  onUploadClick, 
+  isUploading,
+  onCalculateAtsScore,
+  isCalculatingAts,
+  isAiPowered 
+}: AppHeaderProps) {
   const [isPrinting, setIsPrinting] = useState(false);
 
   useEffect(() => {
@@ -41,13 +50,20 @@ export function AppHeader({ onUploadClick, isUploading }: AppHeaderProps) {
       <div className="flex items-center gap-2">
         <Button
           onClick={onUploadClick}
-          disabled={isUploading || isPrinting}
+          disabled={isUploading || isPrinting || isCalculatingAts}
           variant="outline"
         >
           {isUploading ? <Loader2 className="animate-spin" /> : <Upload />}
           <span className="ml-2 hidden sm:inline">Upload Resume</span>
         </Button>
-        <Button onClick={handlePrint} disabled={isPrinting || isUploading}>
+        <Button 
+          onClick={onCalculateAtsScore}
+          disabled={!isAiPowered || isCalculatingAts || isPrinting || isUploading}
+        >
+          {isCalculatingAts ? <Loader2 className="animate-spin" /> : <ScanSearch />}
+           <span className="ml-2 hidden sm:inline">Calculate ATS</span>
+        </Button>
+        <Button onClick={handlePrint} disabled={isPrinting || isUploading || isCalculatingAts}>
           {isPrinting ? <Loader2 className="animate-spin" /> : <FileDown />}
           <span className="ml-2 hidden sm:inline">Download PDF</span>
         </Button>

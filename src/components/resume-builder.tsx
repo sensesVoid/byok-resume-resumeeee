@@ -13,9 +13,10 @@ import {
 } from 'react-resizable-panels';
 import { useMediaQuery } from '@/hooks/use-media-query';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useRef, useTransition } from 'react';
+import { useRef, useTransition, useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import { parseResumeAction } from '@/app/actions';
+import { parseResumeAction, calculateAtsScoreAction } from '@/app/actions';
+import type { CalculateAtsScoreOutput } from '@/ai/flows/calculate-ats-score';
 
 
 export function ResumeBuilder() {
@@ -27,8 +28,14 @@ export function ResumeBuilder() {
 
   const isDesktop = useMediaQuery('(min-width: 768px)');
   const { toast } = useToast();
-  const [isUploading, startUploadingTransition] = useTransition();
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [isUploading, startUploadingTransition] = useTransition();
+  const [isCalculatingAts, startAtsTransition] = useTransition();
+  
+  const [atsResult, setAtsResult] = useState<CalculateAtsScoreOutput | null>(null);
+
+  const aiPowered = form.watch('aiPowered');
 
   const handleUploadClick = () => {
     fileInputRef.current?.click();
@@ -99,6 +106,63 @@ export function ResumeBuilder() {
     }
   };
 
+  const handleCalculateAtsScore = () => {
+    const { personalInfo, summary, experience, education, skills, jobDescription, aiConfig } = form.getValues();
+    
+    if (!jobDescription) {
+      toast({
+        variant: 'destructive',
+        title: 'Job Description Missing',
+        description: 'Please provide a job description in the AI Tools section to calculate the ATS score.',
+      });
+      return;
+    }
+
+    const resumeText = `
+      Name: ${personalInfo.name}
+      Email: ${personalInfo.email}
+      ${personalInfo.phone ? `Phone: ${personalInfo.phone}`: ''}
+      ${personalInfo.website ? `Website: ${personalInfo.website}`: ''}
+      ${personalInfo.location ? `Location: ${personalInfo.location}`: ''}
+
+      Summary: ${summary}
+
+      Experience:
+      ${experience.map(exp => `
+        - ${exp.jobTitle} at ${exp.company} (${exp.startDate} - ${exp.endDate || 'Present'})
+          ${exp.location ? `, ${exp.location}`: ''}
+          Description: ${exp.description}
+      `).join('\n')}
+
+      Education:
+      ${education.map(edu => `
+        - ${edu.degree} from ${edu.institution} (Graduated: ${edu.graduationDate})
+          ${edu.location ? `, ${edu.location}`: ''}
+          ${edu.description ? `Details: ${edu.description}`: ''}
+      `).join('\n')}
+
+      Skills: ${skills.map(s => s.name).join(', ')}
+    `;
+
+    startAtsTransition(async () => {
+      try {
+        setAtsResult(null); // Clear previous results
+        const result = await calculateAtsScoreAction({ resumeText, jobDescription, aiConfig });
+        setAtsResult(result);
+        toast({
+          title: 'Success!',
+          description: 'Your ATS score has been calculated.',
+        });
+      } catch (error) {
+        toast({
+          variant: 'destructive',
+          title: 'Error',
+          description: (error as Error).message,
+        });
+      }
+    });
+  };
+
   return (
     <FormProvider {...form}>
        <input
@@ -109,13 +173,19 @@ export function ResumeBuilder() {
         className="hidden"
       />
       <div className="flex min-h-screen flex-col bg-background">
-        <AppHeader onUploadClick={handleUploadClick} isUploading={isUploading} />
+        <AppHeader 
+          onUploadClick={handleUploadClick} 
+          isUploading={isUploading}
+          onCalculateAtsScore={handleCalculateAtsScore}
+          isCalculatingAts={isCalculatingAts}
+          isAiPowered={aiPowered}
+        />
         <main className="flex-1 overflow-hidden">
           {isDesktop ? (
             <PanelGroup direction="horizontal" className="h-full">
               <Panel defaultSize={50} minSize={40}>
                 <div className="h-full overflow-y-auto p-4 sm:p-8 print:hidden">
-                  <ResumeForm />
+                  <ResumeForm atsResult={atsResult} isCalculatingAts={isCalculatingAts} />
                 </div>
               </Panel>
               <PanelResizeHandle className="w-1 bg-primary/20 transition-colors hover:bg-primary/40 data-[resize-handle-state=drag]:bg-primary print:hidden" />
@@ -133,7 +203,7 @@ export function ResumeBuilder() {
                   <TabsTrigger value="preview">Preview</TabsTrigger>
                 </TabsList>
                 <TabsContent value="form" className="mt-4">
-                  <ResumeForm />
+                  <ResumeForm atsResult={atsResult} isCalculatingAts={isCalculatingAts} />
                 </TabsContent>
                 <TabsContent value="preview" className="mt-4">
                    <ResumePreview />
