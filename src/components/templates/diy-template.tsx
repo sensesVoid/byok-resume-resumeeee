@@ -1,3 +1,4 @@
+
 'use client';
 
 import type { ResumeSchema } from '@/lib/schemas';
@@ -89,6 +90,7 @@ export function DiyTemplate({ data }: { data: ResumeSchema }) {
   const { control, watch, setValue } = useFormContext<ResumeSchema>();
   const { toast } = useToast();
   const photoInputRef = useRef<HTMLInputElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
 
   const {
     fields: experienceFields,
@@ -129,9 +131,8 @@ export function DiyTemplate({ data }: { data: ResumeSchema }) {
       setNewSkill('');
     }
   };
-
-  const handlePhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
+  
+  const handleFile = (file: File | null | undefined) => {
     if (!file) return;
 
     if (!file.type.startsWith('image/')) {
@@ -168,10 +169,42 @@ export function DiyTemplate({ data }: { data: ResumeSchema }) {
         });
     };
     reader.readAsDataURL(file);
+  };
 
+
+  const handlePhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    handleFile(event.target.files?.[0]);
     if (event.target) {
         event.target.value = '';
     }
+  };
+
+  const handlePhotoDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+    
+    handleFile(e.dataTransfer.files?.[0]);
+  };
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+  
+  const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    // Check if files are being dragged
+    if (e.dataTransfer.items && e.dataTransfer.items.length > 0) {
+      setIsDragging(true);
+    }
+  };
+  
+  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
   };
 
   return (
@@ -180,13 +213,23 @@ export function DiyTemplate({ data }: { data: ResumeSchema }) {
       style={rootStyle}
     >
       <header className="text-center">
-         <div className="group relative w-28 h-28 mx-auto mb-4 rounded-full">
+         <div
+            className={cn(
+                "group relative w-28 h-28 mx-auto mb-4 rounded-full transition-all",
+                isDragging && "ring-4 ring-primary ring-offset-2 scale-105"
+            )}
+            onDrop={handlePhotoDrop}
+            onDragOver={handleDragOver}
+            onDragEnter={handleDragEnter}
+            onDragLeave={handleDragLeave}
+         >
             <Avatar className="h-full w-full">
                 <AvatarImage src={watch('personalInfo.photo') || undefined} alt={watch('personalInfo.name') || 'User photo'} />
                 <AvatarFallback className="h-full w-full">
                     <User className="h-12 w-12 text-muted-foreground" />
                 </AvatarFallback>
             </Avatar>
+            
             <div className="absolute inset-0 rounded-full bg-black/50 flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                 <Button type="button" size="icon" onClick={() => photoInputRef.current?.click()} aria-label="Upload photo">
                     <Upload className="h-5 w-5" />
@@ -197,6 +240,14 @@ export function DiyTemplate({ data }: { data: ResumeSchema }) {
                     </Button>
                 )}
             </div>
+
+            {isDragging && (
+              <div className="absolute inset-0 rounded-full bg-primary/30 flex flex-col items-center justify-center pointer-events-none text-white text-xs font-bold">
+                <Upload className="h-8 w-8 mb-1" />
+                Drop to upload
+              </div>
+            )}
+            
             <input
                 type="file"
                 ref={photoInputRef}
