@@ -179,7 +179,18 @@ export function ResumeForm() {
       appendSkill({ id: crypto.randomUUID(), name: newSkill.trim() });
       setNewSkill('');
     }
-  }
+  };
+
+  const handleClearPersonalInfo = () => {
+    form.setValue('personalInfo', {
+      name: '',
+      email: '',
+      phone: '',
+      website: '',
+      location: '',
+    }, { shouldValidate: true });
+    toast({ title: 'Personal info cleared.' });
+  };
 
   return (
     <Form {...form}>
@@ -287,12 +298,19 @@ export function ResumeForm() {
           <AccordionItem value="personal">
             <AccordionTrigger><User className="mr-3 text-primary" /> Personal Information</AccordionTrigger>
             <AccordionContent>
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <FormField control={form.control} name="personalInfo.name" render={({ field }) => (<FormItem><FormLabel>Full Name</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                <FormField control={form.control} name="personalInfo.email" render={({ field }) => (<FormItem><FormLabel>Email</FormLabel><FormControl><Input type="email" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                <FormField control={form.control} name="personalInfo.phone" render={({ field }) => (<FormItem><FormLabel>Phone</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                <FormField control={form.control} name="personalInfo.website" render={({ field }) => (<FormItem><FormLabel>Website/Portfolio</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                <FormField control={form.control} name="personalInfo.location" render={({ field }) => (<FormItem className="sm:col-span-2"><FormLabel>Location</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <FormField control={form.control} name="personalInfo.name" render={({ field }) => (<FormItem><FormLabel>Full Name</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                  <FormField control={form.control} name="personalInfo.email" render={({ field }) => (<FormItem><FormLabel>Email</FormLabel><FormControl><Input type="email" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                  <FormField control={form.control} name="personalInfo.phone" render={({ field }) => (<FormItem><FormLabel>Phone</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                  <FormField control={form.control} name="personalInfo.website" render={({ field }) => (<FormItem><FormLabel>Website/Portfolio</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                  <FormField control={form.control} name="personalInfo.location" render={({ field }) => (<FormItem className="sm:col-span-2"><FormLabel>Location</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                </div>
+                <div className="flex justify-end pt-2">
+                   <Button type="button" variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive" onClick={handleClearPersonalInfo}>
+                      <Trash2 className="h-4 w-4" />
+                   </Button>
+                </div>
               </div>
             </AccordionContent>
           </AccordionItem>
@@ -303,9 +321,26 @@ export function ResumeForm() {
               <FormField control={form.control} name="summary" render={({ field }) => (
                 <FormItem>
                   <FormControl><Textarea rows={5} {...field} /></FormControl><FormMessage />
-                  <div className="mt-2 flex flex-wrap gap-2">
-                    <Button type="button" size="sm" variant="outline" onClick={() => handleImproveContent('summary', field.value || '')} disabled={isImproving || !aiPowered}>{isImproving && fieldToUpdate === 'summary' ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />} Improve with AI</Button>
-                  </div>
+                   <div className="flex items-center justify-between pt-2">
+                      <Button 
+                          type="button" 
+                          size="sm" 
+                          variant="outline" 
+                          onClick={() => handleImproveContent('summary', field.value || '')} 
+                          disabled={isImproving || !aiPowered}
+                      >
+                          {isImproving && fieldToUpdate === 'summary' ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />} Improve with AI
+                      </Button>
+                      <Button 
+                        type="button" 
+                        variant="ghost" 
+                        size="icon" 
+                        className="text-muted-foreground hover:text-destructive" 
+                        onClick={() => form.setValue('summary', '', { shouldValidate: true })}
+                      >
+                          <Trash2 className="h-4 w-4" />
+                      </Button>
+                   </div>
                 </FormItem>
               )} />
             </AccordionContent>
