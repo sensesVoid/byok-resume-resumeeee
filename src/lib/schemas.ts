@@ -33,6 +33,18 @@ const baseAiConfigSchema = z.object({
   model: z.string().optional(),
 });
 
+export const advertisementSlotSchema = z.object({
+  enabled: z.boolean().default(false),
+  imageUrl: z.string().url('Must be a valid URL').optional().or(z.literal('')),
+  linkUrl: z.string().url('Must be a valid URL').optional().or(z.literal('')),
+});
+
+export const advertisementSchema = z.object({
+  topAd: advertisementSlotSchema,
+  bottomAd: advertisementSlotSchema,
+});
+
+
 export const resumeSchema = z.object({
   aiPowered: z.boolean().default(false),
   aiConfig: baseAiConfigSchema.extend({
@@ -65,6 +77,7 @@ export const resumeSchema = z.object({
   skills: z.array(z.object({ id: z.string(), name: z.string() })),
   jobDescription: z.string().optional(),
   coverLetter: z.string().optional(),
+  advertisements: advertisementSchema,
 });
 
 export const aiConfigSchema = resumeSchema.shape.aiConfig;
@@ -130,4 +143,16 @@ export const defaultResumeData: ResumeSchema = {
     model: '',
   },
   aiPowered: false,
+  advertisements: {
+    topAd: {
+      enabled: false,
+      imageUrl: '',
+      linkUrl: '',
+    },
+    bottomAd: {
+      enabled: false,
+      imageUrl: '',
+      linkUrl: '',
+    },
+  },
 };
