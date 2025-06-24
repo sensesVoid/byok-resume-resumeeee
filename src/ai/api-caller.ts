@@ -2,11 +2,6 @@
 
 import type { AiConfig } from '@/lib/schemas';
 
-interface CallApiParams {
-  prompt: string;
-  aiConfig: AiConfig;
-}
-
 // Helper to extract text from a provider's response
 function extractTextFromResponse(
   responseData: any,
@@ -25,7 +20,10 @@ function extractTextFromResponse(
 export async function callApi({
   prompt,
   aiConfig,
-}: CallApiParams): Promise<string> {
+}: {
+  prompt: string;
+  aiConfig: AiConfig;
+}): Promise<string> {
   const { provider, apiKey, model } = aiConfig;
 
   if (!apiKey) {
@@ -47,7 +45,6 @@ export async function callApi({
       payload = {
         contents: [{ parts: [{ text: prompt }] }],
         generationConfig: {
-          // Request JSON output from Gemini
           response_mime_type: 'application/json',
         },
       };
@@ -59,7 +56,6 @@ export async function callApi({
       payload = {
         model: model || 'gpt-4o',
         messages: [{ role: 'user', content: prompt }],
-        // Request JSON output from OpenAI
         response_format: { type: 'json_object' },
       };
       break;
@@ -67,13 +63,11 @@ export async function callApi({
     case 'openrouter':
       url = 'https://openrouter.ai/api/v1/chat/completions';
       headers['Authorization'] = `Bearer ${apiKey}`;
-      // Recommended headers for OpenRouter
       headers['HTTP-Referer'] = 'https://resumeeee.app';
       headers['X-Title'] = 'Resumeeee';
       payload = {
         model: model || 'openrouter/auto',
         messages: [{ role: 'user', content: prompt }],
-        // Request JSON output from OpenRouter compatible models
         response_format: { type: 'json_object' },
       };
       break;
@@ -104,30 +98,25 @@ export async function callApi({
       throw new Error('No content received from the AI model.');
     }
 
-    // The text can be a JSON string, but sometimes models wrap it in markdown
-    // or add conversational text. This logic finds and extracts the JSON object.
-    
-    // First, check for a markdown code block
+    // Models sometimes wrap JSON in markdown. This extracts the JSON.
     const jsonRegex = /```json\s*([\s\S]*?)\s*```/;
     const match = text.match(jsonRegex);
-    
-    let jsonString = text;
     if (match && match[1]) {
-      jsonString = match[1];
-    } else {
-      // If no markdown, find the first '{' and last '}' to extract the object
-      const startIndex = text.indexOf('{');
-      const endIndex = text.lastIndexOf('}');
-      
-      if (startIndex !== -1 && endIndex !== -1 && endIndex > startIndex) {
-        jsonString = text.substring(startIndex, endIndex + 1);
-      }
+      return match[1]; // Return only the content of the markdown block
     }
-
-    return jsonString;
+    
+    // If no markdown block is found, assume the model might have returned raw JSON
+    // potentially with some leading/trailing text. We find the main JSON object.
+    const startIndex = text.indexOf('{');
+    const endIndex = text.lastIndexOf('}');
+    if (startIndex > -1 && endIndex > startIndex) {
+        return text.substring(startIndex, endIndex + 1);
+    }
+    
+    // If no JSON object is found, return the raw text for the caller to handle.
+    return text;
   } catch (error: any) {
     console.error(`API call failed for ${provider}:`, error);
-    // Re-throw the error with a more user-friendly message
     if (error.message.includes('API key')) {
         throw new Error('Invalid or expired API key. Please check your API key and try again.');
     }

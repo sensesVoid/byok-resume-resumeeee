@@ -24,20 +24,19 @@ export type GenerateCoverLetterOutput = z.infer<
 >;
 
 function buildPrompt(resume: string, jobDescription: string, userName: string): string {
-  return `You are an expert career advisor.
+  return `You are an expert career advisor. Based on the user's resume and the job description, generate a professional and engaging cover letter.
 
-  Based on the user's resume and the job description, generate a cover letter for the user.
-  The cover letter should be tailored to the job description and highlight the user's relevant skills and experience.
-  The cover letter should be professional and engaging.
-  The cover letter should be addressed to the hiring manager or the company.
-  The cover letter should include a call to action.
+  **Resume:**
+  ${resume}
+  
+  **Job Description:**
+  ${jobDescription}
+  
+  **User Name:**
+  ${userName}
 
-  Resume: ${resume}
-  Job Description: ${jobDescription}
-  User Name: ${userName}
-
-  Provide a response as a single, valid JSON object with one key: "coverLetter". The value should be the full text of the generated cover letter as a single string.
-  Do not include any other text, markdown, or explanations before or after the JSON object.`;
+  **CRITICAL INSTRUCTIONS:**
+  Your response MUST BE ONLY a single, valid JSON object with one key: "coverLetter". The value must be the full text of the generated cover letter as a single string. Do not include any other text, markdown, or explanations.`;
 }
 
 

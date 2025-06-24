@@ -45,7 +45,7 @@ ${content}`;
     ? 'The rewritten content should be a single, cohesive paragraph. Do not use bullet points or multiple paragraphs.'
     : 'The rewritten content should be a series of bullet points. Each bullet point should start on a new line with a hyphen and a space (e.g., "- Achieved X...").';
 
-  const formatInstruction = `\n\n${formatStyle}\n\nProvide a response as a single, valid JSON object with one key: "suggestions". The value should be ONLY the rewritten, improved content as a single string. Do not add any extra explanations, introductory phrases, or markdown formatting.`;
+  const formatInstruction = `\n\n**CRITICAL INSTRUCTIONS:**\n${formatStyle}\n\nYour response MUST BE ONLY a single, valid JSON object with one key: "suggestions". The value should be ONLY the rewritten, improved content as a single string. Do not add any extra explanations, introductory phrases, or markdown formatting.`;
 
   return basePrompt + jobDescPrompt + formatInstruction;
 }
@@ -57,9 +57,7 @@ export async function improveResumeContent(
   const prompt = buildPrompt(input.content, input.fieldType, input.jobDescription);
 
   try {
-    // The callApi function now directly returns the JSON string from the AI
     const responseJsonString = await callApi({ prompt, aiConfig: input.aiConfig });
-    // We just need to parse it
     const parsedJson = JSON.parse(responseJsonString);
     return ImproveResumeContentOutputSchema.parse(parsedJson);
   } catch (error: any) {

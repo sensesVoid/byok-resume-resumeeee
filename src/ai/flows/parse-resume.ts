@@ -56,53 +56,19 @@ export type ParseResumeInput = z.infer<typeof ParseResumeInputSchema>;
 function buildPrompt(resumeText: string): string {
     return `You are an expert resume parser. Your task is to analyze the provided resume text and extract the information into a structured JSON format.
 
-**Instructions:**
-1.  Analyze the resume text provided below.
+**CRITICAL INSTRUCTIONS:**
+1.  Thoroughly analyze the entire resume text provided.
 2.  Extract the information for each section: personal info, summary, experience, education, and skills.
-3.  For descriptions, capture key responsibilities and achievements as a single string with newline characters (\\n) for bullet points.
-4.  Return **only** a single, valid JSON object. Do not include any other text, markdown formatting like \`\`\`json, or explanations before or after the JSON object.
-
-**Example JSON Structure:**
-{
-  "personalInfo": {
-    "name": "John Doe",
-    "email": "john.doe@example.com",
-    "phone": "123-456-7890",
-    "website": "https://johndoe.dev",
-    "location": "San Francisco, CA"
-  },
-  "summary": "Innovative and deadline-driven Software Engineer...",
-  "experience": [
-    {
-      "jobTitle": "Senior Software Engineer",
-      "company": "Tech Corp",
-      "location": "Palo Alto, CA",
-      "startDate": "Jan 2022",
-      "endDate": "Present",
-      "description": "- Led a team of 5 engineers...\\n- Optimized application performance..."
-    }
-  ],
-  "education": [
-    {
-      "degree": "B.S. in Computer Science",
-      "institution": "State University",
-      "location": "Anytown, USA",
-      "graduationDate": "May 2019",
-      "description": "Graduated with honors, GPA 3.8/4.0."
-    }
-  ],
-  "skills": [
-    { "name": "React" },
-    { "name": "Node.js" }
-  ]
-}
+3.  For 'description' fields, capture responsibilities and achievements as a single string, using the newline character (\\n) for bullet points or line breaks.
+4.  If a value for an optional field (like phone, website, or summary) is not found, OMIT THE KEY from the JSON output. Do not use placeholders like "N/A".
+5.  Your response MUST BE ONLY the JSON object, starting with '{' and ending with '}'. Do not include any other text, explanations, or markdown formatting.
 
 **Resume Text to Parse:**
 ---
 ${resumeText}
 ---
 
-Now, parse the resume text above and provide the JSON output.`;
+Now, provide ONLY the JSON object.`;
 }
 
 export async function parseResume(input: ParseResumeInput): Promise<ParseResumeOutput> {
@@ -111,24 +77,18 @@ export async function parseResume(input: ParseResumeInput): Promise<ParseResumeO
   try {
     const jsonString = await callApi({ prompt, aiConfig: input.aiConfig });
     
-    // The callApi function now attempts to return a clean JSON string.
-    // Now we parse it and validate against the schema.
     const parsedJson = JSON.parse(jsonString);
     return ParseResumeOutputSchema.parse(parsedJson);
   } catch (error: any) {
     console.error('Failed to parse resume JSON response:', error);
     
-    // Create a more user-friendly error message based on the error type
     if (error instanceof z.ZodError) {
-        // This means the JSON structure was valid, but the data didn't match our schema
         console.error("Zod validation errors:", error.errors);
         throw new Error('The AI response structure was unexpected. Please check the resume file or try again.');
-    } else if (error instanceof SyntaxError) { // Catches JSON.parse errors
-        // This means the string from callApi was not valid JSON
+    } else if (error instanceof SyntaxError) {
         throw new Error('The AI returned a malformed response. The document may not be a valid resume.');
     }
     
-    // For other errors (e.g. from callApi's fetch)
     throw new Error(error.message || 'An unexpected error occurred while parsing the resume.');
   }
 }

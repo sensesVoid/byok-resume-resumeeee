@@ -64,7 +64,8 @@ function buildPrompt(
   **${documentName} Text:**
   ${documentText}
   
-  Provide a response as a single, valid JSON object with the following keys: "score", "keywordAnalysis", "formattingFeedback", "missingSkills".
+  **CRITICAL INSTRUCTIONS:**
+  Your response MUST BE ONLY a single, valid JSON object with the following keys: "score", "keywordAnalysis", "formattingFeedback", "missingSkills".
   - "score": A number from 0 to 100.
   - "keywordAnalysis": A string analyzing keyword match.
   - "formattingFeedback": A string providing feedback on formatting.
