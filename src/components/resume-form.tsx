@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
-import { BrainCircuit, Brush, GraduationCap, Info, Loader2, Plus, Trash2, User, Wand2, Briefcase, Star, KeyRound, Power, PowerOff } from 'lucide-react';
+import { BrainCircuit, Brush, GraduationCap, Info, Loader2, Plus, Trash2, User, Wand2, Briefcase, Star, KeyRound, Power, PowerOff, FileText } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { generateCoverLetterAction, improveContentAction, validateApiKeyAction } from '@/app/actions';
 import { useState, useTransition } from 'react';
@@ -252,7 +252,7 @@ export function ResumeForm() {
 
           <AccordionItem value="ai-tools">
              <AccordionTrigger><BrainCircuit className="mr-3 text-primary" /> AI Tools</AccordionTrigger>
-             <AccordionContent className="space-y-8">
+             <AccordionContent>
                 <div>
                    <div className="flex items-center justify-between mb-4">
                      <h3 className="font-semibold flex items-center gap-2"><KeyRound/> API Configuration</h3>
@@ -307,29 +307,29 @@ export function ResumeForm() {
                        )} />
                    </div>
                 </div>
-                
-                <Separator className="my-6" />
-
-                <div>
-                  <h3 className="font-semibold mb-2">AI Cover Letter Generator</h3>
-                   <div className="space-y-4">
-                      <FormField control={form.control} name="jobDescription" render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Job Description</FormLabel>
-                          <FormDescription>Paste the job description here to generate a tailored cover letter and check your ATS score.</FormDescription>
-                          <FormControl><Textarea rows={8} {...field} /></FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )} />
-                      <div className="flex flex-wrap gap-2">
-                        <Button type="button" onClick={handleGenerateCoverLetter} disabled={isGenerating || !aiPowered}>
-                          {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
-                          Generate Cover Letter
-                        </Button>
-                      </div>
-                    </div>
-                </div>
              </AccordionContent>
+          </AccordionItem>
+
+          <AccordionItem value="cover-letter">
+            <AccordionTrigger><FileText className="mr-3 text-primary" /> AI Cover Letter Generator</AccordionTrigger>
+            <AccordionContent>
+              <div className="space-y-4">
+                <FormField control={form.control} name="jobDescription" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Job Description</FormLabel>
+                    <FormDescription>Paste the job description here to generate a tailored cover letter and check your ATS score.</FormDescription>
+                    <FormControl><Textarea rows={8} {...field} /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+                <div className="flex flex-wrap gap-2">
+                  <Button type="button" onClick={handleGenerateCoverLetter} disabled={isGenerating || !aiPowered}>
+                    {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
+                    Generate Cover Letter
+                  </Button>
+                </div>
+              </div>
+            </AccordionContent>
           </AccordionItem>
 
         </Accordion>
