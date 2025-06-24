@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
-import { Bot, Brush, GraduationCap, Info, Loader2, Plus, Trash2, User, Wand2, Briefcase, Star, KeyRound, Power, PowerOff, FileText } from 'lucide-react';
+import { Bot, Brush, GraduationCap, Info, Loader2, Plus, Trash2, User, Wand2, Briefcase, Star, KeyRound, Power, PowerOff, FileText, HelpCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { generateCoverLetterAction, improveContentAction, validateApiKeyAction } from '@/app/actions';
 import { useState, useTransition } from 'react';
@@ -19,6 +19,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from './ui/label';
 import { Separator } from './ui/separator';
 import { cn } from '@/lib/utils';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 const fontColors = [
   { value: '#111827', name: 'Dark Gray' },
@@ -51,6 +52,57 @@ export function ResumeForm() {
   const [newSkill, setNewSkill] = useState('');
 
   const aiPowered = form.watch('aiPowered');
+  const aiProvider = form.watch('aiConfig.provider');
+
+  const getApiKeyHelpText = (provider: 'google' | 'openai' | 'openrouter') => {
+    switch (provider) {
+      case 'google':
+        return (
+          <div>
+            <p>Get your Google AI API key from Google AI Studio.</p>
+            <a
+              href="https://aistudio.google.com/app/apikey"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary underline"
+            >
+              Go to Google AI Studio
+            </a>
+          </div>
+        );
+      case 'openai':
+        return (
+          <div>
+            <p>Get your OpenAI API key from your OpenAI dashboard.</p>
+            <a
+              href="https://platform.openai.com/api-keys"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary underline"
+            >
+              Go to OpenAI Dashboard
+            </a>
+          </div>
+        );
+      case 'openrouter':
+        return (
+          <div>
+            <p>Get your OpenRouter API key from your account settings.</p>
+            <a
+              href="https://openrouter.ai/keys"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary underline"
+            >
+              Go to OpenRouter Keys
+            </a>
+          </div>
+        );
+      default:
+        return <p>Select a provider to see help.</p>;
+    }
+  };
+
 
   const handlePowerToggle = () => {
     if (aiPowered) {
@@ -176,7 +228,21 @@ export function ResumeForm() {
                         )} />
                        <FormField control={form.control} name="aiConfig.apiKey" render={({ field }) => (
                          <FormItem>
-                           <FormLabel>API Key</FormLabel>
+                           <div className="flex items-center gap-2">
+                            <FormLabel>API Key</FormLabel>
+                            <TooltipProvider>
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <button type="button" aria-label="API key help" className="cursor-help">
+                                        <HelpCircle className="h-4 w-4 text-muted-foreground hover:text-foreground" />
+                                      </button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                        {getApiKeyHelpText(aiProvider)}
+                                    </TooltipContent>
+                                </Tooltip>
+                            </TooltipProvider>
+                           </div>
                            <FormControl><Input type="password" placeholder="Enter your API key" {...field} disabled={aiPowered} /></FormControl>
                            <FormMessage />
                          </FormItem>
