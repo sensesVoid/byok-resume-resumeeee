@@ -6,7 +6,6 @@ import {
   Upload,
   ScanSearch,
   ChevronDown,
-  Heart,
   HelpCircle,
   Gift,
 } from 'lucide-react';
@@ -31,7 +30,6 @@ interface AppHeaderProps {
   isDownloading: boolean;
   isDonationEnabled: boolean;
   onAboutClick: () => void;
-  onMonetizationClick: () => void;
   onDonateClick: () => void;
 }
 
@@ -47,7 +45,6 @@ export function AppHeader({
   isDownloading,
   isDonationEnabled,
   onAboutClick,
-  onMonetizationClick,
   onDonateClick,
 }: AppHeaderProps) {
   return (
@@ -65,12 +62,6 @@ export function AppHeader({
         >
           <HelpCircle className="h-5 w-5" />
         </Button>
-        {isDonationEnabled && (
-          <Button onClick={onDonateClick} variant="outline">
-            <Heart className="mr-2 h-4 w-4 text-pink-500" />
-            <span className="hidden sm:inline">Donate</span>
-          </Button>
-        )}
         {isAiPowered && (
           <Button
             onClick={onUploadClick}
@@ -136,14 +127,16 @@ export function AppHeader({
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <Button
-          onClick={onMonetizationClick}
-          variant="outline"
-          disabled={isDownloading || isUploading || isCalculatingAts}
-        >
-          <Gift />
-          <span className="ml-2 hidden sm:inline">Monetization</span>
-        </Button>
+        {isDonationEnabled && (
+          <Button
+            onClick={onDonateClick}
+            variant="outline"
+            disabled={isDownloading || isUploading || isCalculatingAts}
+          >
+            <Gift className="mr-2 h-4 w-4" />
+            <span className="ml-2 hidden sm:inline">Donate</span>
+          </Button>
+        )}
       </div>
     </header>
   );

@@ -35,7 +35,6 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { AboutModal } from '@/components/about-modal';
-import { MonetizationSettingsModal } from '@/components/monetization-settings-modal';
 import { DonationModal } from './donation-modal';
 
 // Set worker source for pdfjs-dist
@@ -63,7 +62,6 @@ export function ResumeBuilder() {
     useState<CalculateAtsScoreOutput | null>(null);
   const [isAtsModalOpen, setIsAtsModalOpen] = useState(false);
   const [isAboutModalOpen, setIsAboutModalOpen] = useState(false);
-  const [isMonetizationModalOpen, setIsMonetizationModalOpen] = useState(false);
   const [isDonationModalOpen, setIsDonationModalOpen] = useState(false);
   const [atsCheckType, setAtsCheckType] = useState<'resume' | 'cover-letter'>(
     'resume'
@@ -471,7 +469,6 @@ export function ResumeBuilder() {
           isDownloading={isDownloading}
           isDonationEnabled={isDonationEnabled}
           onAboutClick={() => setIsAboutModalOpen(true)}
-          onMonetizationClick={() => setIsMonetizationModalOpen(true)}
           onDonateClick={() => setIsDonationModalOpen(true)}
         />
         <main className="flex-1 overflow-hidden">
@@ -529,7 +526,6 @@ export function ResumeBuilder() {
       </Dialog>
       
       <AboutModal isOpen={isAboutModalOpen} onOpenChange={setIsAboutModalOpen} />
-      <MonetizationSettingsModal isOpen={isMonetizationModalOpen} onOpenChange={setIsMonetizationModalOpen} />
       <DonationModal isOpen={isDonationModalOpen} onOpenChange={setIsDonationModalOpen} />
     </FormProvider>
   );
