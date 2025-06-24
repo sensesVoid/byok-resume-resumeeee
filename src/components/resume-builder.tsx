@@ -36,6 +36,7 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { AboutModal } from '@/components/about-modal';
 import { DonationModal } from './donation-modal';
+import { AppFooter } from './app-footer';
 
 // Set worker source for pdfjs-dist
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.mjs`;
@@ -503,6 +504,7 @@ export function ResumeBuilder() {
             </div>
           )}
         </main>
+        <AppFooter />
       </div>
 
       <Dialog open={isAtsModalOpen} onOpenChange={setIsAtsModalOpen}>
