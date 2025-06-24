@@ -157,8 +157,8 @@ export const defaultResumeData: ResumeSchema = {
   aiPowered: false,
   donationConfig: {
     paypal: {
-        enabled: false,
-        username: ''
+        enabled: true,
+        username: 'gehpogi'
     },
     maya: {
         enabled: false,
