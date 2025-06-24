@@ -11,9 +11,9 @@ export function AppFooter() {
             <span className="font-semibold">Resumeeee</span>
         </div>
         <p>© {new Date().getFullYear()} Resumeeee. All Rights Reserved.</p>
-        <p>
-            An AI-powered open source project.
-        </p>
+        <a href="https://geraldaton.xyz" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
+            Contact the Developer
+        </a>
       </div>
     </footer>
   );
