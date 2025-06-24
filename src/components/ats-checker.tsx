@@ -13,7 +13,11 @@ import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 
-export function AtsChecker() {
+interface AtsCheckerProps {
+  isAiPowered: boolean;
+}
+
+export function AtsChecker({ isAiPowered }: AtsCheckerProps) {
   const { getValues } = useFormContext<ResumeSchema>();
   const { toast } = useToast();
   const [isPending, startTransition] = useTransition();
@@ -81,7 +85,7 @@ export function AtsChecker() {
       <p className="text-sm text-muted-foreground">
         Analyze your resume against a job description to see how well it matches and get suggestions for improvement.
       </p>
-      <Button onClick={handleCalculateAtsScore} disabled={isPending}>
+      <Button onClick={handleCalculateAtsScore} disabled={isPending || !isAiPowered}>
         {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ScanSearch className="mr-2 h-4 w-4" />}
         Calculate ATS Score
       </Button>

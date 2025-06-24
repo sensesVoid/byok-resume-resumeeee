@@ -1,15 +1,15 @@
 'use client';
 
 import { useFormContext, useFieldArray } from 'react-hook-form';
-import { type ResumeSchema, type AiConfig } from '@/lib/schemas';
+import { type ResumeSchema } from '@/lib/schemas';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
-import { BrainCircuit, Brush, GraduationCap, Info, Loader2, Plus, Trash2, User, Wand2, Briefcase, Star, KeyRound } from 'lucide-react';
+import { BrainCircuit, Brush, GraduationCap, Info, Loader2, Plus, Trash2, User, Wand2, Briefcase, Star, KeyRound, Power, PowerOff } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { generateCoverLetterAction, improveContentAction } from '@/app/actions';
+import { generateCoverLetterAction, improveContentAction, validateApiKeyAction } from '@/app/actions';
 import { useState, useTransition } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { ScrollArea } from './ui/scroll-area';
@@ -19,6 +19,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { AtsChecker } from '@/components/ats-checker';
 import { Label } from './ui/label';
 import { Separator } from './ui/separator';
+import { cn } from '@/lib/utils';
 
 const fontColors = [
   { value: '#111827', name: 'Dark Gray' },
@@ -37,8 +38,10 @@ const fontStyles = [
 export function ResumeForm() {
   const form = useFormContext<ResumeSchema>();
   const { toast } = useToast();
-  const [isPending, startTransition] = useTransition();
+  const [isGenerating, startGeneratingTransition] = useTransition();
   const [isImproving, startImprovingTransition] = useTransition();
+  const [isValidating, startValidationTransition] = useTransition();
+
   const [suggestion, setSuggestion] = useState<string>('');
   const [isSuggestionModalOpen, setIsSuggestionModalOpen] = useState(false);
   const [fieldToUpdate, setFieldToUpdate] = useState<any>(null);
@@ -48,8 +51,28 @@ export function ResumeForm() {
   const { fields: skillFields, append: appendSkill, remove: removeSkill } = useFieldArray({ control: form.control, name: 'skills' });
   const [newSkill, setNewSkill] = useState('');
 
+  const aiPowered = form.watch('aiPowered');
+
+  const handlePowerToggle = () => {
+    if (aiPowered) {
+      form.setValue('aiPowered', false);
+      toast({ title: 'AI Disabled', description: 'AI features have been turned off.' });
+    } else {
+      startValidationTransition(async () => {
+        const { aiConfig } = form.getValues();
+        const result = await validateApiKeyAction(aiConfig);
+        if (result.isValid) {
+          form.setValue('aiPowered', true);
+          toast({ title: 'AI Enabled!', description: 'Your API key is valid. AI features are now active.' });
+        } else {
+          toast({ variant: 'destructive', title: 'API Key Validation Failed', description: result.error || 'Please check your API key and try again.' });
+        }
+      });
+    }
+  };
+
   const handleGenerateCoverLetter = () => {
-    startTransition(async () => {
+    startGeneratingTransition(async () => {
       const { personalInfo, experience, education, skills, summary, jobDescription, aiConfig } = form.getValues();
       const resume = `
         Name: ${personalInfo.name}
@@ -152,7 +175,7 @@ export function ResumeForm() {
                 <FormItem>
                   <FormControl><Textarea rows={5} {...field} /></FormControl><FormMessage />
                   <div className="mt-2 flex flex-wrap gap-2">
-                    <Button type="button" size="sm" variant="outline" onClick={() => handleImproveContent('summary', field.value || '')} disabled={isImproving}>{isImproving && fieldToUpdate === 'summary' ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />} Improve with AI</Button>
+                    <Button type="button" size="sm" variant="outline" onClick={() => handleImproveContent('summary', field.value || '')} disabled={isImproving || !aiPowered}>{isImproving && fieldToUpdate === 'summary' ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />} Improve with AI</Button>
                   </div>
                 </FormItem>
               )} />
@@ -175,7 +198,7 @@ export function ResumeForm() {
                     <FormField control={form.control} name={`experience.${index}.description`} render={({ field: descField }) => (
                       <FormItem>
                         <FormLabel>Description</FormLabel><FormControl><Textarea rows={5} {...descField} /></FormControl><FormMessage />
-                        <div className="mt-2 flex flex-wrap gap-2"><Button type="button" size="sm" variant="outline" onClick={() => handleImproveContent(`experience.${index}.description`, descField.value || '')} disabled={isImproving}>{isImproving && fieldToUpdate === `experience.${index}.description` ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />} Improve with AI</Button></div>
+                        <div className="mt-2 flex flex-wrap gap-2"><Button type="button" size="sm" variant="outline" onClick={() => handleImproveContent(`experience.${index}.description`, descField.value || '')} disabled={isImproving || !aiPowered}>{isImproving && fieldToUpdate === `experience.${index}.description` ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />} Improve with AI</Button></div>
                       </FormItem>
                     )} />
                     <Button type="button" variant="ghost" size="icon" className="absolute top-2 right-2 text-muted-foreground hover:text-destructive" onClick={() => removeExperience(index)}><Trash2 className="h-4 w-4" /></Button>
@@ -231,13 +254,27 @@ export function ResumeForm() {
              <AccordionTrigger><BrainCircuit className="mr-3 text-primary" /> AI Tools</AccordionTrigger>
              <AccordionContent className="space-y-8">
                 <div>
-                   <h3 className="font-semibold flex items-center gap-2 mb-2"><KeyRound/> API Configuration</h3>
-                   <p className="text-sm text-muted-foreground mb-4">Provide your API key to use the AI features. The key is sent with each request and not stored on any server.</p>
+                   <div className="flex items-center justify-between mb-4">
+                     <h3 className="font-semibold flex items-center gap-2"><KeyRound/> API Configuration</h3>
+                     <Button
+                        size="icon"
+                        onClick={handlePowerToggle}
+                        disabled={isValidating}
+                        className={cn('transition-all',
+                            aiPowered
+                            ? 'bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 bg-[length:200%_200%] text-white shadow-lg shadow-primary/50 animate-flow-glow'
+                            : 'bg-destructive hover:bg-destructive/90 text-destructive-foreground'
+                        )}
+                      >
+                       {isValidating ? <Loader2 className="animate-spin" /> : aiPowered ? <Power /> : <PowerOff />}
+                     </Button>
+                   </div>
+                   <p className="text-sm text-muted-foreground mb-4">Provide your API key, then click the power button to validate it and enable AI features.</p>
                    <div className="space-y-4">
                         <FormField control={form.control} name="aiConfig.provider" render={({ field }) => (
                             <FormItem>
                                 <FormLabel>AI Provider</FormLabel>
-                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <Select onValueChange={field.onChange} defaultValue={field.value} disabled={aiPowered}>
                                     <FormControl>
                                         <SelectTrigger>
                                             <SelectValue placeholder="Select a provider" />
@@ -256,14 +293,14 @@ export function ResumeForm() {
                        <FormField control={form.control} name="aiConfig.apiKey" render={({ field }) => (
                          <FormItem>
                            <FormLabel>API Key</FormLabel>
-                           <FormControl><Input type="password" placeholder="Enter your API key" {...field} /></FormControl>
+                           <FormControl><Input type="password" placeholder="Enter your API key" {...field} disabled={aiPowered} /></FormControl>
                            <FormMessage />
                          </FormItem>
                        )} />
                        <FormField control={form.control} name="aiConfig.model" render={({ field }) => (
                          <FormItem>
                            <FormLabel>Model Name (Optional)</FormLabel>
-                           <FormControl><Input placeholder="e.g., gemini-1.5-flash-latest" {...field} /></FormControl>
+                           <FormControl><Input placeholder="e.g., gemini-1.5-flash-latest" {...field} disabled={aiPowered}/></FormControl>
                            <FormDescription>If left blank, a default model will be used.</FormDescription>
                            <FormMessage />
                          </FormItem>
@@ -273,7 +310,7 @@ export function ResumeForm() {
                 <Separator className="my-6" />
                 <div>
                   <h3 className="font-semibold mb-2">ATS Score Checker</h3>
-                  <AtsChecker />
+                  <AtsChecker isAiPowered={aiPowered} />
                 </div>
                 <Separator className="my-6" />
                 <div>
@@ -288,8 +325,8 @@ export function ResumeForm() {
                         </FormItem>
                       )} />
                       <div className="flex flex-wrap gap-2">
-                        <Button type="button" onClick={handleGenerateCoverLetter} disabled={isPending}>
-                          {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
+                        <Button type="button" onClick={handleGenerateCoverLetter} disabled={isGenerating || !aiPowered}>
+                          {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
                           Generate Cover Letter
                         </Button>
                       </div>

@@ -20,6 +20,12 @@ import {
   type ParseResumeInput,
   type ParseResumeOutput,
 } from '@/ai/flows/parse-resume';
+import {
+  validateApiKey,
+  type ValidateApiKeyOutput,
+} from '@/ai/flows/validate-api-key';
+import type { AiConfig } from '@/lib/schemas';
+
 
 export async function calculateAtsScoreAction(
   input: CalculateAtsScoreInput
@@ -64,5 +70,16 @@ export async function parseResumeAction(
     throw new Error(
       'Failed to parse resume. Please check the file and try again.'
     );
+  }
+}
+
+export async function validateApiKeyAction(
+  aiConfig: AiConfig
+): Promise<ValidateApiKeyOutput> {
+  try {
+    return await validateApiKey(aiConfig);
+  } catch (error) {
+    console.error('Error validating API key:', error);
+    throw new Error('An unexpected error occurred during API key validation.');
   }
 }

@@ -46,6 +46,7 @@ export const resumeSchema = z.object({
   jobDescription: z.string().optional(),
   coverLetter: z.string().optional(),
   aiConfig: aiConfigSchema,
+  aiPowered: z.boolean().default(false),
 });
 
 export type ResumeSchema = z.infer<typeof resumeSchema>;
@@ -99,4 +100,5 @@ export const defaultResumeData: ResumeSchema = {
     apiKey: '',
     model: 'gemini-1.5-flash-latest',
   },
+  aiPowered: false,
 };
