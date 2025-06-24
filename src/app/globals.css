@@ -101,10 +101,23 @@ body {
 
 /* Styles for DIY Template */
 @layer components {
-  .inline-edit-input {
-    @apply w-full bg-transparent border-none p-0 focus:outline-none focus:ring-0 focus:bg-muted/50 rounded-sm;
-  }
+  .inline-edit-input,
   .inline-edit-textarea {
-    @apply w-full bg-transparent border-none p-0 focus:outline-none focus:ring-0 focus:bg-muted/50 rounded-sm resize-none overflow-hidden;
+    @apply w-full h-auto bg-transparent border-none p-0 m-0 focus:outline-none focus:ring-0 resize-none overflow-hidden;
+    font: inherit;
+    letter-spacing: inherit;
+    text-align: inherit;
+    color: inherit;
+  }
+  .inline-edit-input::placeholder,
+  .inline-edit-textarea::placeholder {
+    @apply text-muted-foreground/70 opacity-75;
+  }
+
+  .inline-edit-input:hover,
+  .inline-edit-textarea:hover,
+  .inline-edit-input:focus,
+  .inline-edit-textarea:focus {
+    @apply bg-primary/10 rounded-sm;
   }
 }

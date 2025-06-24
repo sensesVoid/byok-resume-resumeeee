@@ -15,7 +15,6 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
@@ -32,31 +31,37 @@ const EditableField = ({
   as?: 'input' | 'textarea';
 }) => {
   const { control } = useFormContext();
-  const Component = as === 'textarea' ? Textarea : Input;
 
   return (
     <Controller
       name={name}
       control={control}
-      render={({ field }) => (
-        <Component
-          placeholder={placeholder}
-          className={cn(
-            as === 'textarea' ? 'inline-edit-textarea' : 'inline-edit-input',
-            className
-          )}
-          {...field}
-          onInput={
-            as === 'textarea'
-              ? (e) => {
-                  const target = e.target as HTMLTextAreaElement;
-                  target.style.height = 'auto';
-                  target.style.height = `${target.scrollHeight}px`;
-                }
-              : undefined
-          }
-        />
-      )}
+      render={({ field }) => {
+        if (as === 'textarea') {
+          return (
+            <textarea
+              placeholder={placeholder}
+              className={cn('inline-edit-textarea', className)}
+              {...field}
+              rows={1}
+              onInput={(e) => {
+                const target = e.target as HTMLTextAreaElement;
+                // Important: Update form state before calculating height
+                field.onChange(e);
+                target.style.height = 'auto';
+                target.style.height = `${target.scrollHeight}px`;
+              }}
+            />
+          );
+        }
+        return (
+          <input
+            placeholder={placeholder}
+            className={cn('inline-edit-input', className)}
+            {...field}
+          />
+        );
+      }}
     />
   );
 };
@@ -93,23 +98,22 @@ export function DiyTemplate({ data }: { data: ResumeSchema }) {
         <EditableField
           name="personalInfo.name"
           placeholder="Your Name"
-          className="text-4xl font-bold tracking-tight text-center p-1 -m-1"
+          className="text-4xl font-bold tracking-tight text-center"
         />
         <div className="mt-2 flex flex-wrap justify-center gap-x-4 gap-y-1 text-sm text-gray-500">
           <span className="inline-flex items-center gap-1.5">
             <AtSign size={14} />
-            <EditableField name="personalInfo.email" placeholder="Email" className="text-sm" />
+            <EditableField name="personalInfo.email" placeholder="Email" />
           </span>
           <span className="inline-flex items-center gap-1.5">
             <Phone size={14} />
-            <EditableField name="personalInfo.phone" placeholder="Phone" className="text-sm" />
+            <EditableField name="personalInfo.phone" placeholder="Phone" />
           </span>
           <span className="inline-flex items-center gap-1.5">
             <Globe size={14} />
             <EditableField
               name="personalInfo.website"
               placeholder="Website"
-              className="text-sm"
             />
           </span>
           <span className="inline-flex items-center gap-1.5">
@@ -117,7 +121,6 @@ export function DiyTemplate({ data }: { data: ResumeSchema }) {
             <EditableField
               name="personalInfo.location"
               placeholder="Location"
-              className="text-sm"
             />
           </span>
         </div>
@@ -160,14 +163,15 @@ export function DiyTemplate({ data }: { data: ResumeSchema }) {
                     <EditableField
                       name={`experience.${index}.startDate`}
                       placeholder="Start"
-                      className="w-24 text-right text-sm"
+                      className="w-24 text-right"
                     />
                     <span>-</span>
                     <EditableField
                       name={`experience.${index}.endDate`}
                       placeholder="End"
-                      className="w-24 text-sm"
+                      className="w-24"
                     />
+
                   </div>
                 </div>
                 <div className="flex items-baseline justify-between text-md font-medium text-gray-600">
