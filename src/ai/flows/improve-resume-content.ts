@@ -1,18 +1,8 @@
 'use server';
 
-/**
- * @fileOverview This file defines a Genkit flow for improving resume content using AI suggestions.
- *
- * The flow takes resume content as input and returns AI-powered suggestions for improvement.
- * - improveResumeContent - A function that handles the resume content improvement process.
- * - ImproveResumeContentInput - The input type for the improveResumeContent function.
- * - ImproveResumeContentOutput - The return type for the improveResumeContent function.
- */
-
-import {ai} from '@/ai/genkit';
-import {aiConfigSchema} from '@/lib/schemas';
-import {z} from 'genkit';
-import { getModel } from '@/ai/model-factory';
+import { aiConfigSchema } from '@/lib/schemas';
+import { z } from 'zod';
+import { callApi } from '@/ai/api-caller';
 
 const ImproveResumeContentInputSchema = z.object({
   content: z
@@ -39,45 +29,36 @@ export type ImproveResumeContentOutput = z.infer<
   typeof ImproveResumeContentOutputSchema
 >;
 
+
+function buildPrompt(content: string, jobDescription?: string): string {
+  const basePrompt = `You are an AI resume expert. Provide suggestions to improve the following resume content.
+
+Content: ${content}`;
+
+  const jobDescPrompt = jobDescription
+    ? `\n\nTailor the suggestions to this job description:\n${jobDescription}`
+    : '';
+  
+  const formatInstruction = `\n\nProvide a response as a single, valid JSON object with one key: "suggestions". The value should be the full text of your suggestions as a single string, using markdown for formatting (like bullet points).
+Do not include any other text or explanations before or after the JSON object.`;
+
+  return basePrompt + jobDescPrompt + formatInstruction;
+}
+
+
 export async function improveResumeContent(
   input: ImproveResumeContentInput
 ): Promise<ImproveResumeContentOutput> {
-  return improveResumeContentFlow(input);
-}
+  const prompt = buildPrompt(input.content, input.jobDescription);
 
-const basePromptText = `You are an AI resume expert. Provide suggestions to improve the following resume content:
-
-Content: {{{content}}}`;
-
-const jobDescriptionPromptText = `
-Job Description: {{{jobDescription}}}
-
-Tailor the suggestions to this job description.`;
-
-const improveResumeContentFlow = ai.defineFlow(
-  {
-    name: 'improveResumeContentFlow',
-    inputSchema: ImproveResumeContentInputSchema,
-    outputSchema: ImproveResumeContentOutputSchema,
-  },
-  async input => {
-    const model = getModel(input.aiConfig);
-
-    let prompt = basePromptText.replace('{{{content}}}', input.content);
-    if (input.jobDescription) {
-      prompt += jobDescriptionPromptText.replace(
-        '{{{jobDescription}}}',
-        input.jobDescription
-      );
-    }
-    prompt += '\n\nSuggestions:';
-
-    const {output} = await ai.generate({
-      model,
-      prompt,
-      output: {schema: ImproveResumeContentOutputSchema},
-    });
-
-    return output!;
+  try {
+    // The callApi function now directly returns the JSON string from the AI
+    const responseJsonString = await callApi({ prompt, aiConfig: input.aiConfig });
+    // We just need to parse it
+    const parsedJson = JSON.parse(responseJsonString);
+    return ImproveResumeContentOutputSchema.parse(parsedJson);
+  } catch (error: any) {
+    console.error('Failed to get or parse content suggestions:', error);
+    throw new Error(error.message || 'The AI returned an invalid response for content suggestions.');
   }
-);
+}

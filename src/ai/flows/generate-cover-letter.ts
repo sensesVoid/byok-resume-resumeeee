@@ -1,17 +1,8 @@
 'use server';
 
-/**
- * @fileOverview Generates a cover letter based on a resume and job description.
- *
- * - generateCoverLetter - A function that generates a cover letter.
- * - GenerateCoverLetterInput - The input type for the generateCoverLetter function.
- * - GenerateCoverLetterOutput - The return type for the generateCoverLetter function.
- */
-
-import {ai} from '@/ai/genkit';
-import {aiConfigSchema} from '@/lib/schemas';
-import {z} from 'genkit';
-import { getModel } from '@/ai/model-factory';
+import { aiConfigSchema } from '@/lib/schemas';
+import { z } from 'zod';
+import { callApi } from '@/ai/api-caller';
 
 const GenerateCoverLetterInputSchema = z.object({
   resume: z.string().describe('The resume of the user.'),
@@ -32,13 +23,8 @@ export type GenerateCoverLetterOutput = z.infer<
   typeof GenerateCoverLetterOutputSchema
 >;
 
-export async function generateCoverLetter(
-  input: GenerateCoverLetterInput
-): Promise<GenerateCoverLetterOutput> {
-  return generateCoverLetterFlow(input);
-}
-
-const promptText = `You are an expert career advisor.
+function buildPrompt(resume: string, jobDescription: string, userName: string): string {
+  return `You are an expert career advisor.
 
   Based on the user's resume and the job description, generate a cover letter for the user.
   The cover letter should be tailored to the job description and highlight the user's relevant skills and experience.
@@ -46,32 +32,26 @@ const promptText = `You are an expert career advisor.
   The cover letter should be addressed to the hiring manager or the company.
   The cover letter should include a call to action.
 
-  Resume: {{{resume}}}
-  Job Description: {{{jobDescription}}}
-  User Name: {{{userName}}}
+  Resume: ${resume}
+  Job Description: ${jobDescription}
+  User Name: ${userName}
 
-  Cover Letter:`;
+  Provide a response as a single, valid JSON object with one key: "coverLetter". The value should be the full text of the generated cover letter as a single string.
+  Do not include any other text, markdown, or explanations before or after the JSON object.`;
+}
 
-const generateCoverLetterFlow = ai.defineFlow(
-  {
-    name: 'generateCoverLetterFlow',
-    inputSchema: GenerateCoverLetterInputSchema,
-    outputSchema: GenerateCoverLetterOutputSchema,
-  },
-  async input => {
-    const model = getModel(input.aiConfig);
 
-    const prompt = promptText
-      .replace('{{{resume}}}', input.resume)
-      .replace('{{{jobDescription}}}', input.jobDescription)
-      .replace('{{{userName}}}', input.userName);
+export async function generateCoverLetter(
+  input: GenerateCoverLetterInput
+): Promise<GenerateCoverLetterOutput> {
+  const prompt = buildPrompt(input.resume, input.jobDescription, input.userName);
 
-    const {output} = await ai.generate({
-      model,
-      prompt,
-      output: {schema: GenerateCoverLetterOutputSchema},
-    });
-
-    return output!;
+  try {
+    const responseJsonString = await callApi({ prompt, aiConfig: input.aiConfig });
+    const parsedJson = JSON.parse(responseJsonString);
+    return GenerateCoverLetterOutputSchema.parse(parsedJson);
+  } catch (error: any) {
+    console.error('Failed to generate or parse cover letter:', error);
+    throw new Error(error.message || 'The AI returned an invalid response for the cover letter.');
   }
-);
+}

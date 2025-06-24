@@ -1,18 +1,8 @@
 'use server';
 
-/**
- * @fileOverview This file defines a Genkit flow for calculating an ATS (Applicant Tracking System) score for a resume.
- *
- * The flow takes resume content and a job description as input and returns an ATS score and suggestions for improvement.
- * - calculateAtsScore - A function that handles the ATS score calculation process.
- * - CalculateAtsScoreInput - The input type for the calculateAtsScore function.
- * - CalculateAtsScoreOutput - The return type for the calculateAtsScore function.
- */
-
-import {ai} from '@/ai/genkit';
-import {aiConfigSchema} from '@/lib/schemas';
-import {z} from 'genkit';
-import { getModel } from '@/ai/model-factory';
+import { aiConfigSchema } from '@/lib/schemas';
+import { z } from 'zod';
+import { callApi } from '@/ai/api-caller';
 
 const CalculateAtsScoreInputSchema = z.object({
   resumeText: z.string().describe('The full text content of the resume.'),
@@ -55,45 +45,35 @@ export type CalculateAtsScoreOutput = z.infer<
   typeof CalculateAtsScoreOutputSchema
 >;
 
+function buildPrompt(resumeText: string, jobDescription: string): string {
+  return `You are an advanced Applicant Tracking System (ATS) simulator. Your task is to analyze the provided resume against the given job description and provide a detailed evaluation.
+
+  **Job Description:**
+  ${jobDescription}
+
+  **Resume Text:**
+  ${resumeText}
+  
+  Provide a response as a single, valid JSON object with the following keys: "score", "keywordAnalysis", "formattingFeedback", "missingSkills".
+  - "score": A number from 0 to 100.
+  - "keywordAnalysis": A string analyzing keyword match.
+  - "formattingFeedback": A string providing feedback on formatting.
+  - "missingSkills": An array of strings listing missing skills.
+  
+  Do not include any other text, markdown, or explanations before or after the JSON object.`;
+}
+
 export async function calculateAtsScore(
   input: CalculateAtsScoreInput
 ): Promise<CalculateAtsScoreOutput> {
-  return calculateAtsScoreFlow(input);
-}
-
-const promptText = `You are an advanced Applicant Tracking System (ATS) simulator. Your task is to analyze the provided resume against the given job description and provide a detailed evaluation.
-
-  **Instructions:**
-  1.  **Calculate Score:** Assign a score from 0 to 100 based on the relevance of the resume's content (experience, skills) to the job description. A higher score means a better match.
-  2.  **Keyword Analysis:** Provide a brief analysis of the resume's keyword usage. Mention if important keywords from the job description are present.
-  3.  **Formatting Feedback:** Comment on the resume's structure and clarity. Is it easy for an ATS to parse? Note any potential issues like complex tables or unconventional formatting.
-  4.  **Identify Missing Skills:** List the key skills, technologies, or qualifications mentioned in the job description that are absent from the resume.
-
-  **Job Description:**
-  {{{jobDescription}}}
-
-  **Resume Text:**
-  {{{resumeText}}}
-`;
-
-const calculateAtsScoreFlow = ai.defineFlow(
-  {
-    name: 'calculateAtsScoreFlow',
-    inputSchema: CalculateAtsScoreInputSchema,
-    outputSchema: CalculateAtsScoreOutputSchema,
-  },
-  async input => {
-    const model = getModel(input.aiConfig);
-
-    const prompt = promptText
-      .replace('{{{jobDescription}}}', input.jobDescription)
-      .replace('{{{resumeText}}}', input.resumeText);
-
-    const {output} = await ai.generate({
-      model,
-      prompt,
-      output: {schema: CalculateAtsScoreOutputSchema},
-    });
-    return output!;
+  const prompt = buildPrompt(input.resumeText, input.jobDescription);
+  
+  try {
+    const responseJsonString = await callApi({ prompt, aiConfig: input.aiConfig });
+    const parsedJson = JSON.parse(responseJsonString);
+    return CalculateAtsScoreOutputSchema.parse(parsedJson);
+  } catch (error: any) {
+    console.error('Failed to calculate or parse ATS score:', error);
+    throw new Error(error.message || 'The AI returned an invalid response for the ATS score.');
   }
-);
+}

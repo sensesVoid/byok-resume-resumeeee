@@ -1,16 +1,8 @@
 'use server';
-/**
- * @fileOverview Parses resume text into a structured JSON format.
- *
- * - parseResume - A function that parses resume text.
- * - ParseResumeInput - The input type for the parseResume function.
- * - ParseResumeOutput - The return type for the parseResume function.
- */
 
-import {ai} from '@/ai/genkit';
-import {aiConfigSchema} from '@/lib/schemas';
-import {z} from 'genkit';
-import { getModel } from '@/ai/model-factory';
+import { aiConfigSchema } from '@/lib/schemas';
+import { z } from 'zod';
+import { callApi } from '@/ai/api-caller';
 
 // Schemas for what the AI should output. These omit IDs.
 const ParsedPersonalInfoSchema = z.object({
@@ -61,35 +53,27 @@ const ParseResumeInputSchema = z.object({
 });
 export type ParseResumeInput = z.infer<typeof ParseResumeInputSchema>;
 
-export async function parseResume(input: ParseResumeInput): Promise<ParseResumeOutput> {
-  return parseResumeFlow(input);
-}
-
-const promptText = `You are an expert resume parser. Your task is to analyze the provided resume text and extract the information into a structured JSON format.
+function buildPrompt(resumeText: string): string {
+    return `You are an expert resume parser. Your task is to analyze the provided resume text and extract the information.
 
 Pay close attention to dates, job titles, company names, and educational degrees. For descriptions, capture the key responsibilities and achievements. For skills, list each skill individually.
 
 Resume Text:
-{{{resumeText}}}
-`;
+${resumeText}
 
-const parseResumeFlow = ai.defineFlow(
-  {
-    name: 'parseResumeFlow',
-    inputSchema: ParseResumeInputSchema,
-    outputSchema: ParseResumeOutputSchema,
-  },
-  async input => {
-    const model = getModel(input.aiConfig);
+Provide a response as a single, valid JSON object that conforms to the schema of the 'ParseResumeOutput' type, which includes keys for "personalInfo", "summary", "experience", "education", and "skills".
+Do not include any other text, markdown, or explanations before or after the JSON object.`;
+}
 
-    const prompt = promptText.replace('{{{resumeText}}}', input.resumeText);
+export async function parseResume(input: ParseResumeInput): Promise<ParseResumeOutput> {
+  const prompt = buildPrompt(input.resumeText);
 
-    const {output} = await ai.generate({
-      model,
-      prompt,
-      output: {schema: ParseResumeOutputSchema},
-    });
-
-    return output!;
+  try {
+    const responseJsonString = await callApi({ prompt, aiConfig: input.aiConfig });
+    const parsedJson = JSON.parse(responseJsonString);
+    return ParseResumeOutputSchema.parse(parsedJson);
+  } catch (error: any) {
+    console.error('Failed to parse resume JSON response:', error);
+    throw new Error(error.message || 'The AI returned an invalid response format while parsing the resume.');
   }
-);
+}
