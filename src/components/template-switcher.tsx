@@ -25,6 +25,18 @@ const templates = [
   { name: 'elegant', label: 'Elegant' },
   { name: 'geometric', label: 'Geometric' },
   { name: 'technical', label: 'Technical' },
+  { name: 'corporate', label: 'Corporate' },
+  { name: 'infographic', label: 'Infographic' },
+  { name: 'academic', label: 'Academic' },
+  { name: 'startup', label: 'Startup' },
+  { name: 'executive', label: 'Executive' },
+  { name: 'marketing', label: 'Marketing' },
+  { name: 'designer', label: 'Designer' },
+  { name: 'developer', label: 'Developer' },
+  { name: 'legal', label: 'Legal' },
+  { name: 'medical', label: 'Medical' },
+  { name: 'two-tone', label: 'Two-Tone' },
+  { name: 'compact', label: 'Compact' },
 ] as const;
 
 export function TemplateSwitcher() {

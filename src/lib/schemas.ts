@@ -61,6 +61,18 @@ export const resumeSchema = z.object({
       'elegant',
       'geometric',
       'technical',
+      'corporate',
+      'infographic',
+      'academic',
+      'startup',
+      'executive',
+      'marketing',
+      'designer',
+      'developer',
+      'legal',
+      'medical',
+      'two-tone',
+      'compact',
     ])
     .default('modern'),
   fontStyle: z

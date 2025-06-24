@@ -13,6 +13,18 @@ import { ProfessionalTemplate } from '@/components/templates/professional-templa
 import { ElegantTemplate } from '@/components/templates/elegant-template';
 import { GeometricTemplate } from '@/components/templates/geometric-template';
 import { TechnicalTemplate } from '@/components/templates/technical-template';
+import { CorporateTemplate } from './templates/corporate-template';
+import { InfographicTemplate } from './templates/infographic-template';
+import { AcademicTemplate } from './templates/academic-template';
+import { StartupTemplate } from './templates/startup-template';
+import { ExecutiveTemplate } from './templates/executive-template';
+import { MarketingTemplate } from './templates/marketing-template';
+import { DesignerTemplate } from './templates/designer-template';
+import { DeveloperTemplate } from './templates/developer-template';
+import { LegalTemplate } from './templates/legal-template';
+import { MedicalTemplate } from './templates/medical-template';
+import { TwoToneTemplate } from './templates/two-tone-template';
+import { CompactTemplate } from './templates/compact-template';
 
 const templates = {
   modern: ModernTemplate,
@@ -23,6 +35,18 @@ const templates = {
   elegant: ElegantTemplate,
   geometric: GeometricTemplate,
   technical: TechnicalTemplate,
+  corporate: CorporateTemplate,
+  infographic: InfographicTemplate,
+  academic: AcademicTemplate,
+  startup: StartupTemplate,
+  executive: ExecutiveTemplate,
+  marketing: MarketingTemplate,
+  designer: DesignerTemplate,
+  developer: DeveloperTemplate,
+  legal: LegalTemplate,
+  medical: MedicalTemplate,
+  'two-tone': TwoToneTemplate,
+  compact: CompactTemplate,
 };
 
 export function ResumePreview() {
