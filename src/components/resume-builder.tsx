@@ -479,13 +479,15 @@ export function ResumeBuilder() {
           {isDesktop ? (
             <PanelGroup direction="horizontal" className="h-full">
               <Panel defaultSize={50} minSize={40}>
-                <div className="h-full overflow-y-auto p-4 sm:p-8 print:hidden">
-                  <ResumeForm />
-                </div>
+                <ScrollArea className="h-full print:hidden">
+                  <div className="p-4 sm:p-8">
+                    <ResumeForm />
+                  </div>
+                </ScrollArea>
               </Panel>
               <PanelResizeHandle className="w-1 bg-primary/20 transition-colors hover:bg-primary/40 data-[resize-handle-state=drag]:bg-primary print:hidden" />
               <Panel defaultSize={50} minSize={30}>
-                <div className="h-full overflow-y-auto bg-muted/30 p-4 sm:p-8">
+                <div className="h-full bg-muted/30 p-4 sm:p-8">
                   <ResumePreview />
                 </div>
               </Panel>
