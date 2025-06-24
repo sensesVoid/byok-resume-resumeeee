@@ -70,21 +70,20 @@ const ParseResumeInputSchema = z.object({
 export type ParseResumeInput = z.infer<typeof ParseResumeInputSchema>;
 
 function buildPrompt(resumeText: string): string {
-    return `You are an expert resume parser. Your primary function is to analyze the provided resume text and extract the information into a structured JSON format. Your output MUST be a single, valid JSON object and nothing else. Adhere strictly to the schema described in the example.
+    return `Your task is to convert the following resume text into a single, valid JSON object.
+The JSON object must strictly match the structure shown in the example below.
 
-**CRITICAL INSTRUCTIONS:**
-- Parse the entire resume text.
-- For 'description' fields, use the newline character (\\n) for bullet points or line breaks.
-- If a section like 'certifications' or 'projects' is not found, return an empty array for that key (e.g., "projects": []).
-- For optional text fields like 'phone' or 'summary', if no information is found, you may omit the key from the JSON.
-- Do NOT include any explanations, markdown formatting, or any text outside of the main JSON object.
+**CRITICAL RULES:**
+1.  Your entire response MUST be ONLY the JSON object. Do not include any text before or after it, and do not use markdown formatting like \`\`\`json.
+2.  If an optional field is not present in the resume text (like 'phone', 'website', 'summary'), completely OMIT the key from the JSON. Do not include it with a null or empty value.
+3.  For array fields ('experience', 'education', 'skills', 'certifications', 'projects'), if the section is not found in the resume, you MUST use an empty array: [].
+4.  Inside 'description' fields, you MUST use the newline character (\\n) to represent line breaks or bullet points.
 
 **EXAMPLE JSON OUTPUT STRUCTURE:**
 {
   "personalInfo": {
     "name": "Jane Doe",
-    "email": "jane.doe@email.com",
-    "phone": "555-123-4567",
+    "email": "jane.doe@example.com",
     "location": "New York, NY"
   },
   "summary": "A brief professional summary.",
@@ -117,7 +116,7 @@ function buildPrompt(resumeText: string): string {
 ${resumeText}
 ---
 
-Now, provide ONLY the JSON object based on the resume text provided above.`;
+Now, provide ONLY the JSON object.`;
 }
 
 
