@@ -257,7 +257,7 @@ export function ResumeForm() {
           Place your ad here!
         </div>
 
-        <Accordion type="multiple" defaultValue={['ai-tools', 'design', 'personal', 'ats-tools']} className="w-full">
+        <Accordion type="multiple" defaultValue={['ai-tools', 'ats-tools', 'design', 'personal']} className="w-full">
           
           <AccordionItem value="ai-tools">
              <AccordionTrigger><h2 className="text-lg font-semibold flex items-center"><Bot className="mr-3 text-primary" /> Power your Agent</h2></AccordionTrigger>
@@ -337,6 +337,39 @@ export function ResumeForm() {
              </AccordionContent>
           </AccordionItem>
 
+          <AccordionItem value="ats-tools">
+            <AccordionTrigger><h2 className="text-lg font-semibold flex items-center"><ScanSearch className="mr-3 text-primary" /> ATS & Job Matching</h2></AccordionTrigger>
+            <AccordionContent>
+                <div className="space-y-4 pt-4">
+                <FormField control={form.control} name="jobDescription" render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>Job Description</FormLabel>
+                    <FormDescription>Paste the job description here to check your ATS score and generate a tailored cover letter.</FormDescription>
+                    <FormControl><Textarea rows={8} {...field} /></FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )} />
+                </div>
+            </AccordionContent>
+          </AccordionItem>
+
+          <AccordionItem value="cover-letter-generator">
+            <AccordionTrigger><h2 className="text-lg font-semibold flex items-center"><Mail className="mr-3 text-primary" /> AI Cover Letter Generator</h2></AccordionTrigger>
+            <AccordionContent>
+                <div className="space-y-4 pt-4">
+                <p className="text-sm text-muted-foreground">
+                    Make sure you've added a job description in the "ATS & Job Matching" section above before generating a cover letter.
+                </p>
+                <div className="flex flex-wrap gap-2">
+                    <Button type="button" onClick={handleGenerateCoverLetter} disabled={isGenerating || !aiPowered}>
+                    {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
+                    Generate Cover Letter
+                    </Button>
+                </div>
+                </div>
+            </AccordionContent>
+          </AccordionItem>
+          
           <AccordionItem value="design">
             <AccordionTrigger><h2 className="text-lg font-semibold flex items-center"><Brush className="mr-3 text-primary" /> Design & Style</h2></AccordionTrigger>
             <AccordionContent className="space-y-6 pt-4">
@@ -634,40 +667,6 @@ export function ResumeForm() {
               </div>
             </AccordionContent>
           </AccordionItem>
-
-          <AccordionItem value="ats-tools">
-            <AccordionTrigger><h2 className="text-lg font-semibold flex items-center"><ScanSearch className="mr-3 text-primary" /> ATS & Job Matching</h2></AccordionTrigger>
-            <AccordionContent>
-                <div className="space-y-4 pt-4">
-                <FormField control={form.control} name="jobDescription" render={({ field }) => (
-                    <FormItem>
-                    <FormLabel>Job Description</FormLabel>
-                    <FormDescription>Paste the job description here to check your ATS score and generate a tailored cover letter.</FormDescription>
-                    <FormControl><Textarea rows={8} {...field} /></FormControl>
-                    <FormMessage />
-                    </FormItem>
-                )} />
-                </div>
-            </AccordionContent>
-          </AccordionItem>
-
-          <AccordionItem value="cover-letter-generator">
-            <AccordionTrigger><h2 className="text-lg font-semibold flex items-center"><Mail className="mr-3 text-primary" /> AI Cover Letter Generator</h2></AccordionTrigger>
-            <AccordionContent>
-                <div className="space-y-4 pt-4">
-                <p className="text-sm text-muted-foreground">
-                    Make sure you've added a job description in the "ATS & Job Matching" section above before generating a cover letter.
-                </p>
-                <div className="flex flex-wrap gap-2">
-                    <Button type="button" onClick={handleGenerateCoverLetter} disabled={isGenerating || !aiPowered}>
-                    {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
-                    Generate Cover Letter
-                    </Button>
-                </div>
-                </div>
-            </AccordionContent>
-          </AccordionItem>
-
         </Accordion>
 
         <div className="my-4 flex h-24 items-center justify-center rounded-lg border border-dashed bg-muted/50 text-sm text-muted-foreground">
