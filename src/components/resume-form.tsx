@@ -340,9 +340,9 @@ export function ResumeForm() {
         <Dialog open={isSuggestionModalOpen} onOpenChange={setIsSuggestionModalOpen}>
             <DialogContent className="sm:max-w-[625px] bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl">
                 <DialogHeader>
-                    <DialogTitle>AI Content Suggestions</DialogTitle>
+                    <DialogTitle>AI-Improved Content</DialogTitle>
                     <DialogDescription>
-                        Here are some suggestions to improve your content. You can copy and paste them into the form.
+                        Here is the improved version of your content. You can use it to replace the original.
                     </DialogDescription>
                 </DialogHeader>
                 <ScrollArea className="max-h-[50vh] rounded-md border p-4 bg-background/50">
@@ -353,7 +353,7 @@ export function ResumeForm() {
                       form.setValue(fieldToUpdate, suggestion, { shouldValidate: true });
                       setIsSuggestionModalOpen(false);
                       toast({ title: "Success!", description: "Content has been updated with AI suggestion."});
-                    }}>Use This Suggestion</Button>
+                    }}>Use This Version</Button>
                     <Button variant="outline" onClick={handleDownloadSuggestion}>Download</Button>
                     <Button variant="secondary" onClick={() => setIsSuggestionModalOpen(false)}>Close</Button>
                 </DialogFooter>

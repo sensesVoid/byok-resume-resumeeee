@@ -22,7 +22,7 @@ export type ImproveResumeContentInput = z.infer<
 const ImproveResumeContentOutputSchema = z.object({
   suggestions: z
     .string()
-    .describe('AI-powered suggestions for improving the resume content.'),
+    .describe('The rewritten and improved resume content.'),
 });
 
 export type ImproveResumeContentOutput = z.infer<
@@ -31,16 +31,16 @@ export type ImproveResumeContentOutput = z.infer<
 
 
 function buildPrompt(content: string, jobDescription?: string): string {
-  const basePrompt = `You are an AI resume expert. Provide suggestions to improve the following resume content.
+  const basePrompt = `You are an expert resume writer. Your task is to rewrite and improve the provided resume content. Make it more professional, impactful, and concise. Use strong action verbs and quantify achievements where possible.
 
-Content: ${content}`;
+Original Content:
+${content}`;
 
   const jobDescPrompt = jobDescription
-    ? `\n\nTailor the suggestions to this job description:\n${jobDescription}`
+    ? `\n\nTailor the rewritten content to this job description:\n${jobDescription}`
     : '';
   
-  const formatInstruction = `\n\nProvide a response as a single, valid JSON object with one key: "suggestions". The value should be the full text of your suggestions as a single string, using markdown for formatting (like bullet points).
-Do not include any other text or explanations before or after the JSON object.`;
+  const formatInstruction = `\n\nProvide a response as a single, valid JSON object with one key: "suggestions". The value should be ONLY the rewritten, improved content as a single string. If the original content used bullet points (lines starting with '-'), maintain that format in your response. Do not add any extra explanations, introductory phrases like "Here is the revised version:", or markdown formatting unless it was in the original content.`;
 
   return basePrompt + jobDescPrompt + formatInstruction;
 }
