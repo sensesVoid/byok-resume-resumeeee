@@ -57,6 +57,7 @@ export const resumeSchema = z.object({
     .default('inter'),
   headingColor: z.string().default('#111827'),
   bodyColor: z.string().default('#374151'),
+  accentColor: z.string().default('#f3f4f6'),
   personalInfo: personalInfoSchema,
   summary: z.string().optional(),
   experience: z.array(experienceSchema),
@@ -80,6 +81,7 @@ export const defaultResumeData: ResumeSchema = {
   fontStyle: 'inter',
   headingColor: '#111827',
   bodyColor: '#374151',
+  accentColor: '#f3f4f6',
   personalInfo: {
     name: 'John Doe',
     email: 'john.doe@example.com',

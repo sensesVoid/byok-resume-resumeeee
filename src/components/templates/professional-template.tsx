@@ -42,6 +42,7 @@ export function ProfessionalTemplate({ data }: TemplateProps) {
     fontStyle,
     headingColor,
     bodyColor,
+    accentColor,
   } = data;
 
   const rootStyle = {
@@ -51,6 +52,10 @@ export function ProfessionalTemplate({ data }: TemplateProps) {
 
   const headingStyle = {
     color: headingColor || '#111827',
+  } as React.CSSProperties;
+
+  const sidebarStyle = {
+    backgroundColor: accentColor || '#f3f4f6',
   } as React.CSSProperties;
 
   const renderDescription = (text?: string) => {
@@ -80,7 +85,7 @@ export function ProfessionalTemplate({ data }: TemplateProps) {
       style={rootStyle}
     >
       {/* Left Column (Sidebar) */}
-      <div className="w-1/3 bg-gray-100 p-8 space-y-8">
+      <div className="w-1/3 p-8 space-y-8" style={sidebarStyle}>
         <div className="flex flex-col items-center text-center space-y-4">
             {personalInfo?.photo && (
                 <img src={personalInfo.photo} alt={personalInfo.name || ''} className="h-32 w-32 rounded-full object-cover border-4 border-white shadow-md" />
@@ -178,7 +183,7 @@ export function ProfessionalTemplate({ data }: TemplateProps) {
                   <div className="flex items-baseline justify-between">
                     <h3 className="text-lg font-semibold">{exp.jobTitle}</h3>
                     <div className="text-sm font-medium shrink-0 whitespace-nowrap" style={{color: bodyColor}}>
-                      {exp.startDate} - {exp.endDate || 'Present'}
+                      {exp.startDate}{exp.endDate ? ` - ${exp.endDate}` : ' - Present'}
                     </div>
                   </div>
                   <div className="flex items-baseline justify-between text-md font-medium">

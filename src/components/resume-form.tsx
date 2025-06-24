@@ -322,12 +322,11 @@ export function ResumeForm() {
               <TemplateSwitcher />
               <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                 <FormField control={form.control} name="fontStyle" render={({ field }) => (
-                  <FormItem>
+                  <FormItem className="sm:col-span-2">
                     <FormLabel>Font Family</FormLabel>
                     <Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a font" /></SelectTrigger></FormControl><SelectContent>{fontStyles.map(font => (<SelectItem key={font.value} value={font.value}>{font.label}</SelectItem>))}</SelectContent></Select><FormMessage />
                   </FormItem>
                 )} />
-                <div/>
                 <FormField control={form.control} name="headingColor" render={({ field }) => (
                   <FormItem>
                     <FormLabel>Heading Color</FormLabel>
@@ -357,6 +356,23 @@ export function ResumeForm() {
                             <div className="h-full w-full rounded-[inherit]" style={{ backgroundColor: field.value }}></div>
                         </div>
                     </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+                <FormField control={form.control} name="accentColor" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Accent Color</FormLabel>
+                    <FormControl>
+                        <div className="relative h-10 w-full rounded-md border border-input">
+                            <input
+                                type="color"
+                                {...field}
+                                className="absolute w-full h-full opacity-0 cursor-pointer"
+                            />
+                            <div className="h-full w-full rounded-[inherit]" style={{ backgroundColor: field.value }}></div>
+                        </div>
+                    </FormControl>
+                    <FormDescription>For sidebars or headers.</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )} />

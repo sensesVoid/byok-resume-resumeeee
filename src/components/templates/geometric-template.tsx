@@ -24,7 +24,7 @@ const fontClassMap: { [key: string]: string } = {
 }
 
 export function GeometricTemplate({ data }: TemplateProps) {
-    const { personalInfo, summary, experience, education, skills, fontStyle, headingColor, bodyColor } = data;
+    const { personalInfo, summary, experience, education, skills, fontStyle, headingColor, bodyColor, accentColor } = data;
 
     const rootStyle = {
       fontFamily: fontMap[fontStyle] || fontMap.inter,
@@ -33,6 +33,10 @@ export function GeometricTemplate({ data }: TemplateProps) {
 
     const headingStyle = {
       color: headingColor || '#111827',
+    } as React.CSSProperties;
+
+    const headerStyle = {
+      backgroundColor: accentColor || '#f9fafb', // Use accentColor for the header
     } as React.CSSProperties;
 
     const renderDescription = (text?: string) => {
@@ -53,7 +57,7 @@ export function GeometricTemplate({ data }: TemplateProps) {
 
     return (
         <div className={cn("p-8 bg-white", fontClassMap[fontStyle] || 'font-sans')} style={rootStyle}>
-            <header className="relative mb-8 text-left p-6 bg-gray-50">
+            <header className="relative mb-8 text-left p-6" style={headerStyle}>
                 <div className="absolute top-0 right-0 h-16 w-16 opacity-20" style={{ backgroundColor: headingColor || 'hsl(var(--primary))' }}></div>
                 <div className="relative z-10">
                     <h1 className="text-4xl font-extrabold tracking-tighter" style={headingStyle}>{personalInfo?.name || 'Your Name'}</h1>
@@ -84,7 +88,7 @@ export function GeometricTemplate({ data }: TemplateProps) {
                         <div key={exp.id}>
                         <div className="flex items-baseline justify-between">
                             <h3 className="text-lg font-semibold">{exp.jobTitle || 'Job Title'}</h3>
-                            <div className="text-sm font-medium text-gray-500 shrink-0 whitespace-nowrap">{exp.startDate} - {exp.endDate || 'Present'}</div>
+                            <div className="text-sm font-medium text-gray-500 shrink-0 whitespace-nowrap">{exp.startDate}{exp.endDate ? ` - ${exp.endDate}` : ' - Present'}</div>
                         </div>
                         <div className="flex items-baseline justify-between text-md font-medium text-gray-600">
                             <span>{exp.company || 'Company'}{exp.location ? `, ${exp.location}`: ''}</span>
