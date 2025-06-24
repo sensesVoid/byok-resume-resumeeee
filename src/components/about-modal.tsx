@@ -41,8 +41,8 @@ export function AboutModal({ isOpen, onOpenChange }: AboutModalProps) {
               </p>
               <p className="font-semibold text-destructive/90">
                 However, this means that if you clear your browser's cache or
-                site data, your resume information will be permanently deleted from
-                your machine.
+                site data, your resume information will be permanently deleted
+                from your machine.
               </p>
             </AccordionContent>
           </AccordionItem>
@@ -64,20 +64,57 @@ export function AboutModal({ isOpen, onOpenChange }: AboutModalProps) {
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value="item-3">
-            <AccordionTrigger>Is my API key secure?</AccordionTrigger>
+            <AccordionTrigger>Is my API key and data secure?</AccordionTrigger>
             <AccordionContent className="space-y-2 text-sm">
               <p>
-                Yes. Your API key is also stored in your browser's local
-                storage and is{' '}
+                Absolutely. Your API key and all your resume content are stored
+                exclusively in your browser's local storage. They are{' '}
                 <span className="font-bold">
-                  only sent directly from your browser to the AI provider you
-                  select
+                  never sent to or stored on our servers.
                 </span>{' '}
-                (e.g., Google, OpenAI).
+                When you use an AI feature, your browser sends the necessary
+                data directly to the AI provider you select (e.g., Google,
+                OpenAI).
               </p>
               <p>
-                It is never sent to or stored on our servers. It remains on
-                your machine and under your control.
+                Your information remains on your machine and under your
+                control.
+              </p>
+            </AccordionContent>
+          </AccordionItem>
+          <AccordionItem value="item-4">
+            <AccordionTrigger>
+              How does the ATS Score Checker work?
+            </AccordionTrigger>
+            <AccordionContent className="space-y-2 text-sm">
+              <p>
+                The ATS (Applicant Tracking System) Score Checker is an
+                AI-powered simulation. It analyzes your resume or cover letter
+                against the job description you provide, just like a real ATS
+                might.
+              </p>
+              <p>
+                It identifies matching keywords, assesses formatting from a
+                machine-readability standpoint, and finds skill gaps to help
+                you tailor your application and increase your chances of
+                getting noticed by recruiters.
+              </p>
+            </AccordionContent>
+          </AccordionItem>
+          <AccordionItem value="item-5">
+            <AccordionTrigger>Can I use this app offline?</AccordionTrigger>
+            <AccordionContent className="space-y-2 text-sm">
+              <p>
+                Yes! You can edit your resume and use all non-AI features
+                completely offline. Since all your data is stored in your
+                browser, you don't need an internet connection to access or
+                modify your content.
+              </p>
+              <p>
+                An internet connection is only required when you use the
+                AI-powered features (like parsing, content improvement, or ATS
+                checks) as they need to communicate with the external AI
+                providers.
               </p>
             </AccordionContent>
           </AccordionItem>
