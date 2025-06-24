@@ -1,5 +1,3 @@
-'use server';
-
 import {googleAI} from '@genkit-ai/googleai';
 import type {ModelReference} from 'genkit/model';
 import type {AiConfig} from '@/lib/schemas';
