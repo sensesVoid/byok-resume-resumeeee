@@ -79,6 +79,18 @@ body {
   }
 }
 
+/* Styles for preparing content for PDF generation/printing */
+.printing-resume .cover-letter-content-wrapper,
+.printing-cover-letter .resume-content-wrapper {
+  display: none !important;
+}
+
+/* Override Radix Tabs default behavior to show inactive content for PDF generation */
+.printing-resume .resume-content-wrapper[data-state='inactive'],
+.printing-cover-letter .cover-letter-content-wrapper[data-state='inactive'] {
+  display: block !important;
+}
+
 @media print {
   @page {
     size: A4;
@@ -89,19 +101,5 @@ body {
     print-color-adjust: exact;
     background-image: none !important;
     background-color: white !important;
-  }
-
-  /* New styles for printing specific parts */
-  .printing-resume .cover-letter-content-wrapper {
-    display: none;
-  }
-
-  .printing-cover-letter .resume-content-wrapper {
-    display: none;
-  }
-
-  /* Override Radix Tabs default behavior to show inactive content for printing */
-  .printing-cover-letter .cover-letter-content-wrapper[data-state='inactive'] {
-    display: block !important;
   }
 }

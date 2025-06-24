@@ -31,6 +31,9 @@ import {
 import { AtsChecker } from '@/components/ats-checker';
 import * as pdfjs from 'pdfjs-dist/build/pdf';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
+
 
 // Set worker source for pdfjs-dist
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.mjs`;
@@ -48,11 +51,11 @@ export function ResumeBuilder() {
 
   const [isUploading, startUploadingTransition] = useTransition();
   const [isCalculatingAts, startAtsTransition] = useTransition();
+  const [isDownloading, startDownloadingTransition] = useTransition();
 
   const [atsResult, setAtsResult] =
     useState<CalculateAtsScoreOutput | null>(null);
   const [isAtsModalOpen, setIsAtsModalOpen] = useState(false);
-  const [isPrinting, setIsPrinting] = useState(false);
   const [atsCheckType, setAtsCheckType] = useState<'resume' | 'cover-letter'>(
     'resume'
   );
@@ -60,25 +63,78 @@ export function ResumeBuilder() {
   const aiPowered = form.watch('aiPowered');
   const coverLetter = form.watch('coverLetter');
 
-  useEffect(() => {
-    const handleAfterPrint = () => {
-      document.body.classList.remove('printing-resume', 'printing-cover-letter');
-      setIsPrinting(false);
-    };
-
-    window.addEventListener('afterprint', handleAfterPrint);
-    return () => {
-      window.removeEventListener('afterprint', handleAfterPrint);
-    };
-  }, []);
-
-  const handleDownload = (target: 'resume' | 'cover-letter') => {
-    setIsPrinting(true);
-    document.body.classList.add(`printing-${target}`);
-    // Use a short timeout to allow the class to be applied before printing
-    setTimeout(() => {
-      window.print();
-    }, 100);
+  const handleDownloadPdf = async (target: 'resume' | 'cover-letter') => {
+    startDownloadingTransition(async () => {
+      const selector =
+        target === 'resume'
+          ? '.resume-content-wrapper'
+          : '.cover-letter-content-wrapper';
+      
+      const element = document.querySelector(selector) as HTMLElement | null;
+  
+      if (!element) {
+        toast({
+          variant: 'destructive',
+          title: 'Error',
+          description: 'Could not find the content to download.',
+        });
+        return;
+      }
+      
+      toast({ title: 'Preparing PDF...', description: 'Please wait while we generate your document.' });
+  
+      try {
+          document.body.classList.add(`printing-${target}`);
+  
+          const canvas = await html2canvas(element, {
+              scale: 2, 
+              useCORS: true,
+              logging: false,
+          });
+          
+          document.body.classList.remove(`printing-${target}`);
+  
+          const imgData = canvas.toDataURL('image/png');
+          
+          const pdf = new jsPDF({
+              orientation: 'p',
+              unit: 'mm',
+              format: 'a4',
+          });
+  
+          const pdfWidth = pdf.internal.pageSize.getWidth();
+          const pdfHeight = pdf.internal.pageSize.getHeight();
+          const canvasWidth = canvas.width;
+          const canvasHeight = canvas.height;
+          
+          const imgHeight = canvasHeight * pdfWidth / canvasWidth;
+          let heightLeft = imgHeight;
+          let position = 0;
+  
+          pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeight);
+          heightLeft -= pdfHeight;
+  
+          while (heightLeft > 0) {
+            position -= pdfHeight;
+            pdf.addPage();
+            pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeight);
+            heightLeft -= pdfHeight;
+          }
+          
+          pdf.save(`${target}.pdf`);
+  
+          toast({ title: 'Download Started!', description: `Your ${target}.pdf is being downloaded.` });
+  
+      } catch (error) {
+          console.error("Error generating PDF:", error);
+          toast({
+              variant: 'destructive',
+              title: 'PDF Generation Failed',
+              description: 'An unexpected error occurred. Please try again.',
+          });
+          document.body.classList.remove(`printing-${target}`);
+      }
+    });
   };
 
   const handleUploadClick = () => {
@@ -339,10 +395,10 @@ export function ResumeBuilder() {
           onCalculateAtsScore={handleCalculateAtsScore}
           isCalculatingAts={isCalculatingAts}
           isAiPowered={aiPowered}
-          onDownloadResume={() => handleDownload('resume')}
-          onDownloadCoverLetter={() => handleDownload('cover-letter')}
+          onDownloadResume={() => handleDownloadPdf('resume')}
+          onDownloadCoverLetter={() => handleDownloadPdf('cover-letter')}
           isCoverLetterEmpty={!coverLetter}
-          isPrinting={isPrinting}
+          isDownloading={isDownloading}
         />
         <main className="flex-1 overflow-hidden">
           {isDesktop ? (

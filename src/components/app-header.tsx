@@ -25,7 +25,7 @@ interface AppHeaderProps {
   onDownloadResume: () => void;
   onDownloadCoverLetter: () => void;
   isCoverLetterEmpty: boolean;
-  isPrinting: boolean;
+  isDownloading: boolean;
 }
 
 export function AppHeader({
@@ -37,7 +37,7 @@ export function AppHeader({
   onDownloadResume,
   onDownloadCoverLetter,
   isCoverLetterEmpty,
-  isPrinting,
+  isDownloading,
 }: AppHeaderProps) {
   return (
     <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center justify-between border-b bg-background/80 px-4 backdrop-blur-sm sm:px-8 print:hidden">
@@ -49,7 +49,7 @@ export function AppHeader({
         {isAiPowered && (
           <Button
             onClick={onUploadClick}
-            disabled={isUploading || isPrinting || isCalculatingAts}
+            disabled={isUploading || isDownloading || isCalculatingAts}
             variant="outline"
           >
             {isUploading ? <Loader2 className="animate-spin" /> : <Upload />}
@@ -59,8 +59,8 @@ export function AppHeader({
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button disabled={isPrinting || isUploading || isCalculatingAts}>
-              {isPrinting ? (
+            <Button disabled={isDownloading || isUploading || isCalculatingAts}>
+              {isDownloading ? (
                 <Loader2 className="animate-spin" />
               ) : (
                 <FileDown />
@@ -86,7 +86,7 @@ export function AppHeader({
           <DropdownMenuTrigger asChild>
             <Button
               disabled={
-                !isAiPowered || isCalculatingAts || isPrinting || isUploading
+                !isAiPowered || isCalculatingAts || isDownloading || isUploading
               }
             >
               {isCalculatingAts ? (
