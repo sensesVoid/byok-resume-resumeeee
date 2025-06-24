@@ -18,7 +18,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import Link from 'next/link';
 
 interface AppHeaderProps {
   onUploadClick: () => void;
@@ -33,6 +32,7 @@ interface AppHeaderProps {
   isDonationEnabled: boolean;
   onAboutClick: () => void;
   onMonetizationClick: () => void;
+  onDonateClick: () => void;
 }
 
 export function AppHeader({
@@ -48,6 +48,7 @@ export function AppHeader({
   isDonationEnabled,
   onAboutClick,
   onMonetizationClick,
+  onDonateClick,
 }: AppHeaderProps) {
   return (
     <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center justify-between border-b bg-background/80 px-4 backdrop-blur-sm sm:px-8 print:hidden">
@@ -65,11 +66,9 @@ export function AppHeader({
           <HelpCircle className="h-5 w-5" />
         </Button>
         {isDonationEnabled && (
-          <Button asChild variant="outline">
-            <Link href="/donate">
-              <Heart className="mr-2 h-4 w-4 text-pink-500" />
-              <span className="hidden sm:inline">Donate</span>
-            </Link>
+          <Button onClick={onDonateClick} variant="outline">
+            <Heart className="mr-2 h-4 w-4 text-pink-500" />
+            <span className="hidden sm:inline">Donate</span>
           </Button>
         )}
         {isAiPowered && (
