@@ -91,12 +91,21 @@ export default {
         'flow-glow': {
           '0%, 100%': { 'background-position': '0% 50%' },
           '50%': { 'background-position': '100% 50%' },
+        },
+        'pulse-glow': {
+          '0%, 100%': {
+            'box-shadow': '0 0 12px -2px hsl(var(--primary) / 0.5)',
+          },
+          '50%': {
+            'box-shadow': '0 0 20px 2px hsl(var(--primary) / 0.5)',
+          },
         }
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
         'flow-glow': 'flow-glow 10s ease-in-out infinite',
+        'pulse-glow': 'pulse-glow 3s ease-in-out infinite',
       },
     },
   },

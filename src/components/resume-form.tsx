@@ -198,7 +198,7 @@ export function ResumeForm() {
                         disabled={isValidating}
                         className={cn('transition-all',
                             aiPowered
-                            ? 'bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 bg-[length:200%_200%] text-white shadow-lg shadow-primary/50 animate-flow-glow'
+                            ? 'bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 bg-[length:200%_200%] text-white animate-flow-glow animate-pulse-glow'
                             : 'bg-destructive hover:bg-destructive/90 text-destructive-foreground'
                         )}
                       >
