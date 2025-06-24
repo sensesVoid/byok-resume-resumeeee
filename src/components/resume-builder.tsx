@@ -379,7 +379,7 @@ export function ResumeBuilder() {
       </div>
 
       <Dialog open={isAtsModalOpen} onOpenChange={setIsAtsModalOpen}>
-        <DialogContent className="sm:max-w-[625px] flex flex-col max-h-[90vh]">
+        <DialogContent className="sm:max-w-[625px] grid grid-rows-[auto_minmax(0,1fr)] max-h-[90vh]">
           <DialogHeader>
             <DialogTitle>ATS Score Checker</DialogTitle>
             <DialogDescription>
