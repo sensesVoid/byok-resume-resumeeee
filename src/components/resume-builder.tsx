@@ -460,7 +460,7 @@ export function ResumeBuilder() {
         accept=".txt,.pdf"
         className="hidden"
       />
-      <div className="flex min-h-screen flex-col bg-background">
+      <div className="grid h-screen grid-rows-[auto_1fr_auto] bg-background">
         <AppHeader
           onUploadClick={handleUploadClick}
           isUploading={isUploading}
@@ -475,7 +475,7 @@ export function ResumeBuilder() {
           onAboutClick={() => setIsAboutModalOpen(true)}
           onDonateClick={() => setIsDonationModalOpen(true)}
         />
-        <main className="flex-1 overflow-hidden">
+        <main className="overflow-hidden">
           {isDesktop ? (
             <PanelGroup direction="horizontal" className="h-full">
               <Panel defaultSize={50} minSize={40}>
@@ -537,3 +537,4 @@ export function ResumeBuilder() {
     </FormProvider>
   );
 }
+ 
