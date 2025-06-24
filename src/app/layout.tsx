@@ -22,7 +22,8 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className="font-body antialiased">
+      {/* Added gradient background for glassmorphism */}
+      <body className="font-body antialiased bg-[#ecf0f1] dark:bg-slate-900 bg-gradient-to-br from-blue-50 via-[#ecf0f1] to-blue-200 dark:from-slate-900 dark:via-slate-800 dark:to-blue-950">
         {children}
         <Toaster />
       </body>

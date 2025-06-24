@@ -8,47 +8,63 @@ body {
 
 @layer base {
   :root {
-    --background: 210 17% 95%;
+    --background: 210 17% 98%;
     --foreground: 222.2 84% 4.9%;
-    --card: 210 17% 95%;
+
+    --card: 210 40% 100%;
     --card-foreground: 222.2 84% 4.9%;
+
     --popover: 210 17% 95%;
     --popover-foreground: 222.2 84% 4.9%;
+
     --primary: 207 70% 53%;
     --primary-foreground: 210 40% 98%;
+
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
+
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
+
     --accent: 205 65% 45%;
     --accent-foreground: 210 40% 98%;
+
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
+
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
     --ring: 207 70% 53%;
-    --radius: 0.5rem;
+    --radius: 0.75rem; /* Increased for a softer feel */
   }
 
   .dark {
     --background: 222 47% 11%;
     --foreground: 210 40% 98%;
-    --card: 222 47% 11%;
+    
+    --card: 222 47% 15%;
     --card-foreground: 210 40% 98%;
+    
     --popover: 222 47% 11%;
     --popover-foreground: 210 40% 98%;
+    
     --primary: 207 70% 53%;
     --primary-foreground: 210 40% 98%;
+    
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
+    
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215.4 16.3% 56.9%;
+    
     --accent: 205 65% 45%;
     --accent-foreground: 210 40% 98%;
+    
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
+    
+    --border: 217.2 32.6% 25.5%;
+    --input: 217.2 32.6% 25.5%;
     --ring: 207 70% 53%;
   }
 }
@@ -58,7 +74,8 @@ body {
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    /* Set a base text color, background is handled in layout */
+    @apply text-foreground;
   }
 }
 
@@ -70,5 +87,7 @@ body {
   body {
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
+    background-image: none !important;
+    background-color: white !important;
   }
 }
