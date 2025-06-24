@@ -55,7 +55,17 @@ export function ResumeForm() {
   const aiPowered = form.watch('aiPowered');
   const aiProvider = form.watch('aiConfig.provider');
   const selectedTemplate = form.watch('template');
-  const templatesWithPhoto: ResumeSchema['template'][] = ['professional', 'creative'];
+  const templatesWithPhoto: ResumeSchema['template'][] = [
+    'professional',
+    'creative',
+    'infographic',
+    'marketing',
+    'two-tone',
+    'executive',
+    'corporate',
+    'designer',
+    'modern',
+  ];
   const showPhotoUpload = templatesWithPhoto.includes(selectedTemplate);
 
 

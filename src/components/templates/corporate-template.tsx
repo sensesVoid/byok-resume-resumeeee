@@ -1,3 +1,4 @@
+
 'use client';
 
 import { type ResumeSchema } from '@/lib/schemas';
@@ -66,6 +67,15 @@ export function CorporateTemplate({ data }: TemplateProps) {
     >
       {/* Left Column */}
       <div className="w-1/3 flex-shrink-0 space-y-6">
+        {personalInfo.photo && (
+          <div className="flex justify-center">
+            <img
+              src={personalInfo.photo}
+              alt={personalInfo.name}
+              className="w-32 h-32 rounded-full object-cover shadow-md"
+            />
+          </div>
+        )}
         <section>
           <h2 className="text-base font-bold uppercase tracking-wider border-b-2 pb-1 mb-3" style={{...headingStyle, borderColor: accentColor}}>
             Contact

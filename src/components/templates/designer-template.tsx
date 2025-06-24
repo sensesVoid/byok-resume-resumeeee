@@ -1,3 +1,4 @@
+
 'use client';
 
 import { type ResumeSchema } from '@/lib/schemas';
@@ -102,8 +103,17 @@ export function DesignerTemplate({ data }: TemplateProps) {
         </div>
 
         {/* Sidebar Column */}
-        <div className="col-span-1 space-y-8 pt-24">
-            <section>
+        <div className="col-span-1 space-y-8">
+            {personalInfo.photo && (
+              <div className="flex justify-center pt-8">
+                <img
+                  src={personalInfo.photo}
+                  alt={personalInfo.name}
+                  className="w-28 h-28 rounded-full object-cover"
+                />
+              </div>
+            )}
+            <section className={cn(!personalInfo.photo && 'pt-24')}>
                 <h2 className="text-sm font-bold tracking-[0.2em] uppercase mb-3" style={headingStyle}>Contact</h2>
                 <div className="space-y-2 text-sm">
                     {personalInfo?.email && <div className="flex items-start gap-2"><AtSign size={14} className="mt-1 shrink-0" /><span className="break-all">{personalInfo.email}</span></div>}

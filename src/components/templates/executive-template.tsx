@@ -1,3 +1,4 @@
+
 'use client';
 
 import { type ResumeSchema } from '@/lib/schemas';
@@ -49,13 +50,60 @@ export function ExecutiveTemplate({ data }: TemplateProps) {
   
   return (
     <div className={cn("p-10 bg-white", fontClassMap[fontStyle] || 'font-merriweather')} style={rootStyle}>
-      <header className="text-center mb-10">
-        <h1 className="text-4xl font-bold tracking-wider uppercase" style={headingStyle}>{personalInfo?.name || 'Your Name'}</h1>
-        <div className="mt-3 flex justify-center flex-wrap gap-x-6 gap-y-1 text-xs text-gray-500">
-          {personalInfo?.location && <span className="inline-flex items-center"><MapPin size={12} className="mr-1.5" />{personalInfo.location}</span>}
-          {personalInfo?.phone && <a href={`tel:${personalInfo.phone}`} className="inline-flex items-center hover:underline"><Phone size={12} className="mr-1.5" />{personalInfo.phone}</a>}
-          {personalInfo?.email && <a href={`mailto:${personalInfo.email}`} className="inline-flex items-center hover:underline break-all"><AtSign size={12} className="mr-1.5" />{personalInfo.email}</a>}
-          {personalInfo?.website && <a href={personalInfo.website} target="_blank" rel="noopener noreferrer" className="inline-flex items-center hover:underline break-all"><Globe size={12} className="mr-1.5" />{personalInfo.website}</a>}
+      <header className="mb-10">
+        <div className="flex items-center gap-8 justify-center">
+          {personalInfo.photo && (
+            <img
+              src={personalInfo.photo}
+              alt={personalInfo.name}
+              className="w-28 h-28 rounded-full object-cover shrink-0"
+            />
+          )}
+          <div className="text-center flex-grow">
+            <h1
+              className="text-4xl font-bold tracking-wider uppercase"
+              style={headingStyle}
+            >
+              {personalInfo?.name || 'Your Name'}
+            </h1>
+            <div className="mt-3 flex justify-center flex-wrap gap-x-6 gap-y-1 text-xs text-gray-500">
+              {personalInfo?.location && (
+                <span className="inline-flex items-center">
+                  <MapPin size={12} className="mr-1.5" />
+                  {personalInfo.location}
+                </span>
+              )}
+              {personalInfo?.phone && (
+                <a
+                  href={`tel:${personalInfo.phone}`}
+                  className="inline-flex items-center hover:underline"
+                >
+                  <Phone size={12} className="mr-1.5" />
+                  {personalInfo.phone}
+                </a>
+              )}
+              {personalInfo?.email && (
+                <a
+                  href={`mailto:${personalInfo.email}`}
+                  className="inline-flex items-center hover:underline break-all"
+                >
+                  <AtSign size={12} className="mr-1.5" />
+                  {personalInfo.email}
+                </a>
+              )}
+              {personalInfo?.website && (
+                <a
+                  href={personalInfo.website}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center hover:underline break-all"
+                >
+                  <Globe size={12} className="mr-1.5" />
+                  {personalInfo.website}
+                </a>
+              )}
+            </div>
+          </div>
         </div>
       </header>
 
