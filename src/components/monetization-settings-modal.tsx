@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useFormContext } from 'react-hook-form';
@@ -44,7 +45,7 @@ export function MonetizationSettingsModal({ isOpen, onOpenChange }: Monetization
                 <div className="space-y-4 rounded-lg border p-4">
                     <div className="flex items-center justify-between">
                         <h4 className="font-semibold flex items-center gap-2">
-                          <Image src="/images/paypal.png" alt="PayPal Logo" width={24} height={24} />
+                          <Image src="/images/paypal.png" alt="PayPal Logo" width={32} height={32} />
                            PayPal
                         </h4>
                         <FormField
@@ -82,7 +83,7 @@ export function MonetizationSettingsModal({ isOpen, onOpenChange }: Monetization
                 <div className="space-y-4 rounded-lg border p-4 mt-4">
                     <div className="flex items-center justify-between">
                         <h4 className="font-semibold flex items-center gap-2">
-                          <Image src="/images/maya.png" alt="Maya Logo" width={24} height={24} />
+                          <Image src="/images/maya.png" alt="Maya Logo" width={32} height={32} />
                           Maya
                         </h4>
                         <FormField
