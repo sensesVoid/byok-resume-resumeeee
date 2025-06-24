@@ -66,18 +66,9 @@ export function ResumeBuilder() {
       return;
     }
 
-    startUploadingTransition(async () => {
-      const originalValues = form.getValues();
-      // 1. Clear the form content fields first, preserving settings and photo
-      form.reset({
-        ...originalValues,
-        personalInfo: { ...originalValues.personalInfo, name: '', email: '', phone: '', website: '', location: '' },
-        summary: '',
-        experience: [],
-        education: [],
-        skills: [],
-      });
+    const originalValues = form.getValues();
 
+    startUploadingTransition(async () => {
       let text = '';
       try {
         if (file.type === 'application/pdf' || file.name.endsWith('.pdf')) {
@@ -102,15 +93,13 @@ export function ResumeBuilder() {
             title: 'Empty File',
             description: 'The file appears to be empty or contains no text.',
           });
-          // Restore original data if file is empty
-          form.reset(originalValues);
           return;
         }
 
-        // 2. AI will analyze and parse the resume
+        // AI will analyze and parse the resume
         const parsedData = await parseResumeAction({ resumeText: text, aiConfig: originalValues.aiConfig });
 
-        // 3. If successful, populate the form with extracted details
+        // If successful, populate the form with extracted details
         const finalData = {
           ...originalValues,
           ...parsedData,
@@ -129,13 +118,12 @@ export function ResumeBuilder() {
           description: 'Your resume has been parsed and loaded into the form.',
         });
       } catch (error) {
-        // 4. If not, throw a toast saying the pdf is not a resume
+        // If parsing fails, show a toast and leave the original form data intact.
         toast({
           variant: 'destructive',
           title: 'Parsing Failed',
           description: "The uploaded file does not appear to be a valid resume. Please check the file and try again.",
         });
-        // Form remains cleared as per the new workflow
       }
     });
 
