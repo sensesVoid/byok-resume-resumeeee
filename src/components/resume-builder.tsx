@@ -1,3 +1,4 @@
+
 'use client';
 
 import { FormProvider, useForm } from 'react-hook-form';
@@ -68,8 +69,10 @@ export function ResumeBuilder() {
 
   const aiPowered = form.watch('aiPowered');
   const coverLetter = form.watch('coverLetter');
-  const donationConfig = form.watch('donationConfig');
-  const isDonationEnabled = donationConfig?.maya?.enabled || donationConfig?.paypal?.enabled;
+  
+  // Monetization config is static and comes from the default data
+  const { donationConfig } = defaultResumeData;
+  const isDonationEnabled = donationConfig.paypal.enabled || donationConfig.maya.enabled;
 
 
   // Load state from localStorage on initial render

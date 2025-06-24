@@ -1,38 +1,20 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Copy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { type ResumeSchema, defaultResumeData, resumeSchema } from '@/lib/schemas';
+import { defaultResumeData } from '@/lib/schemas';
 import { QRCode } from 'qrcode.react';
 import { useToast } from '@/hooks/use-toast';
 import { PayPalIcon, MayaIcon } from '@/components/payment-icons';
-import { Skeleton } from '@/components/ui/skeleton';
 
 export default function DonatePage() {
-  const [config, setConfig] = useState<ResumeSchema['donationConfig']>(defaultResumeData.donationConfig);
-  const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
-
-  useEffect(() => {
-    try {
-      const savedData = localStorage.getItem('resumeeee-data');
-      if (savedData) {
-        const parsedData = JSON.parse(savedData);
-        const validation = resumeSchema.safeParse(parsedData);
-        if (validation.success) {
-          setConfig(validation.data.donationConfig);
-        }
-      }
-    } catch (error) {
-      console.error('Failed to load donation config from localStorage', error);
-    } finally {
-        setIsLoading(false);
-    }
-  }, []);
+  const config = defaultResumeData.donationConfig;
+  const isAnyEnabled = config.maya.enabled || config.paypal.enabled;
+  const paypalLink = `https://paypal.me/${config.paypal.username}`;
 
   const handleCopy = (text: string, type: string) => {
     navigator.clipboard.writeText(text);
@@ -41,22 +23,6 @@ export default function DonatePage() {
       description: `Your ${type} has been copied.`,
     });
   };
-
-  const paypalLink = `https://paypal.me/${config.paypal.username}`;
-
-  if (isLoading) {
-    return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-background p-4 sm:p-6">
-            <Skeleton className="h-16 w-64 mb-8" />
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-4xl">
-                <Skeleton className="h-96 w-full" />
-                <Skeleton className="h-96 w-full" />
-            </div>
-        </div>
-    )
-  }
-
-  const isAnyEnabled = config.maya.enabled || config.paypal.enabled;
 
   return (
     <div className="flex flex-col items-center min-h-screen bg-background p-4 sm:p-6 text-foreground">
