@@ -43,11 +43,9 @@ const EditableField = ({
           placeholder={placeholder}
           className={cn(
             as === 'textarea' ? 'inline-edit-textarea' : 'inline-edit-input',
-            'text-sm',
             className
           )}
           {...field}
-          // Simple auto-resize for textarea
           onInput={
             as === 'textarea'
               ? (e) => {
@@ -92,31 +90,26 @@ export function DiyTemplate({ data }: { data: ResumeSchema }) {
   return (
     <div className="p-6 sm:p-8 bg-white font-sans text-gray-800">
       <header className="text-center">
-        <Controller
+        <EditableField
           name="personalInfo.name"
-          control={control}
-          render={({ field }) => (
-            <input
-              placeholder="Your Name"
-              className="w-full text-4xl font-bold tracking-tight text-center bg-transparent border-none focus:outline-none focus:ring-0 focus:bg-muted/50 p-1 -m-1 rounded-sm"
-              {...field}
-            />
-          )}
+          placeholder="Your Name"
+          className="text-4xl font-bold tracking-tight text-center p-1 -m-1"
         />
         <div className="mt-2 flex flex-wrap justify-center gap-x-4 gap-y-1 text-sm text-gray-500">
           <span className="inline-flex items-center gap-1.5">
             <AtSign size={14} />
-            <EditableField name="personalInfo.email" placeholder="Email" />
+            <EditableField name="personalInfo.email" placeholder="Email" className="text-sm" />
           </span>
           <span className="inline-flex items-center gap-1.5">
             <Phone size={14} />
-            <EditableField name="personalInfo.phone" placeholder="Phone" />
+            <EditableField name="personalInfo.phone" placeholder="Phone" className="text-sm" />
           </span>
           <span className="inline-flex items-center gap-1.5">
             <Globe size={14} />
             <EditableField
               name="personalInfo.website"
               placeholder="Website"
+              className="text-sm"
             />
           </span>
           <span className="inline-flex items-center gap-1.5">
@@ -124,6 +117,7 @@ export function DiyTemplate({ data }: { data: ResumeSchema }) {
             <EditableField
               name="personalInfo.location"
               placeholder="Location"
+              className="text-sm"
             />
           </span>
         </div>
@@ -166,13 +160,13 @@ export function DiyTemplate({ data }: { data: ResumeSchema }) {
                     <EditableField
                       name={`experience.${index}.startDate`}
                       placeholder="Start"
-                      className="w-24 text-right"
+                      className="w-24 text-right text-sm"
                     />
                     <span>-</span>
                     <EditableField
                       name={`experience.${index}.endDate`}
                       placeholder="End"
-                      className="w-24"
+                      className="w-24 text-sm"
                     />
                   </div>
                 </div>
@@ -187,6 +181,7 @@ export function DiyTemplate({ data }: { data: ResumeSchema }) {
                     name={`experience.${index}.description`}
                     placeholder="Describe your role and achievements..."
                     as="textarea"
+                    className="text-sm"
                   />
                 </div>
               </div>
@@ -248,7 +243,7 @@ export function DiyTemplate({ data }: { data: ResumeSchema }) {
                   name={`education.${index}.description`}
                   placeholder="Additional details..."
                   as="textarea"
-                  className="mt-1"
+                  className="mt-1 text-sm"
                 />
               </div>
             ))}
