@@ -32,7 +32,8 @@ export function MinimalistTemplate({ data }: TemplateProps) {
     skills,
     fontStyle,
     headingColor,
-    bodyColor
+    bodyColor,
+    accentColor
   } = data;
 
   const rootStyle = {
@@ -67,7 +68,7 @@ export function MinimalistTemplate({ data }: TemplateProps) {
       className={cn('p-8 bg-white', fontClassMap[fontStyle] || 'font-sans')}
       style={rootStyle}
     >
-      <header className="mb-8 text-left border-b pb-4">
+      <header className="mb-8 text-left border-b pb-4" style={{ borderColor: accentColor }}>
         <h1 className="text-4xl font-bold" style={headingStyle}>
           {personalInfo?.name || 'Your Name'}
         </h1>

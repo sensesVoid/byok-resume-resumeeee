@@ -24,7 +24,7 @@ const fontClassMap: { [key: string]: string } = {
 }
 
 export function ElegantTemplate({ data }: TemplateProps) {
-  const { personalInfo, summary, experience, education, skills, fontStyle, headingColor, bodyColor } = data;
+  const { personalInfo, summary, experience, education, skills, fontStyle, headingColor, bodyColor, accentColor } = data;
   
   const rootStyle = {
     fontFamily: fontMap[fontStyle] || fontMap.inter,
@@ -48,13 +48,13 @@ export function ElegantTemplate({ data }: TemplateProps) {
   
   return (
     <div className={cn("p-8 bg-white", fontClassMap[fontStyle] || 'font-sans')} style={rootStyle}>
-      <header className="mb-8 border-b-2 border-gray-200 pb-4">
+      <header className="mb-8 border-b-2 pb-4" style={{ borderColor: accentColor }}>
         <h1 className="text-4xl font-bold tracking-tight text-center" style={headingStyle}>{personalInfo?.name || 'Your Name'}</h1>
         <div className="mt-3 flex justify-center flex-wrap gap-x-6 gap-y-1 text-xs text-gray-500">
           {personalInfo?.location && <span className="inline-flex items-center"><MapPin size={12} className="mr-1.5" />{personalInfo.location}</span>}
           {personalInfo?.phone && <a href={`tel:${personalInfo.phone}`} className="inline-flex items-center hover:underline"><Phone size={12} className="mr-1.5" />{personalInfo.phone}</a>}
-          {personalInfo?.email && <a href={`mailto:${personalInfo.email}`} className="inline-flex items-center hover:underline"><AtSign size={12} className="mr-1.5" />{personalInfo.email}</a>}
-          {personalInfo?.website && <a href={personalInfo.website} target="_blank" rel="noopener noreferrer" className="inline-flex items-center hover:underline"><Globe size={12} className="mr-1.5" />{personalInfo.website}</a>}
+          {personalInfo?.email && <a href={`mailto:${personalInfo.email}`} className="inline-flex items-center hover:underline break-all"><AtSign size={12} className="mr-1.5" />{personalInfo.email}</a>}
+          {personalInfo?.website && <a href={personalInfo.website} target="_blank" rel="noopener noreferrer" className="inline-flex items-center hover:underline break-all"><Globe size={12} className="mr-1.5" />{personalInfo.website}</a>}
         </div>
       </header>
 

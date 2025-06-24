@@ -24,7 +24,7 @@ const fontClassMap: { [key: string]: string } = {
 }
 
 export function ClassicTemplate({ data }: TemplateProps) {
-  const { personalInfo, summary, experience, education, skills, fontStyle, headingColor, bodyColor } = data;
+  const { personalInfo, summary, experience, education, skills, fontStyle, headingColor, bodyColor, accentColor } = data;
   
   const rootStyle = {
     fontFamily: fontMap[fontStyle] || fontMap.inter,
@@ -34,6 +34,11 @@ export function ClassicTemplate({ data }: TemplateProps) {
   const headingStyle = {
     color: headingColor || '#111827',
   } as React.CSSProperties;
+
+  const headingWithAccentBorderStyle = {
+    ...headingStyle,
+    borderColor: accentColor,
+  };
 
   const renderDescription = (text?: string) => {
     if (!text) return null;
@@ -50,7 +55,7 @@ export function ClassicTemplate({ data }: TemplateProps) {
     <div className={cn("p-8 bg-white", fontClassMap[fontStyle] || 'font-sans')} style={rootStyle}>
       <header className="text-center mb-6">
         <h1 className="text-3xl font-bold tracking-wider uppercase" style={headingStyle}>{personalInfo?.name || 'Your Name'}</h1>
-        <div className="mt-2 flex justify-center flex-wrap gap-x-6 text-xs text-gray-500">
+        <div className="mt-2 flex justify-center flex-wrap gap-x-6 gap-y-1 text-xs text-gray-500">
           {personalInfo?.location && <span className="inline-flex items-center"><MapPin size={12} className="mr-1.5" />{personalInfo.location}</span>}
           {personalInfo?.phone && <a href={`tel:${personalInfo.phone}`} className="inline-flex items-center hover:underline"><Phone size={12} className="mr-1.5" />{personalInfo.phone}</a>}
           {personalInfo?.email && <a href={`mailto:${personalInfo.email}`} className="inline-flex items-center hover:underline break-all"><AtSign size={12} className="mr-1.5" />{personalInfo.email}</a>}
@@ -60,7 +65,7 @@ export function ClassicTemplate({ data }: TemplateProps) {
 
       {summary && (
         <section className="mb-6">
-          <h2 className="text-sm font-bold uppercase tracking-widest text-center border-b-2 border-current pb-1 mb-2" style={headingStyle}>Summary</h2>
+          <h2 className="text-sm font-bold uppercase tracking-widest text-center border-b-2 pb-1 mb-2" style={headingWithAccentBorderStyle}>Summary</h2>
           <p className="text-sm text-center">{summary}</p>
         </section>
       )}
@@ -68,7 +73,7 @@ export function ClassicTemplate({ data }: TemplateProps) {
       <div className="space-y-6">
         {experience?.length > 0 && (
           <section>
-            <h2 className="text-sm font-bold uppercase tracking-widest border-b-2 border-current pb-1 mb-2" style={headingStyle}>Experience</h2>
+            <h2 className="text-sm font-bold uppercase tracking-widest border-b-2 pb-1 mb-2" style={headingWithAccentBorderStyle}>Experience</h2>
             <div className="space-y-4">
               {experience.map((exp) => (
                 <div key={exp.id}>
@@ -88,7 +93,7 @@ export function ClassicTemplate({ data }: TemplateProps) {
 
         {education?.length > 0 && (
           <section>
-            <h2 className="text-sm font-bold uppercase tracking-widest border-b-2 border-current pb-1 mb-2" style={headingStyle}>Education</h2>
+            <h2 className="text-sm font-bold uppercase tracking-widest border-b-2 pb-1 mb-2" style={headingWithAccentBorderStyle}>Education</h2>
             <div className="space-y-3">
               {education.map((edu) => (
                 <div key={edu.id}>
@@ -108,7 +113,7 @@ export function ClassicTemplate({ data }: TemplateProps) {
 
         {skills?.length > 0 && (
           <section>
-            <h2 className="text-sm font-bold uppercase tracking-widest border-b-2 border-current pb-1 mb-2" style={headingStyle}>Skills</h2>
+            <h2 className="text-sm font-bold uppercase tracking-widest border-b-2 pb-1 mb-2" style={headingWithAccentBorderStyle}>Skills</h2>
             <p className="text-sm">
               {skills.map((skill) => skill.name).join(' | ')}
             </p>

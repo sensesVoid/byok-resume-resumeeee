@@ -25,7 +25,7 @@ const fontClassMap: { [key: string]: string } = {
 }
 
 export function ModernTemplate({ data }: TemplateProps) {
-  const { personalInfo, summary, experience, education, skills, fontStyle, headingColor, bodyColor } = data;
+  const { personalInfo, summary, experience, education, skills, fontStyle, headingColor, bodyColor, accentColor } = data;
 
   const rootStyle = {
     fontFamily: fontMap[fontStyle] || fontMap.inter,
@@ -65,7 +65,7 @@ export function ModernTemplate({ data }: TemplateProps) {
         </section>
       )}
 
-      <Separator className="my-6" />
+      <Separator className="my-6" style={{ backgroundColor: accentColor }} />
       
       <div className="space-y-8">
         {experience?.length > 0 && (

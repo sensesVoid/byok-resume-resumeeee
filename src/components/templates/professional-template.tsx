@@ -97,7 +97,7 @@ export function ProfessionalTemplate({ data }: TemplateProps) {
 
         <div className="space-y-6">
           <div>
-            <h2 className="font-bold uppercase tracking-wider text-sm mb-2 border-b border-gray-300 pb-1" style={headingStyle}>
+            <h2 className="font-bold uppercase tracking-wider text-sm mb-2 border-b pb-1" style={{...headingStyle, borderColor: bodyColor}}>
               Contact
             </h2>
             <div className="space-y-2 text-xs" style={{color: bodyColor}}>
@@ -130,7 +130,7 @@ export function ProfessionalTemplate({ data }: TemplateProps) {
 
           {education?.length > 0 && (
             <div>
-              <h2 className="font-bold uppercase tracking-wider text-sm mb-2 border-b border-gray-300 pb-1" style={headingStyle}>
+              <h2 className="font-bold uppercase tracking-wider text-sm mb-2 border-b pb-1" style={{...headingStyle, borderColor: bodyColor}}>
                 Education
               </h2>
               <div className="space-y-3">
@@ -147,7 +147,7 @@ export function ProfessionalTemplate({ data }: TemplateProps) {
 
           {skills?.length > 0 && (
             <div>
-              <h2 className="font-bold uppercase tracking-wider text-sm mb-2 border-b border-gray-300 pb-1" style={headingStyle}>
+              <h2 className="font-bold uppercase tracking-wider text-sm mb-2 border-b pb-1" style={{...headingStyle, borderColor: bodyColor}}>
                 Skills
               </h2>
               <div className="flex flex-col space-y-1 text-sm">
@@ -176,10 +176,10 @@ export function ProfessionalTemplate({ data }: TemplateProps) {
             <h2 className="text-xl font-bold flex items-center gap-2 mb-4" style={headingStyle}>
               <Briefcase size={20} /> Work Experience
             </h2>
-            <div className="space-y-6 border-l-2 border-gray-200 pl-6">
+            <div className="space-y-6 border-l-2 pl-6" style={{ borderColor: accentColor }}>
               {experience.map((exp) => (
                 <div key={exp.id} className="relative">
-                  <div className="absolute -left-[33px] top-1.5 h-4 w-4 rounded-full bg-gray-300 border-4 border-white"></div>
+                  <div className="absolute -left-[33px] top-1.5 h-4 w-4 rounded-full border-4 border-white" style={{ backgroundColor: accentColor }}></div>
                   <div className="flex items-baseline justify-between">
                     <h3 className="text-lg font-semibold">{exp.jobTitle}</h3>
                     <div className="text-sm font-medium shrink-0 whitespace-nowrap" style={{color: bodyColor}}>
