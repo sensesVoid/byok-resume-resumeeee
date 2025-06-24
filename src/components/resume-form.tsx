@@ -250,7 +250,7 @@ export function ResumeForm() {
                           size="icon"
                           onClick={handlePowerToggle}
                           disabled={isValidating}
-                          className={cn('transition-all',
+                          className={cn('transition-all shrink-0',
                               aiPowered
                               ? 'bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 bg-[length:200%_200%] text-white animate-flow-glow animate-pulse-glow'
                               : 'bg-destructive hover:bg-destructive/90 text-destructive-foreground'
