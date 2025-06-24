@@ -316,7 +316,7 @@ export function ResumeForm() {
             <AccordionContent>
               <div className="space-y-6">
                 {experienceFields.map((field, index) => (
-                  <div key={field.id} className="relative rounded-lg border border-border/50 p-4 space-y-4 bg-background/30">
+                  <div key={field.id} className="rounded-lg border border-border/50 p-4 space-y-4 bg-background/30">
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                       <FormField control={form.control} name={`experience.${index}.jobTitle`} render={({ field }) => (<FormItem><FormLabel>Job Title</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
                       <FormField control={form.control} name={`experience.${index}.company`} render={({ field }) => (<FormItem><FormLabel>Company</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
@@ -327,10 +327,22 @@ export function ResumeForm() {
                     <FormField control={form.control} name={`experience.${index}.description`} render={({ field: descField }) => (
                       <FormItem>
                         <FormLabel>Description</FormLabel><FormControl><Textarea rows={5} {...descField} /></FormControl><FormMessage />
-                        <div className="mt-2 flex flex-wrap gap-2"><Button type="button" size="sm" variant="outline" onClick={() => handleImproveContent(`experience.${index}.description`, descField.value || '')} disabled={isImproving || !aiPowered}>{isImproving && fieldToUpdate === `experience.${index}.description` ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />} Improve with AI</Button></div>
                       </FormItem>
                     )} />
-                    <Button type="button" variant="ghost" size="icon" className="absolute top-2 right-2 text-muted-foreground hover:text-destructive" onClick={() => removeExperience(index)}><Trash2 className="h-4 w-4" /></Button>
+                    <div className="flex items-center justify-between pt-2">
+                        <Button 
+                            type="button" 
+                            size="sm" 
+                            variant="outline" 
+                            onClick={() => handleImproveContent(`experience.${index}.description`, form.getValues(`experience.${index}.description`) || '')} 
+                            disabled={isImproving || !aiPowered}
+                        >
+                            {isImproving && fieldToUpdate === `experience.${index}.description` ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />} Improve with AI
+                        </Button>
+                        <Button type="button" variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive" onClick={() => removeExperience(index)}>
+                            <Trash2 className="h-4 w-4" />
+                        </Button>
+                    </div>
                   </div>
                 ))}
                 <Button type="button" variant="secondary" onClick={() => appendExperience({ id: crypto.randomUUID(), jobTitle: '', company: '', startDate: '', endDate: '', description: '', location: '' })}><Plus className="mr-2 h-4 w-4" /> Add Experience</Button>
@@ -343,7 +355,7 @@ export function ResumeForm() {
             <AccordionContent>
               <div className="space-y-6">
                 {educationFields.map((field, index) => (
-                  <div key={field.id} className="relative rounded-lg border border-border/50 p-4 space-y-4 bg-background/30">
+                  <div key={field.id} className="rounded-lg border border-border/50 p-4 space-y-4 bg-background/30">
                      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                       <FormField control={form.control} name={`education.${index}.degree`} render={({ field }) => (<FormItem><FormLabel>Degree/Certificate</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
                       <FormField control={form.control} name={`education.${index}.institution`} render={({ field }) => (<FormItem><FormLabel>Institution</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
@@ -351,7 +363,11 @@ export function ResumeForm() {
                       <FormField control={form.control} name={`education.${index}.graduationDate`} render={({ field }) => (<FormItem><FormLabel>Graduation Date</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
                     </div>
                     <FormField control={form.control} name={`education.${index}.description`} render={({ field }) => (<FormItem><FormLabel>Description</FormLabel><FormControl><Textarea rows={3} {...field} /></FormControl><FormMessage /></FormItem>)} />
-                    <Button type="button" variant="ghost" size="icon" className="absolute top-2 right-2 text-muted-foreground hover:text-destructive" onClick={() => removeEducation(index)}><Trash2 className="h-4 w-4" /></Button>
+                    <div className="flex justify-end pt-2">
+                        <Button type="button" variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive" onClick={() => removeEducation(index)}>
+                            <Trash2 className="h-4 w-4" />
+                        </Button>
+                    </div>
                   </div>
                 ))}
                 <Button type="button" variant="secondary" onClick={() => appendEducation({ id: crypto.randomUUID(), degree: '', institution: '', graduationDate: '', description: '', location: '' })}><Plus className="mr-2 h-4 w-4" /> Add Education</Button>
