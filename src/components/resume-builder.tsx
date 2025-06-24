@@ -71,7 +71,7 @@ export function ResumeBuilder() {
       try {
         if (file.type === 'application/pdf' || file.name.endsWith('.pdf')) {
           const arrayBuffer = await file.arrayBuffer();
-          const pdf = await pdfjs.getDocument(arrayBuffer).promise;
+          const pdf = await pdfjs.getDocument({ data: arrayBuffer }).promise;
           const numPages = pdf.numPages;
           for (let i = 1; i <= numPages; i++) {
             const page = await pdf.getPage(i);

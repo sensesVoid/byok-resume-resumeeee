@@ -28,14 +28,18 @@ export const educationSchema = z.object({
   description: z.string().optional(),
 });
 
-export const aiConfigSchema = z.object({
+const baseAiConfigSchema = z.object({
   provider: z.enum(['google', 'openai', 'openrouter']).default('google'),
-  apiKey: z.string().optional(),
   model: z.string().optional(),
 });
-export type AiConfig = z.infer<typeof aiConfigSchema>;
 
 export const resumeSchema = z.object({
+  aiPowered: z.boolean().default(false),
+  aiConfig: baseAiConfigSchema.extend({
+ apiKey: z.string().optional(), // Initially optional
+  }),
+  // Use refine to make apiKey required only when aiPowered is true
+
   template: z
     .enum([
       'modern',
@@ -60,10 +64,15 @@ export const resumeSchema = z.object({
   skills: z.array(z.object({ id: z.string(), name: z.string() })),
   jobDescription: z.string().optional(),
   coverLetter: z.string().optional(),
-  aiConfig: aiConfigSchema,
-  aiPowered: z.boolean().default(false),
 });
 
+export const aiConfigSchema = resumeSchema.shape.aiConfig;
+export type AiConfig = z.infer<typeof aiConfigSchema>;
+
+resumeSchema.refine((data) => !data.aiPowered || (data.aiPowered && data.aiConfig.apiKey), {
+  message: 'API Key is required when AI is powered on',
+  path: ['aiConfig', 'apiKey'],
+});
 export type ResumeSchema = z.infer<typeof resumeSchema>;
 
 export const defaultResumeData: ResumeSchema = {
