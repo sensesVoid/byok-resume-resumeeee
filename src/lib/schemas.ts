@@ -50,7 +50,8 @@ export const resumeSchema = z.object({
   fontStyle: z
     .enum(['inter', 'roboto', 'lato', 'merriweather'])
     .default('inter'),
-  fontColor: z.string().default('#111827'),
+  headingColor: z.string().default('#111827'),
+  bodyColor: z.string().default('#374151'),
   personalInfo: personalInfoSchema,
   summary: z.string().optional(),
   experience: z.array(experienceSchema),
@@ -67,7 +68,8 @@ export type ResumeSchema = z.infer<typeof resumeSchema>;
 export const defaultResumeData: ResumeSchema = {
   template: 'modern',
   fontStyle: 'inter',
-  fontColor: '#111827',
+  headingColor: '#111827',
+  bodyColor: '#374151',
   personalInfo: {
     name: 'John Doe',
     email: 'john.doe@example.com',

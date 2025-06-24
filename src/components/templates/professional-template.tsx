@@ -40,15 +40,17 @@ export function ProfessionalTemplate({ data }: TemplateProps) {
     education,
     skills,
     fontStyle,
-    fontColor,
+    headingColor,
+    bodyColor,
   } = data;
 
   const rootStyle = {
     fontFamily: fontMap[fontStyle] || fontMap.inter,
+    color: bodyColor || '#374151',
   } as React.CSSProperties;
 
   const headingStyle = {
-    color: fontColor || '#111827',
+    color: headingColor || '#111827',
   } as React.CSSProperties;
 
   const renderDescription = (text?: string) => {
@@ -60,7 +62,7 @@ export function ProfessionalTemplate({ data }: TemplateProps) {
           .map(
             (line, index) =>
               line.trim() && (
-                <li key={index} className="text-sm text-gray-700">
+                <li key={index} className="text-sm">
                   {line.replace(/^-/, '').trim()}
                 </li>
               )
@@ -78,7 +80,7 @@ export function ProfessionalTemplate({ data }: TemplateProps) {
       style={rootStyle}
     >
       {/* Left Column (Sidebar) */}
-      <div className="w-1/3 bg-gray-100 p-8 space-y-8 text-gray-800">
+      <div className="w-1/3 bg-gray-100 p-8 space-y-8">
         <div>
           <h1 className="text-3xl font-bold" style={headingStyle}>
             {personalInfo?.name || 'Your Name'}
@@ -140,7 +142,7 @@ export function ProfessionalTemplate({ data }: TemplateProps) {
               <h2 className="font-bold uppercase tracking-wider text-sm mb-2 border-b border-gray-300 pb-1" style={headingStyle}>
                 Skills
               </h2>
-              <div className="flex flex-col space-y-1 text-sm text-gray-700">
+              <div className="flex flex-col space-y-1 text-sm">
                 {skills.map((skill) => (
                   <span key={skill.id}>{skill.name}</span>
                 ))}
@@ -157,7 +159,7 @@ export function ProfessionalTemplate({ data }: TemplateProps) {
             <h2 className="text-xl font-bold flex items-center gap-2 mb-2" style={headingStyle}>
               <User size={20} /> Professional Summary
             </h2>
-            <p className="text-sm text-gray-700">{summary}</p>
+            <p className="text-sm">{summary}</p>
           </section>
         )}
 
@@ -176,8 +178,8 @@ export function ProfessionalTemplate({ data }: TemplateProps) {
                       {exp.startDate} - {exp.endDate || 'Present'}
                     </div>
                   </div>
-                  <div className="flex items-baseline justify-between text-md font-medium text-gray-700">
-                    <span>{exp.company}</span>
+                  <div className="flex items-baseline justify-between text-md font-medium">
+                    <span style={{color: bodyColor}}>{exp.company}</span>
                     <span className="text-sm text-gray-500">{exp.location}</span>
                   </div>
                   <div className="mt-2">{renderDescription(exp.description)}</div>

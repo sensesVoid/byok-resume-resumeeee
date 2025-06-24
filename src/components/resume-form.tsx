@@ -15,18 +15,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { ScrollArea } from './ui/scroll-area';
 import { TemplateSwitcher } from '@/components/template-switcher';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Label } from './ui/label';
 import { Separator } from './ui/separator';
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-
-const fontColors = [
-  { value: '#111827', name: 'Dark Gray' },
-  { value: '#1E40AF', name: 'Blue' },
-  { value: '#1E8449', name: 'Green' },
-  { value: '#884EA0', name: 'Purple' },
-];
 
 const fontStyles = [
   { value: 'inter', label: 'Inter (Sans-serif)' },
@@ -285,10 +276,37 @@ export function ResumeForm() {
                     <Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a font" /></SelectTrigger></FormControl><SelectContent>{fontStyles.map(font => (<SelectItem key={font.value} value={font.value}>{font.label}</SelectItem>))}</SelectContent></Select><FormMessage />
                   </FormItem>
                 )} />
-                <FormField control={form.control} name="fontColor" render={({ field }) => (
+                <div/>
+                <FormField control={form.control} name="headingColor" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Font Color</FormLabel>
-                    <FormControl><RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="flex items-center gap-4 pt-2">{fontColors.map(color => (<FormItem key={color.value} className="flex items-center space-x-3 space-y-0"><FormControl><RadioGroupItem value={color.value} id={`color-${color.value}`} className="sr-only" /></FormControl><Label htmlFor={`color-${color.value}`} className="cursor-pointer rounded-full p-0.5 ring-offset-background has-[:checked]:ring-2 has-[:checked]:ring-primary"><div className="h-6 w-6 rounded-full border" style={{ backgroundColor: color.value }} /><span className="sr-only">{color.name}</span></Label></FormItem>))}</RadioGroup></FormControl><FormMessage />
+                    <FormLabel>Heading Color</FormLabel>
+                    <FormControl>
+                        <div className="relative h-10 w-full rounded-md border border-input">
+                            <input
+                                type="color"
+                                {...field}
+                                className="absolute w-full h-full opacity-0 cursor-pointer"
+                            />
+                            <div className="h-full w-full rounded-[inherit]" style={{ backgroundColor: field.value }}></div>
+                        </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+                 <FormField control={form.control} name="bodyColor" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Body Text Color</FormLabel>
+                    <FormControl>
+                        <div className="relative h-10 w-full rounded-md border border-input">
+                             <input
+                                type="color"
+                                {...field}
+                                className="absolute w-full h-full opacity-0 cursor-pointer"
+                            />
+                            <div className="h-full w-full rounded-[inherit]" style={{ backgroundColor: field.value }}></div>
+                        </div>
+                    </FormControl>
+                    <FormMessage />
                   </FormItem>
                 )} />
               </div>

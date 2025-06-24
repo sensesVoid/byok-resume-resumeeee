@@ -24,21 +24,22 @@ const fontClassMap: { [key: string]: string } = {
 };
 
 export function TechnicalTemplate({ data }: TemplateProps) {
-  const { personalInfo, summary, experience, education, skills, fontStyle, fontColor } = data;
+  const { personalInfo, summary, experience, education, skills, fontStyle, headingColor, bodyColor } = data;
 
   const rootStyle = {
     fontFamily: fontMap[fontStyle] || fontMap.inter,
+    color: bodyColor || '#374151',
   } as React.CSSProperties;
 
   const headingStyle = {
-    color: fontColor || '#111827',
+    color: headingColor || '#111827',
   } as React.CSSProperties;
 
   const renderDescription = (text?: string) => {
     if (!text) return null;
     return (
-        <div className="prose prose-sm max-w-none text-gray-700">
-            <ul>
+        <div className="prose prose-sm max-w-none">
+            <ul style={{ color: bodyColor }}>
                 {text.split('\n').map((line, index) => (
                     line.trim() && <li key={index}>{line.replace(/^-/, '').trim()}</li>
                 ))}
@@ -62,7 +63,7 @@ export function TechnicalTemplate({ data }: TemplateProps) {
       {summary && (
         <section className="mb-6">
             <h2 className="text-xs uppercase font-bold tracking-widest text-gray-500 mb-2" style={headingStyle}>About</h2>
-            <p className="text-sm text-gray-700">{summary}</p>
+            <p className="text-sm">{summary}</p>
         </section>
       )}
       
@@ -106,7 +107,7 @@ export function TechnicalTemplate({ data }: TemplateProps) {
         {skills?.length > 0 && (
           <section>
             <h2 className="text-xs uppercase font-bold tracking-widest text-gray-500 mb-3" style={headingStyle}>Skills</h2>
-            <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-700">
+            <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm">
               {skills.map((skill) => (
                 <span key={skill.id}>{skill.name}</span>
               ))}

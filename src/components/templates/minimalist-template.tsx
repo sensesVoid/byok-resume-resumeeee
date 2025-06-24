@@ -31,15 +31,17 @@ export function MinimalistTemplate({ data }: TemplateProps) {
     education,
     skills,
     fontStyle,
-    fontColor,
+    headingColor,
+    bodyColor
   } = data;
 
   const rootStyle = {
     fontFamily: fontMap[fontStyle] || fontMap.inter,
+    color: bodyColor || '#374151',
   } as React.CSSProperties;
 
   const headingStyle = {
-    color: fontColor || '#111827',
+    color: headingColor || '#111827',
   } as React.CSSProperties;
 
   const renderDescription = (text?: string) => {
@@ -51,7 +53,7 @@ export function MinimalistTemplate({ data }: TemplateProps) {
           .map(
             (line, index) =>
               line.trim() && (
-                <li key={index} className="text-sm text-gray-600">
+                <li key={index} className="text-sm">
                   {line.replace(/^-/, '').trim()}
                 </li>
               )
@@ -111,16 +113,16 @@ export function MinimalistTemplate({ data }: TemplateProps) {
       <div className="space-y-6">
         {summary && (
           <section>
-            <h2 className="text-base font-semibold tracking-widest uppercase text-gray-500 mb-2" style={{ color: fontColor ? 'hsl(var(--muted-foreground))' : undefined }}>
+            <h2 className="text-base font-semibold tracking-widest uppercase text-gray-500 mb-2">
               Summary
             </h2>
-            <p className="text-sm text-gray-700">{summary}</p>
+            <p className="text-sm">{summary}</p>
           </section>
         )}
 
         {experience?.length > 0 && (
           <section>
-            <h2 className="text-base font-semibold tracking-widest uppercase text-gray-500 mb-3" style={{ color: fontColor ? 'hsl(var(--muted-foreground))' : undefined }}>
+            <h2 className="text-base font-semibold tracking-widest uppercase text-gray-500 mb-3">
               Experience
             </h2>
             <div className="space-y-4">
@@ -135,7 +137,7 @@ export function MinimalistTemplate({ data }: TemplateProps) {
                     </div>
                   </div>
                   <div className="flex justify-between items-baseline text-sm">
-                    <span className="font-medium text-gray-700">
+                    <span className="font-medium">
                       {exp.company || 'Company'}
                     </span>
                     <span className="text-xs text-gray-500">
@@ -151,7 +153,7 @@ export function MinimalistTemplate({ data }: TemplateProps) {
 
         {education?.length > 0 && (
           <section>
-            <h2 className="text-base font-semibold tracking-widest uppercase text-gray-500 mb-3" style={{ color: fontColor ? 'hsl(var(--muted-foreground))' : undefined }}>
+            <h2 className="text-base font-semibold tracking-widest uppercase text-gray-500 mb-3">
               Education
             </h2>
             <div className="space-y-3">
@@ -166,7 +168,7 @@ export function MinimalistTemplate({ data }: TemplateProps) {
                     </div>
                   </div>
                   <div className="flex justify-between items-baseline text-sm">
-                    <span className="font-medium text-gray-700">
+                    <span className="font-medium">
                       {edu.institution || 'Institution'}
                     </span>
                     <span className="text-xs text-gray-500">
@@ -186,10 +188,10 @@ export function MinimalistTemplate({ data }: TemplateProps) {
 
         {skills?.length > 0 && (
           <section>
-            <h2 className="text-base font-semibold tracking-widest uppercase text-gray-500 mb-3" style={{ color: fontColor ? 'hsl(var(--muted-foreground))' : undefined }}>
+            <h2 className="text-base font-semibold tracking-widest uppercase text-gray-500 mb-3">
               Skills
             </h2>
-            <p className="text-sm text-gray-700">
+            <p className="text-sm">
               {skills.map((skill) => skill.name).join(' · ')}
             </p>
           </section>

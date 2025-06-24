@@ -24,14 +24,15 @@ const fontClassMap: { [key: string]: string } = {
 }
 
 export function CreativeTemplate({ data }: TemplateProps) {
-    const { personalInfo, summary, experience, education, skills, fontStyle, fontColor } = data;
+    const { personalInfo, summary, experience, education, skills, fontStyle, headingColor, bodyColor } = data;
 
     const rootStyle = {
       fontFamily: fontMap[fontStyle] || fontMap.inter,
+      color: bodyColor || '#374151',
     } as React.CSSProperties;
 
     const headingStyle = {
-      color: fontColor || '#111827',
+      color: headingColor || '#111827',
     } as React.CSSProperties;
 
     const renderDescription = (text?: string) => {
@@ -39,7 +40,7 @@ export function CreativeTemplate({ data }: TemplateProps) {
         return (
           <ul className="list-disc space-y-1 pl-4">
             {text.split('\n').map((line, index) => (
-              line.trim() && <li key={index} className="text-sm text-gray-700">{line.replace(/^-/, '').trim()}</li>
+              line.trim() && <li key={index} className="text-sm">{line.replace(/^-/, '').trim()}</li>
             ))}
           </ul>
         );
@@ -57,7 +58,7 @@ export function CreativeTemplate({ data }: TemplateProps) {
                 <div className="space-y-4">
                     <div>
                         <h2 className="font-bold uppercase tracking-wider text-sm mb-2" style={headingStyle}>Contact</h2>
-                        <div className="space-y-1 text-sm text-gray-700">
+                        <div className="space-y-1 text-sm">
                             {personalInfo?.phone && <div className="flex items-center gap-2"><Phone size={14} /><span>{personalInfo.phone}</span></div>}
                             {personalInfo?.email && <div className="flex items-center gap-2"><AtSign size={14} /><span>{personalInfo.email}</span></div>}
                             {personalInfo?.website && <div className="flex items-center gap-2"><Globe size={14} /><span>{personalInfo.website}</span></div>}
@@ -98,7 +99,7 @@ export function CreativeTemplate({ data }: TemplateProps) {
                 {summary && (
                     <section>
                         <h2 className="text-xl font-bold flex items-center gap-2 mb-4" style={headingStyle}><Star size={20} /> Professional Summary</h2>
-                        <p className="text-sm text-gray-700">{summary}</p>
+                        <p className="text-sm">{summary}</p>
                     </section>
                 )}
 

@@ -25,14 +25,15 @@ const fontClassMap: { [key: string]: string } = {
 }
 
 export function ModernTemplate({ data }: TemplateProps) {
-  const { personalInfo, summary, experience, education, skills, fontStyle, fontColor } = data;
+  const { personalInfo, summary, experience, education, skills, fontStyle, headingColor, bodyColor } = data;
 
   const rootStyle = {
     fontFamily: fontMap[fontStyle] || fontMap.inter,
+    color: bodyColor || '#374151',
   } as React.CSSProperties;
 
   const headingStyle = {
-    color: fontColor || '#111827',
+    color: headingColor || '#111827',
   } as React.CSSProperties;
 
   const renderDescription = (text?: string) => {
@@ -40,7 +41,7 @@ export function ModernTemplate({ data }: TemplateProps) {
     return (
       <ul className="list-disc space-y-1 pl-4">
         {text.split('\n').map((line, index) => (
-          line.trim() && <li key={index} className="text-sm text-gray-700">{line.replace(/^-/, '').trim()}</li>
+          line.trim() && <li key={index} className="text-sm">{line.replace(/^-/, '').trim()}</li>
         ))}
       </ul>
     );
@@ -60,7 +61,7 @@ export function ModernTemplate({ data }: TemplateProps) {
 
       {summary && (
         <section className="mt-8">
-          <p className="text-center text-sm text-gray-700">{summary}</p>
+          <p className="text-center text-sm">{summary}</p>
         </section>
       )}
 
@@ -102,7 +103,7 @@ export function ModernTemplate({ data }: TemplateProps) {
                     <span>{edu.institution || 'Institution'}</span>
                     <span className="text-sm">{edu.location || 'Location'}</span>
                   </div>
-                  {edu.description && <p className="mt-1 text-sm text-gray-700">{edu.description}</p>}
+                  {edu.description && <p className="mt-1 text-sm">{edu.description}</p>}
                 </div>
               ))}
             </div>

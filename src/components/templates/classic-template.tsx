@@ -24,14 +24,15 @@ const fontClassMap: { [key: string]: string } = {
 }
 
 export function ClassicTemplate({ data }: TemplateProps) {
-  const { personalInfo, summary, experience, education, skills, fontStyle, fontColor } = data;
+  const { personalInfo, summary, experience, education, skills, fontStyle, headingColor, bodyColor } = data;
   
   const rootStyle = {
     fontFamily: fontMap[fontStyle] || fontMap.inter,
+    color: bodyColor || '#374151',
   } as React.CSSProperties;
 
   const headingStyle = {
-    color: fontColor || '#111827',
+    color: headingColor || '#111827',
   } as React.CSSProperties;
 
   const renderDescription = (text?: string) => {
@@ -39,7 +40,7 @@ export function ClassicTemplate({ data }: TemplateProps) {
     return (
       <ul className="list-disc space-y-1 pl-5">
         {text.split('\n').map((line, index) => (
-          line.trim() && <li key={index} className="text-sm text-gray-700">{line.replace(/^-/, '').trim()}</li>
+          line.trim() && <li key={index} className="text-sm">{line.replace(/^-/, '').trim()}</li>
         ))}
       </ul>
     );
@@ -60,7 +61,7 @@ export function ClassicTemplate({ data }: TemplateProps) {
       {summary && (
         <section className="mb-6">
           <h2 className="text-sm font-bold uppercase tracking-widest text-center border-b-2 border-current pb-1 mb-2" style={headingStyle}>Summary</h2>
-          <p className="text-sm text-center text-gray-700">{summary}</p>
+          <p className="text-sm text-center">{summary}</p>
         </section>
       )}
       

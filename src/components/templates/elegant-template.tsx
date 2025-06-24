@@ -24,14 +24,15 @@ const fontClassMap: { [key: string]: string } = {
 }
 
 export function ElegantTemplate({ data }: TemplateProps) {
-  const { personalInfo, summary, experience, education, skills, fontStyle, fontColor } = data;
+  const { personalInfo, summary, experience, education, skills, fontStyle, headingColor, bodyColor } = data;
   
   const rootStyle = {
     fontFamily: fontMap[fontStyle] || fontMap.inter,
+    color: bodyColor || '#374151',
   } as React.CSSProperties;
 
   const headingStyle = {
-    color: fontColor || '#111827',
+    color: headingColor || '#111827',
   } as React.CSSProperties;
 
   const renderDescription = (text?: string) => {
@@ -39,7 +40,7 @@ export function ElegantTemplate({ data }: TemplateProps) {
     return (
       <ul className="list-disc space-y-1 pl-5">
         {text.split('\n').map((line, index) => (
-          line.trim() && <li key={index} className="text-sm text-gray-600">{line.replace(/^-/, '').trim()}</li>
+          line.trim() && <li key={index} className="text-sm">{line.replace(/^-/, '').trim()}</li>
         ))}
       </ul>
     );
@@ -59,7 +60,7 @@ export function ElegantTemplate({ data }: TemplateProps) {
 
       {summary && (
         <section className="mb-8">
-          <p className="text-center text-sm italic text-gray-700">{summary}</p>
+          <p className="text-center text-sm italic">{summary}</p>
         </section>
       )}
       
@@ -108,7 +109,7 @@ export function ElegantTemplate({ data }: TemplateProps) {
                     <h2 className="text-lg font-semibold uppercase tracking-wider mb-4" style={headingStyle}>Skills</h2>
                     <ul className="space-y-1">
                         {skills.map((skill) => (
-                            <li key={skill.id} className="text-sm text-gray-700">{skill.name}</li>
+                            <li key={skill.id} className="text-sm">{skill.name}</li>
                         ))}
                     </ul>
                 </section>
