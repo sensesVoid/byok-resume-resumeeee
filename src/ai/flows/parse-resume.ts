@@ -76,7 +76,7 @@ function buildPrompt(resumeText: string): string {
 1.  Thoroughly analyze the entire resume text provided.
 2.  Extract the information for each section: personal info, summary, experience, education, skills, certifications, and projects.
 3.  For 'description' fields, capture responsibilities and achievements as a single string, using the newline character (\\n) for bullet points or line breaks.
-4.  If a value for an optional field (like phone, website, or summary) or an entire section (like certifications or projects) is not found, OMIT THE KEY from the JSON output. Do not use placeholders like "N/A".
+4.  If a value for an optional field (like phone, website, or summary) is not found, OMIT THE KEY from the JSON output. The 'certifications' and 'projects' sections are also optional. If these sections are not present in the resume text, completely omit their corresponding keys ('certifications', 'projects') from the JSON output. Do not use placeholders like "N/A" or empty arrays for any missing optional data.
 5.  Your response MUST BE ONLY the JSON object, starting with '{' and ending with '}'. Do not include any other text, explanations, or markdown formatting.
 
 **Resume Text to Parse:**
