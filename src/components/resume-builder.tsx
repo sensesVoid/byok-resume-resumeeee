@@ -35,6 +35,53 @@ import { AboutModal } from '@/components/about-modal';
 import { DonationModal } from './donation-modal';
 import { AppFooter } from './app-footer';
 
+// Import all templates
+import { ModernTemplate } from '@/components/templates/modern-template';
+import { ClassicTemplate } from '@/components/templates/classic-template';
+import { CreativeTemplate } from '@/components/templates/creative-template';
+import { MinimalistTemplate } from '@/components/templates/minimalist-template';
+import { ProfessionalTemplate } from '@/components/templates/professional-template';
+import { ElegantTemplate } from '@/components/templates/elegant-template';
+import { GeometricTemplate } from '@/components/templates/geometric-template';
+import { TechnicalTemplate } from '@/components/templates/technical-template';
+import { CorporateTemplate } from './templates/corporate-template';
+import { InfographicTemplate } from './templates/infographic-template';
+import { AcademicTemplate } from './templates/academic-template';
+import { StartupTemplate } from './templates/startup-template';
+import { ExecutiveTemplate } from './templates/executive-template';
+import { MarketingTemplate } from './templates/marketing-template';
+import { DesignerTemplate } from './templates/designer-template';
+import { DeveloperTemplate } from './templates/developer-template';
+import { LegalTemplate } from './templates/legal-template';
+import { MedicalTemplate } from './templates/medical-template';
+import { TwoToneTemplate } from './templates/two-tone-template';
+import { CompactTemplate } from './templates/compact-template';
+import { FileText } from 'lucide-react';
+
+
+const templates = {
+  modern: ModernTemplate,
+  classic: ClassicTemplate,
+  creative: CreativeTemplate,
+  minimalist: MinimalistTemplate,
+  professional: ProfessionalTemplate,
+  elegant: ElegantTemplate,
+  geometric: GeometricTemplate,
+  technical: TechnicalTemplate,
+  corporate: CorporateTemplate,
+  infographic: InfographicTemplate,
+  academic: AcademicTemplate,
+  startup: StartupTemplate,
+  executive: ExecutiveTemplate,
+  marketing: MarketingTemplate,
+  designer: DesignerTemplate,
+  developer: DeveloperTemplate,
+  legal: LegalTemplate,
+  medical: MedicalTemplate,
+  'two-tone': TwoToneTemplate,
+  compact: CompactTemplate,
+};
+
 export function ResumeBuilder() {
   const form = useForm<ResumeSchema>({
     resolver: zodResolver(resumeSchema),
@@ -58,16 +105,21 @@ export function ResumeBuilder() {
   const [isAtsModalOpen, setIsAtsModalOpen] = useState(false);
   const [isAboutModalOpen, setIsAboutModalOpen] = useState(false);
   const [isDonationModalOpen, setIsDonationModalOpen] = useState(false);
+  const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
+  const [previewTarget, setPreviewTarget] = useState<'resume' | 'cover-letter' | null>(null);
+
   const [atsCheckType, setAtsCheckType] = useState<'resume' | 'cover-letter'>(
     'resume'
   );
 
-  const aiPowered = form.watch('aiPowered');
-  const coverLetter = form.watch('coverLetter');
+  const formData = form.watch();
+  const { aiPowered, coverLetter, template } = formData;
   
   // Monetization config is static and comes from the default data
   const { donationConfig } = defaultResumeData;
   const isDonationEnabled = donationConfig.paypal.enabled || donationConfig.maya.enabled;
+  
+  const SelectedTemplate = templates[template] || ModernTemplate;
 
 
   // Load state from localStorage on initial render
@@ -451,6 +503,12 @@ export function ResumeBuilder() {
     });
   };
 
+  const handlePreviewClick = (type: 'resume' | 'cover-letter') => {
+    setPreviewTarget(type);
+    setIsPreviewModalOpen(true);
+  };
+
+
   return (
     <FormProvider {...form}>
       <input
@@ -469,6 +527,7 @@ export function ResumeBuilder() {
           isAiPowered={aiPowered}
           onDownloadResume={() => handleDownloadPdf('resume')}
           onDownloadCoverLetter={() => handleDownloadPdf('cover-letter')}
+          onPreviewClick={handlePreviewClick}
           isCoverLetterEmpty={!coverLetter}
           isDownloading={isDownloading}
           isDonationEnabled={isDonationEnabled}
@@ -532,9 +591,40 @@ export function ResumeBuilder() {
         </DialogContent>
       </Dialog>
       
+      <Dialog open={isPreviewModalOpen} onOpenChange={setIsPreviewModalOpen}>
+        <DialogContent className="sm:max-w-4xl h-[90vh] flex flex-col p-0">
+          <DialogHeader className="p-6 pb-2 border-b">
+            <DialogTitle>Download Preview: {previewTarget === 'resume' ? 'Resume' : 'Cover Letter'}</DialogTitle>
+            <DialogDescription>
+              This is a preview of what your document will look like.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex-1 overflow-auto bg-muted/30">
+            <div className="p-8 my-8 mx-auto bg-white shadow-lg" style={{width: '210mm'}}>
+              {previewTarget === 'resume' && formData && <SelectedTemplate data={formData} />}
+              {previewTarget === 'cover-letter' && (
+                <div className="p-6 sm:p-8">
+                  {coverLetter ? (
+                    <div className="whitespace-pre-wrap font-body text-sm text-gray-900">
+                      {coverLetter}
+                    </div>
+                  ) : (
+                    <div className="flex h-96 items-center justify-center text-center text-gray-500">
+                      <div className="space-y-2">
+                        <FileText size={48} className="mx-auto" />
+                        <p>No cover letter content to preview.</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       <AboutModal isOpen={isAboutModalOpen} onOpenChange={setIsAboutModalOpen} />
       <DonationModal isOpen={isDonationModalOpen} onOpenChange={setIsDonationModalOpen} />
     </FormProvider>
   );
 }
- 

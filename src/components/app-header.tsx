@@ -8,6 +8,7 @@ import {
   ChevronDown,
   HelpCircle,
   Gift,
+  Eye,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/icons';
@@ -27,6 +28,7 @@ interface AppHeaderProps {
   isAiPowered: boolean;
   onDownloadResume: () => void;
   onDownloadCoverLetter: () => void;
+  onPreviewClick: (type: 'resume' | 'cover-letter') => void;
   isCoverLetterEmpty: boolean;
   isDownloading: boolean;
   isDonationEnabled: boolean;
@@ -42,6 +44,7 @@ export function AppHeader({
   isAiPowered,
   onDownloadResume,
   onDownloadCoverLetter,
+  onPreviewClick,
   isCoverLetterEmpty,
   isDownloading,
   isDonationEnabled,
@@ -73,6 +76,30 @@ export function AppHeader({
             <span className="ml-2 hidden sm:inline">Upload Resume</span>
           </Button>
         )}
+
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="outline"
+              disabled={isDownloading || isUploading || isCalculatingAts}
+            >
+              <Eye />
+              <span className="ml-2 hidden sm:inline">Preview</span>
+              <ChevronDown className="ml-1 h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuItem onClick={() => onPreviewClick('resume')}>
+              Preview Resume
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => onPreviewClick('cover-letter')}
+              disabled={isCoverLetterEmpty}
+            >
+              Preview Cover Letter
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
