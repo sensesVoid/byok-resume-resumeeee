@@ -204,7 +204,7 @@ export function ResumeBuilder() {
         variant: 'destructive',
         title: 'Job Description Missing',
         description:
-          'Please provide a job description in the "AI Job Tools" section to calculate the ATS score.',
+          'Please provide a job description in the "ATS & Job Matching" section to calculate the ATS score.',
       });
       return;
     }

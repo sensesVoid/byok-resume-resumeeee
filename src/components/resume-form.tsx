@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
-import { Bot, Brush, GraduationCap, Info, Loader2, Plus, Trash2, User, Wand2, Briefcase, Star, KeyRound, Power, PowerOff, FileText, HelpCircle, Upload } from 'lucide-react';
+import { Bot, Brush, GraduationCap, Info, Loader2, Plus, Trash2, User, Wand2, Briefcase, Star, KeyRound, Power, PowerOff, HelpCircle, Upload, ScanSearch, Mail } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { generateCoverLetterAction, improveContentAction, validateApiKeyAction } from '@/app/actions';
 import { useState, useTransition, useRef } from 'react';
@@ -166,6 +166,16 @@ export function ResumeForm() {
   const handleGenerateCoverLetter = () => {
     startGeneratingTransition(async () => {
       const { personalInfo, experience, education, skills, summary, jobDescription, aiConfig } = form.getValues();
+      
+      if (!jobDescription) {
+        toast({ 
+            variant: 'destructive', 
+            title: 'Job Description Missing', 
+            description: 'Please add a job description in the "ATS & Job Matching" section first.' 
+        });
+        return;
+      }
+      
       const resume = `
         Name: ${personalInfo.name}
         ${summary ? `Summary: ${summary}` : ''}
@@ -174,10 +184,6 @@ export function ResumeForm() {
         Skills: ${skills.map(s => s.name).join(', ')}
       `;
 
-      if (!jobDescription) {
-        toast({ variant: 'destructive', title: 'Job Description Missing', description: 'Please provide a job description to generate a cover letter.' });
-        return;
-      }
       try {
         const result = await generateCoverLetterAction({ resume, jobDescription, userName: personalInfo.name, aiConfig });
         form.setValue('coverLetter', result.coverLetter, { shouldValidate: true });
@@ -241,7 +247,7 @@ export function ResumeForm() {
           Ad Space (Top)
         </div>
 
-        <Accordion type="multiple" defaultValue={['ai-tools', 'design', 'personal']} className="w-full">
+        <Accordion type="multiple" defaultValue={['ai-tools', 'design', 'personal', 'ats-tools']} className="w-full">
           
           <AccordionItem value="ai-tools">
              <AccordionTrigger><Bot className="mr-3 text-primary" /> Power your Agent</AccordionTrigger>
@@ -567,25 +573,36 @@ export function ResumeForm() {
             </AccordionContent>
           </AccordionItem>
 
-          <AccordionItem value="job-tools">
-            <AccordionTrigger><FileText className="mr-3 text-primary" /> AI Job Tools</AccordionTrigger>
+          <AccordionItem value="ats-tools">
+            <AccordionTrigger><ScanSearch className="mr-3 text-primary" /> ATS & Job Matching</AccordionTrigger>
             <AccordionContent>
-              <div className="space-y-4">
+                <div className="space-y-4">
                 <FormField control={form.control} name="jobDescription" render={({ field }) => (
-                  <FormItem>
+                    <FormItem>
                     <FormLabel>Job Description</FormLabel>
-                    <FormDescription>Paste the job description here to generate a tailored cover letter and check your ATS score.</FormDescription>
+                    <FormDescription>Paste the job description here to check your ATS score and generate a tailored cover letter.</FormDescription>
                     <FormControl><Textarea rows={8} {...field} /></FormControl>
                     <FormMessage />
-                  </FormItem>
+                    </FormItem>
                 )} />
+                </div>
+            </AccordionContent>
+          </AccordionItem>
+
+          <AccordionItem value="cover-letter-generator">
+            <AccordionTrigger><Mail className="mr-3 text-primary" /> AI Cover Letter Generator</AccordionTrigger>
+            <AccordionContent>
+                <div className="space-y-4">
+                <p className="text-sm text-muted-foreground">
+                    Make sure you've added a job description in the "ATS & Job Matching" section above before generating a cover letter.
+                </p>
                 <div className="flex flex-wrap gap-2">
-                  <Button type="button" onClick={handleGenerateCoverLetter} disabled={isGenerating || !aiPowered}>
+                    <Button type="button" onClick={handleGenerateCoverLetter} disabled={isGenerating || !aiPowered}>
                     {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
                     Generate Cover Letter
-                  </Button>
+                    </Button>
                 </div>
-              </div>
+                </div>
             </AccordionContent>
           </AccordionItem>
 
