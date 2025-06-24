@@ -237,6 +237,10 @@ export function ResumeForm() {
   return (
     <Form {...form}>
       <div className="space-y-4">
+        <div className="flex h-24 items-center justify-center rounded-lg border-2 border-dashed bg-muted/50 text-muted-foreground">
+          Ad Space (Top)
+        </div>
+
         <Accordion type="multiple" defaultValue={['ai-tools', 'design', 'personal']} className="w-full">
           
           <AccordionItem value="ai-tools">
@@ -586,6 +590,10 @@ export function ResumeForm() {
           </AccordionItem>
 
         </Accordion>
+
+        <div className="flex h-24 items-center justify-center rounded-lg border-2 border-dashed bg-muted/50 text-muted-foreground">
+          Ad Space (Bottom)
+        </div>
 
         <Dialog open={isSuggestionModalOpen} onOpenChange={setIsSuggestionModalOpen}>
             <DialogContent className="sm:max-w-[625px] bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl">
