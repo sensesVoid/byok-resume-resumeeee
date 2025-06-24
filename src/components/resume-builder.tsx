@@ -34,7 +34,6 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 
-
 // Set worker source for pdfjs-dist
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.mjs`;
 
@@ -53,6 +52,9 @@ export function ResumeBuilder() {
   const [isCalculatingAts, startAtsTransition] = useTransition();
   const [isDownloading, startDownloadingTransition] = useTransition();
 
+  // State to track if data has been loaded from localStorage
+  const [isDataLoaded, setIsDataLoaded] = useState(false);
+
   const [atsResult, setAtsResult] =
     useState<CalculateAtsScoreOutput | null>(null);
   const [isAtsModalOpen, setIsAtsModalOpen] = useState(false);
@@ -63,6 +65,49 @@ export function ResumeBuilder() {
   const aiPowered = form.watch('aiPowered');
   const coverLetter = form.watch('coverLetter');
   const donationUrl = form.watch('donationUrl');
+
+  // Load state from localStorage on initial render
+  useEffect(() => {
+    try {
+      const savedData = localStorage.getItem('resumeeee-data');
+      if (savedData) {
+        const parsedData = JSON.parse(savedData);
+        // Validate against schema to prevent errors from outdated data
+        const validation = resumeSchema.safeParse(parsedData);
+        if (validation.success) {
+          form.reset(validation.data);
+          toast({
+            title: 'Welcome Back!',
+            description: 'Your previous session has been restored.',
+          });
+        }
+      }
+    } catch (error) {
+      console.error('Failed to load data from localStorage', error);
+    } finally {
+      setIsDataLoaded(true);
+    }
+  }, [form, toast]);
+
+  // Save state to localStorage on changes
+  useEffect(() => {
+    // Don't save until initial data is loaded
+    if (!isDataLoaded) return;
+
+    const subscription = form.watch((value) => {
+      try {
+        localStorage.setItem('resumeeee-data', JSON.stringify(value));
+      } catch (error) {
+        console.error('Failed to save data to localStorage', error);
+        toast({
+            variant: 'destructive',
+            title: 'Could not save progress',
+            description: 'There was an issue saving your data to the browser. Your latest changes might not be persisted.'
+        });
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [form, isDataLoaded, toast]);
 
   const handleDownloadPdf = async (target: 'resume' | 'cover-letter') => {
     startDownloadingTransition(async () => {
@@ -103,8 +148,6 @@ export function ResumeBuilder() {
               scale: 2, 
               useCORS: true,
               logging: false,
-              width: clone.offsetWidth,
-              height: clone.offsetHeight,
           });
           
           const imgData = canvas.toDataURL('image/png');
