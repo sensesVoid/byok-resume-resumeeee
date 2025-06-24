@@ -105,13 +105,13 @@ export function ProfessionalTemplate({ data }: TemplateProps) {
               {personalInfo?.email && (
                 <div className="flex items-start gap-2">
                   <AtSign size={14} className="mt-0.5 shrink-0" />
-                  <span>{personalInfo.email}</span>
+                  <span className="break-all">{personalInfo.email}</span>
                 </div>
               )}
               {personalInfo?.website && (
                 <div className="flex items-start gap-2">
                   <Globe size={14} className="mt-0.5 shrink-0" />
-                  <span>{personalInfo.website}</span>
+                  <span className="break-all">{personalInfo.website}</span>
                 </div>
               )}
               {personalInfo?.location && (

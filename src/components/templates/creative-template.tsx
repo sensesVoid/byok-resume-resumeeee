@@ -65,8 +65,8 @@ export function CreativeTemplate({ data }: TemplateProps) {
                         <h2 className="font-bold uppercase tracking-wider text-sm mb-2" style={headingStyle}>Contact</h2>
                         <div className="space-y-1 text-sm">
                             {personalInfo?.phone && <div className="flex items-center gap-2"><Phone size={14} /><span>{personalInfo.phone}</span></div>}
-                            {personalInfo?.email && <div className="flex items-center gap-2"><AtSign size={14} /><span>{personalInfo.email}</span></div>}
-                            {personalInfo?.website && <div className="flex items-center gap-2"><Globe size={14} /><span>{personalInfo.website}</span></div>}
+                            {personalInfo?.email && <div className="flex items-center gap-2"><AtSign size={14} /><span className="break-all">{personalInfo.email}</span></div>}
+                            {personalInfo?.website && <div className="flex items-center gap-2"><Globe size={14} /><span className="break-all">{personalInfo.website}</span></div>}
                             {personalInfo?.location && <div className="flex items-center gap-2"><MapPin size={14} /><span>{personalInfo.location}</span></div>}
                         </div>
                     </div>
