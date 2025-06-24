@@ -30,11 +30,15 @@ const AccordionTrigger = React.forwardRef<
       <AccordionPrimitive.Trigger
         ref={ref}
         className={cn(
-          "group relative flex w-full flex-1 items-center justify-between overflow-hidden p-6 transition-all bg-gradient-to-br from-white/10 to-transparent hover:bg-white/20 dark:from-white/5 dark:to-transparent dark:hover:bg-white/10",
+          "group relative flex w-full flex-1 items-center justify-between overflow-hidden p-6 transition-all",
+          props['data-powered'] === false
+            ? "bg-destructive/10 text-destructive hover:bg-destructive/20 dark:bg-destructive/20 dark:hover:bg-destructive/30"
+            : "bg-gradient-to-br from-white/10 to-transparent hover:bg-white/20 dark:from-white/5 dark:to-transparent dark:hover:bg-white/10",
           className
         )}
         {...props}
       >
+        {/* Glow effect for powered ON state */}
         <div className="absolute inset-0 z-0 bg-gradient-to-r from-blue-400/20 via-sky-400/20 to-cyan-400/20 bg-[length:200%_200%] opacity-0 transition-opacity duration-500 group-hover:opacity-100 group-data-[state=open]:opacity-100 group-data-[powered=true]:opacity-100 animate-flow-glow blur-lg" />
         <div className="relative z-10 flex w-full items-center justify-between">
           {children}
@@ -62,5 +66,3 @@ const AccordionContent = React.forwardRef<
 AccordionContent.displayName = AccordionPrimitive.Content.displayName
 
 export { Accordion, AccordionItem, AccordionTrigger, AccordionContent }
-
-    

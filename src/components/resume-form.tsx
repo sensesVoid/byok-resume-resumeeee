@@ -265,7 +265,7 @@ export function ResumeForm() {
             <Accordion type="multiple" defaultValue={['ai-tools']} className="w-full">
                 <AccordionItem value="ai-tools">
                     <AccordionTrigger data-powered={aiPowered}>
-                        <div className="flex items-center"><KeyRound className="mr-3 text-primary" /> Power your Agent</div>
+                        <div className="flex items-center"><KeyRound className={cn("mr-3", aiPowered ? "text-primary" : "text-destructive")} /> Power your Agent</div>
                     </AccordionTrigger>
                     <AccordionContent>
                         <div className="pt-4">
@@ -345,7 +345,7 @@ export function ResumeForm() {
 
                 <AccordionItem value="ats-tools">
                     <AccordionTrigger data-powered={aiPowered}>
-                        <div className="flex items-center"><ScanSearch className="mr-3 text-primary" /> ATS & Job Matching</div>
+                        <div className="flex items-center"><ScanSearch className={cn("mr-3", aiPowered ? "text-primary" : "text-destructive")} /> ATS & Job Matching</div>
                     </AccordionTrigger>
                     <AccordionContent>
                         <div className="space-y-4 pt-4">
@@ -363,7 +363,7 @@ export function ResumeForm() {
 
                 <AccordionItem value="cover-letter-generator">
                     <AccordionTrigger data-powered={aiPowered}>
-                        <div className="flex items-center"><Mail className="mr-3 text-primary" /> AI Cover Letter Generator</div>
+                        <div className="flex items-center"><Mail className={cn("mr-3", aiPowered ? "text-primary" : "text-destructive")} /> AI Cover Letter Generator</div>
                     </AccordionTrigger>
                     <AccordionContent>
                         <div className="space-y-4 pt-4">
