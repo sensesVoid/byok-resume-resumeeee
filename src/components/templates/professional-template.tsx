@@ -81,10 +81,13 @@ export function ProfessionalTemplate({ data }: TemplateProps) {
     >
       {/* Left Column (Sidebar) */}
       <div className="w-1/3 bg-gray-100 p-8 space-y-8">
-        <div>
-          <h1 className="text-3xl font-bold" style={headingStyle}>
-            {personalInfo?.name || 'Your Name'}
-          </h1>
+        <div className="flex flex-col items-center text-center space-y-4">
+            {personalInfo?.photo && (
+                <img src={personalInfo.photo} alt={personalInfo.name || ''} className="h-32 w-32 rounded-full object-cover border-4 border-white shadow-md" />
+            )}
+            <h1 className="text-3xl font-bold" style={headingStyle}>
+                {personalInfo?.name || 'Your Name'}
+            </h1>
         </div>
 
         <div className="space-y-6">
@@ -92,7 +95,7 @@ export function ProfessionalTemplate({ data }: TemplateProps) {
             <h2 className="font-bold uppercase tracking-wider text-sm mb-2 border-b border-gray-300 pb-1" style={headingStyle}>
               Contact
             </h2>
-            <div className="space-y-2 text-xs text-gray-600">
+            <div className="space-y-2 text-xs" style={{color: bodyColor}}>
               {personalInfo?.phone && (
                 <div className="flex items-start gap-2">
                   <Phone size={14} className="mt-0.5 shrink-0" />
@@ -129,8 +132,8 @@ export function ProfessionalTemplate({ data }: TemplateProps) {
                 {education.map((edu) => (
                   <div key={edu.id}>
                     <h3 className="font-semibold text-md">{edu.degree}</h3>
-                    <p className="text-sm text-gray-600">{edu.institution}</p>
-                    <p className="text-xs text-gray-500">{edu.graduationDate}</p>
+                    <p className="text-sm" style={{color: bodyColor}}>{edu.institution}</p>
+                    <p className="text-xs" style={{color: bodyColor}}>{edu.graduationDate}</p>
                   </div>
                 ))}
               </div>
@@ -174,13 +177,13 @@ export function ProfessionalTemplate({ data }: TemplateProps) {
                   <div className="absolute -left-[33px] top-1.5 h-4 w-4 rounded-full bg-gray-300 border-4 border-white"></div>
                   <div className="flex items-baseline justify-between">
                     <h3 className="text-lg font-semibold">{exp.jobTitle}</h3>
-                    <div className="text-sm font-medium text-gray-500">
+                    <div className="text-sm font-medium" style={{color: bodyColor}}>
                       {exp.startDate} - {exp.endDate || 'Present'}
                     </div>
                   </div>
                   <div className="flex items-baseline justify-between text-md font-medium">
                     <span style={{color: bodyColor}}>{exp.company}</span>
-                    <span className="text-sm text-gray-500">{exp.location}</span>
+                    <span className="text-sm" style={{color: bodyColor}}>{exp.location}</span>
                   </div>
                   <div className="mt-2">{renderDescription(exp.description)}</div>
                 </div>

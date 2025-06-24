@@ -7,10 +7,10 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
-import { Bot, Brush, GraduationCap, Info, Loader2, Plus, Trash2, User, Wand2, Briefcase, Star, KeyRound, Power, PowerOff, FileText, HelpCircle } from 'lucide-react';
+import { Bot, Brush, GraduationCap, Info, Loader2, Plus, Trash2, User, Wand2, Briefcase, Star, KeyRound, Power, PowerOff, FileText, HelpCircle, Upload } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { generateCoverLetterAction, improveContentAction, validateApiKeyAction } from '@/app/actions';
-import { useState, useTransition } from 'react';
+import { useState, useTransition, useRef } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { ScrollArea } from './ui/scroll-area';
 import { TemplateSwitcher } from '@/components/template-switcher';
@@ -18,6 +18,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Separator } from './ui/separator';
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 const fontStyles = [
   { value: 'inter', label: 'Inter (Sans-serif)' },
@@ -32,7 +33,8 @@ export function ResumeForm() {
   const [isGenerating, startGeneratingTransition] = useTransition();
   const [isImproving, startImprovingTransition] = useTransition();
   const [isValidating, startValidationTransition] = useTransition();
-
+  
+  const photoInputRef = useRef<HTMLInputElement>(null);
   const [suggestion, setSuggestion] = useState<string>('');
   const [isSuggestionModalOpen, setIsSuggestionModalOpen] = useState(false);
   const [fieldToUpdate, setFieldToUpdate] = useState<any>(null);
@@ -91,6 +93,50 @@ export function ResumeForm() {
         );
       default:
         return <p>Select a provider to see help.</p>;
+    }
+  };
+
+  const handlePhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+        toast({
+            variant: 'destructive',
+            title: 'Invalid File Type',
+            description: 'Please upload an image file (e.g., PNG, JPG).',
+        });
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        const dataUrl = e.target?.result as string;
+        if (!dataUrl) {
+            toast({
+                variant: 'destructive',
+                title: 'Error Reading File',
+                description: 'Could not read the selected file.',
+            });
+            return;
+        }
+        form.setValue('personalInfo.photo', dataUrl, { shouldValidate: true });
+        toast({
+            title: 'Photo Uploaded!',
+            description: 'Your photo has been added to the resume.',
+        });
+    };
+    reader.onerror = () => {
+        toast({
+            variant: 'destructive',
+            title: 'Error reading file',
+            description: 'Could not read the content from the selected file.',
+        });
+    };
+    reader.readAsDataURL(file);
+
+    if (event.target) {
+        event.target.value = '';
     }
   };
 
@@ -179,6 +225,7 @@ export function ResumeForm() {
       phone: '',
       website: '',
       location: '',
+      photo: '',
     }, { shouldValidate: true });
     toast({ title: 'Personal info cleared.' });
   };
@@ -317,6 +364,50 @@ export function ResumeForm() {
             <AccordionTrigger><User className="mr-3 text-primary" /> Personal Information</AccordionTrigger>
             <AccordionContent>
               <div className="space-y-4">
+                 <FormField
+                    control={form.control}
+                    name="personalInfo.photo"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>Photo</FormLabel>
+                        <FormControl>
+                            <div className="flex items-center gap-4">
+                                <Avatar className="h-20 w-20">
+                                    <AvatarImage src={field.value || undefined} alt="User Photo" />
+                                    <AvatarFallback>
+                                        <User className="h-10 w-10 text-muted-foreground" />
+                                    </AvatarFallback>
+                                </Avatar>
+                                <div className="flex flex-col gap-2">
+                                    <Button type="button" variant="outline" size="sm" onClick={() => photoInputRef.current?.click()}>
+                                        <Upload className="mr-2 h-4 w-4" /> Upload
+                                    </Button>
+                                    {field.value && (
+                                        <Button
+                                            type="button"
+                                            variant="ghost"
+                                            size="sm"
+                                            className="text-muted-foreground hover:text-destructive"
+                                            onClick={() => form.setValue('personalInfo.photo', '', { shouldValidate: true })}
+                                        >
+                                            <Trash2 className="mr-2 h-4 w-4" /> Remove
+                                        </Button>
+                                    )}
+                                </div>
+                            </div>
+                        </FormControl>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                    />
+                    <input
+                        type="file"
+                        ref={photoInputRef}
+                        onChange={handlePhotoUpload}
+                        accept="image/png, image/jpeg"
+                        className="hidden"
+                    />
+
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <FormField control={form.control} name="personalInfo.name" render={({ field }) => (<FormItem><FormLabel>Full Name</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
                   <FormField control={form.control} name="personalInfo.email" render={({ field }) => (<FormItem><FormLabel>Email</FormLabel><FormControl><Input type="email" {...field} /></FormControl><FormMessage /></FormItem>)} />
@@ -324,7 +415,7 @@ export function ResumeForm() {
                   <FormField control={form.control} name="personalInfo.website" render={({ field }) => (<FormItem><FormLabel>Website/Portfolio</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
                   <FormField control={form.control} name="personalInfo.location" render={({ field }) => (<FormItem className="sm:col-span-2"><FormLabel>Location</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
                 </div>
-                <div className="flex justify-end pt-2">
+                 <div className="flex justify-end pt-2">
                    <Button type="button" variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive" onClick={handleClearPersonalInfo}>
                       <Trash2 className="h-4 w-4" />
                    </Button>

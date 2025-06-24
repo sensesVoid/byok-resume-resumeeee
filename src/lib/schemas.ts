@@ -6,6 +6,7 @@ export const personalInfoSchema = z.object({
   phone: z.string().optional(),
   website: z.string().url('Invalid URL').optional(),
   location: z.string().optional(),
+  photo: z.string().optional(),
 });
 
 export const experienceSchema = z.object({
@@ -76,6 +77,7 @@ export const defaultResumeData: ResumeSchema = {
     phone: '123-456-7890',
     website: 'https://johndoe.dev',
     location: 'San Francisco, CA',
+    photo: '',
   },
   summary:
     'Innovative and deadline-driven Software Engineer with 5+ years of experience designing and developing user-centered digital products from initial concept to final, polished deliverable.',

@@ -51,8 +51,13 @@ export function CreativeTemplate({ data }: TemplateProps) {
             {/* Left Column */}
             <div className="md:col-span-1 space-y-8">
                 <div className="text-center">
+                     {personalInfo?.photo && (
+                        <div className="flex justify-center mb-4">
+                            <img src={personalInfo.photo} alt={personalInfo.name || ''} className="h-28 w-28 rounded-full object-cover border-4 border-gray-200 shadow-lg" />
+                        </div>
+                    )}
                     <h1 className="text-3xl font-bold" style={headingStyle}>{personalInfo?.name || 'Your Name'}</h1>
-                    <p className="text-md mt-1 text-gray-600">Aspiring to be great</p>
+                    <p className="text-md mt-1" style={{ color: bodyColor }}>Aspiring to be great</p>
                 </div>
                 
                 <div className="space-y-4">
@@ -73,8 +78,8 @@ export function CreativeTemplate({ data }: TemplateProps) {
                                 {education.map((edu) => (
                                     <div key={edu.id}>
                                         <h3 className="font-semibold text-md">{edu.degree}</h3>
-                                        <p className="text-sm text-gray-600">{edu.institution}</p>
-                                        <p className="text-xs text-gray-500">{edu.graduationDate}</p>
+                                        <p className="text-sm" style={{color: bodyColor}}>{edu.institution}</p>
+                                        <p className="text-xs" style={{color: bodyColor}}>{edu.graduationDate}</p>
                                     </div>
                                 ))}
                             </div>
@@ -111,11 +116,11 @@ export function CreativeTemplate({ data }: TemplateProps) {
                                 <div key={exp.id}>
                                     <div className="flex items-baseline justify-between">
                                         <h3 className="text-lg font-semibold">{exp.jobTitle}</h3>
-                                        <div className="text-sm font-medium text-gray-500">{exp.startDate} - {exp.endDate || 'Present'}</div>
+                                        <div className="text-sm font-medium" style={{color: bodyColor}}>{exp.startDate} - {exp.endDate || 'Present'}</div>
                                     </div>
                                     <div className="flex items-baseline justify-between text-md font-medium">
                                         <span className="text-gray-800">{exp.company}</span>
-                                        <span className="text-sm text-gray-500">{exp.location}</span>
+                                        <span className="text-sm" style={{color: bodyColor}}>{exp.location}</span>
                                     </div>
                                     <div className="mt-2">{renderDescription(exp.description)}</div>
                                 </div>
