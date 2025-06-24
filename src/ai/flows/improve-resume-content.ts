@@ -10,6 +10,8 @@
  */
 
 import {ai} from '@/ai/genkit';
+import {googleAI} from '@genkit-ai/googleai';
+import {aiConfigSchema} from '@/lib/schemas';
 import {z} from 'genkit';
 
 const ImproveResumeContentInputSchema = z.object({
@@ -20,6 +22,7 @@ const ImproveResumeContentInputSchema = z.object({
     .string()
     .optional()
     .describe('Optional job description to tailor the content to.'),
+  aiConfig: aiConfigSchema,
 });
 
 export type ImproveResumeContentInput = z.infer<
@@ -42,22 +45,14 @@ export async function improveResumeContent(
   return improveResumeContentFlow(input);
 }
 
-const improveResumeContentPrompt = ai.definePrompt({
-  name: 'improveResumeContentPrompt',
-  input: {schema: ImproveResumeContentInputSchema},
-  output: {schema: ImproveResumeContentOutputSchema},
-  prompt: `You are an AI resume expert. Provide suggestions to improve the following resume content:
+const basePromptText = `You are an AI resume expert. Provide suggestions to improve the following resume content:
 
-Content: {{{content}}}
+Content: {{{content}}}`;
 
-{% if jobDescription %}
+const jobDescriptionPromptText = `
 Job Description: {{{jobDescription}}}
 
-Tailor the suggestions to this job description.
-{% endif %}
-
-Suggestions:`,
-});
+Tailor the suggestions to this job description.`;
 
 const improveResumeContentFlow = ai.defineFlow(
   {
@@ -66,7 +61,30 @@ const improveResumeContentFlow = ai.defineFlow(
     outputSchema: ImproveResumeContentOutputSchema,
   },
   async input => {
-    const {output} = await improveResumeContentPrompt(input);
+    const {provider, apiKey, model: modelName} = input.aiConfig;
+    if (provider !== 'Google AI') {
+      throw new Error('Only the Google AI provider is supported at this time.');
+    }
+    if (!apiKey) {
+      throw new Error('An API key is required for the selected provider.');
+    }
+    const model = googleAI({apiKey}).model(modelName || 'gemini-2.0-flash');
+
+    let prompt = basePromptText.replace('{{{content}}}', input.content);
+    if (input.jobDescription) {
+      prompt += jobDescriptionPromptText.replace(
+        '{{{jobDescription}}}',
+        input.jobDescription
+      );
+    }
+    prompt += '\n\nSuggestions:';
+
+    const {output} = await ai.generate({
+      model,
+      prompt,
+      output: {schema: ImproveResumeContentOutputSchema},
+    });
+
     return output!;
   }
 );

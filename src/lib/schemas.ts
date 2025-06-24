@@ -27,6 +27,12 @@ export const educationSchema = z.object({
   description: z.string().optional(),
 });
 
+export const aiConfigSchema = z.object({
+  provider: z.string().default('Google AI'),
+  apiKey: z.string().optional(),
+  model: z.string().optional(),
+});
+
 export const resumeSchema = z.object({
   template: z.enum(['modern', 'classic', 'creative']).default('modern'),
   fontStyle: z.enum(['inter', 'roboto', 'lato', 'merriweather']).default('inter'),
@@ -38,6 +44,7 @@ export const resumeSchema = z.object({
   skills: z.array(z.object({ id: z.string(), name: z.string() })),
   jobDescription: z.string().optional(),
   coverLetter: z.string().optional(),
+  aiConfig: aiConfigSchema,
 });
 
 export type ResumeSchema = z.infer<typeof resumeSchema>;
@@ -86,4 +93,9 @@ export const defaultResumeData: ResumeSchema = {
   ],
   jobDescription: '',
   coverLetter: '',
+  aiConfig: {
+    provider: 'Google AI',
+    apiKey: '',
+    model: 'gemini-2.0-flash',
+  },
 };

@@ -1,4 +1,3 @@
-// src/ai/flows/generate-cover-letter.ts
 'use server';
 
 /**
@@ -10,33 +9,36 @@
  */
 
 import {ai} from '@/ai/genkit';
+import {googleAI} from '@genkit-ai/googleai';
+import {aiConfigSchema} from '@/lib/schemas';
 import {z} from 'genkit';
 
 const GenerateCoverLetterInputSchema = z.object({
-  resume: z
-    .string()
-    .describe('The resume of the user.'),
+  resume: z.string().describe('The resume of the user.'),
   jobDescription: z.string().describe('The job description for the role.'),
   userName: z.string().describe('The name of the user.'),
+  aiConfig: aiConfigSchema,
 });
 
-export type GenerateCoverLetterInput = z.infer<typeof GenerateCoverLetterInputSchema>;
+export type GenerateCoverLetterInput = z.infer<
+  typeof GenerateCoverLetterInputSchema
+>;
 
 const GenerateCoverLetterOutputSchema = z.object({
   coverLetter: z.string().describe('The generated cover letter.'),
 });
 
-export type GenerateCoverLetterOutput = z.infer<typeof GenerateCoverLetterOutputSchema>;
+export type GenerateCoverLetterOutput = z.infer<
+  typeof GenerateCoverLetterOutputSchema
+>;
 
-export async function generateCoverLetter(input: GenerateCoverLetterInput): Promise<GenerateCoverLetterOutput> {
+export async function generateCoverLetter(
+  input: GenerateCoverLetterInput
+): Promise<GenerateCoverLetterOutput> {
   return generateCoverLetterFlow(input);
 }
 
-const generateCoverLetterPrompt = ai.definePrompt({
-  name: 'generateCoverLetterPrompt',
-  input: {schema: GenerateCoverLetterInputSchema},
-  output: {schema: GenerateCoverLetterOutputSchema},
-  prompt: `You are an expert career advisor.
+const promptText = `You are an expert career advisor.
 
   Based on the user's resume and the job description, generate a cover letter for the user.
   The cover letter should be tailored to the job description and highlight the user's relevant skills and experience.
@@ -48,8 +50,7 @@ const generateCoverLetterPrompt = ai.definePrompt({
   Job Description: {{{jobDescription}}}
   User Name: {{{userName}}}
 
-  Cover Letter:`,
-});
+  Cover Letter:`;
 
 const generateCoverLetterFlow = ai.defineFlow(
   {
@@ -58,7 +59,26 @@ const generateCoverLetterFlow = ai.defineFlow(
     outputSchema: GenerateCoverLetterOutputSchema,
   },
   async input => {
-    const {output} = await generateCoverLetterPrompt(input);
+    const {provider, apiKey, model: modelName} = input.aiConfig;
+    if (provider !== 'Google AI') {
+      throw new Error('Only the Google AI provider is supported at this time.');
+    }
+    if (!apiKey) {
+      throw new Error('An API key is required for the selected provider.');
+    }
+    const model = googleAI({apiKey}).model(modelName || 'gemini-2.0-flash');
+
+    const prompt = promptText
+      .replace('{{{resume}}}', input.resume)
+      .replace('{{{jobDescription}}}', input.jobDescription)
+      .replace('{{{userName}}}', input.userName);
+
+    const {output} = await ai.generate({
+      model,
+      prompt,
+      output: {schema: GenerateCoverLetterOutputSchema},
+    });
+
     return output!;
   }
 );

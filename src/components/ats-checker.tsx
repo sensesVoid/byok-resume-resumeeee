@@ -20,7 +20,7 @@ export function AtsChecker() {
   const [atsResult, setAtsResult] = useState<CalculateAtsScoreOutput | null>(null);
 
   const handleCalculateAtsScore = () => {
-    const { personalInfo, summary, experience, education, skills, jobDescription } = getValues();
+    const { personalInfo, summary, experience, education, skills, jobDescription, aiConfig } = getValues();
     
     if (!jobDescription) {
       toast({
@@ -60,7 +60,7 @@ export function AtsChecker() {
     startTransition(async () => {
       try {
         setAtsResult(null);
-        const result = await calculateAtsScoreAction({ resumeText, jobDescription });
+        const result = await calculateAtsScoreAction({ resumeText, jobDescription, aiConfig });
         setAtsResult(result);
         toast({
           title: 'Success!',

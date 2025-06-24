@@ -8,6 +8,8 @@
  */
 
 import {ai} from '@/ai/genkit';
+import {googleAI} from '@genkit-ai/googleai';
+import {aiConfigSchema} from '@/lib/schemas';
 import {z} from 'genkit';
 
 // Schemas for what the AI should output. These omit IDs.
@@ -55,6 +57,7 @@ const ParseResumeInputSchema = z.object({
   resumeText: z
     .string()
     .describe('The full text content of the resume to be parsed.'),
+  aiConfig: aiConfigSchema,
 });
 export type ParseResumeInput = z.infer<typeof ParseResumeInputSchema>;
 
@@ -62,18 +65,13 @@ export async function parseResume(input: ParseResumeInput): Promise<ParseResumeO
   return parseResumeFlow(input);
 }
 
-const parseResumePrompt = ai.definePrompt({
-  name: 'parseResumePrompt',
-  input: {schema: ParseResumeInputSchema},
-  output: {schema: ParseResumeOutputSchema},
-  prompt: `You are an expert resume parser. Your task is to analyze the provided resume text and extract the information into a structured JSON format.
+const promptText = `You are an expert resume parser. Your task is to analyze the provided resume text and extract the information into a structured JSON format.
 
 Pay close attention to dates, job titles, company names, and educational degrees. For descriptions, capture the key responsibilities and achievements. For skills, list each skill individually.
 
 Resume Text:
 {{{resumeText}}}
-`,
-});
+`;
 
 const parseResumeFlow = ai.defineFlow(
   {
@@ -82,7 +80,23 @@ const parseResumeFlow = ai.defineFlow(
     outputSchema: ParseResumeOutputSchema,
   },
   async input => {
-    const {output} = await parseResumePrompt(input);
+    const {provider, apiKey, model: modelName} = input.aiConfig;
+    if (provider !== 'Google AI') {
+      throw new Error('Only the Google AI provider is supported at this time.');
+    }
+    if (!apiKey) {
+      throw new Error('An API key is required for the selected provider.');
+    }
+    const model = googleAI({apiKey}).model(modelName || 'gemini-2.0-flash');
+
+    const prompt = promptText.replace('{{{resumeText}}}', input.resumeText);
+
+    const {output} = await ai.generate({
+      model,
+      prompt,
+      output: {schema: ParseResumeOutputSchema},
+    });
+
     return output!;
   }
 );

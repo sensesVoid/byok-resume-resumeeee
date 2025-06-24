@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
-import { BrainCircuit, Brush, GraduationCap, Info, Loader2, Plus, Trash2, User, Wand2, Briefcase, Star } from 'lucide-react';
+import { BrainCircuit, Brush, GraduationCap, Info, Loader2, Plus, Trash2, User, Wand2, Briefcase, Star, KeyRound } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { generateCoverLetterAction, improveContentAction } from '@/app/actions';
 import { useState, useTransition } from 'react';
@@ -18,6 +18,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { AtsChecker } from '@/components/ats-checker';
 import { Label } from './ui/label';
+import { Separator } from './ui/separator';
 
 const fontColors = [
   { value: '#111827', name: 'Dark Gray' },
@@ -49,7 +50,7 @@ export function ResumeForm() {
 
   const handleGenerateCoverLetter = () => {
     startTransition(async () => {
-      const { personalInfo, experience, education, skills, summary, jobDescription } = form.getValues();
+      const { personalInfo, experience, education, skills, summary, jobDescription, aiConfig } = form.getValues();
       const resume = `
         Name: ${personalInfo.name}
         ${summary ? `Summary: ${summary}` : ''}
@@ -63,7 +64,7 @@ export function ResumeForm() {
         return;
       }
       try {
-        const result = await generateCoverLetterAction({ resume, jobDescription, userName: personalInfo.name });
+        const result = await generateCoverLetterAction({ resume, jobDescription, userName: personalInfo.name, aiConfig });
         form.setValue('coverLetter', result.coverLetter, { shouldValidate: true });
         toast({ title: 'Success!', description: 'Your AI-powered cover letter has been generated.' });
       } catch (error) {
@@ -75,9 +76,9 @@ export function ResumeForm() {
   const handleImproveContent = (fieldName: any, content: string) => {
     startImprovingTransition(async () => {
       setFieldToUpdate(fieldName);
-      const { jobDescription } = form.getValues();
+      const { jobDescription, aiConfig } = form.getValues();
       try {
-        const result = await improveContentAction({ content, jobDescription });
+        const result = await improveContentAction({ content, jobDescription, aiConfig });
         setSuggestion(result.suggestions);
         setIsSuggestionModalOpen(true);
       } catch (error) {
@@ -108,7 +109,7 @@ export function ResumeForm() {
   return (
     <Form {...form}>
       <div className="space-y-4">
-        <Accordion type="multiple" defaultValue={['design', 'personal']} className="w-full">
+        <Accordion type="multiple" defaultValue={['design', 'personal', 'ai-tools']} className="w-full">
           
           <AccordionItem value="design">
             <AccordionTrigger><Brush className="mr-3 text-primary" /> Design & Style</AccordionTrigger>
@@ -230,9 +231,44 @@ export function ResumeForm() {
              <AccordionTrigger><BrainCircuit className="mr-3 text-primary" /> AI Tools</AccordionTrigger>
              <AccordionContent className="space-y-8">
                 <div>
+                   <h3 className="font-semibold flex items-center gap-2 mb-2"><KeyRound/> API Configuration</h3>
+                   <p className="text-sm text-muted-foreground mb-4">Bring your own API key to use the AI features. The key is sent with each request and not stored on any server.</p>
+                   <div className="space-y-4">
+                     <FormField control={form.control} name="aiConfig.provider" render={({ field }) => (
+                         <FormItem>
+                           <FormLabel>Provider</FormLabel>
+                           <Select onValueChange={field.onChange} defaultValue={field.value}>
+                             <FormControl><SelectTrigger><SelectValue/></SelectTrigger></FormControl>
+                             <SelectContent>
+                               <SelectItem value="Google AI">Google AI</SelectItem>
+                               <SelectItem value="OpenAI" disabled>OpenAI (Coming Soon)</SelectItem>
+                             </SelectContent>
+                           </Select>
+                           <FormMessage />
+                         </FormItem>
+                       )} />
+                       <FormField control={form.control} name="aiConfig.apiKey" render={({ field }) => (
+                         <FormItem>
+                           <FormLabel>API Key</FormLabel>
+                           <FormControl><Input type="password" placeholder="Enter your API key" {...field} /></FormControl>
+                           <FormMessage />
+                         </FormItem>
+                       )} />
+                       <FormField control={form.control} name="aiConfig.model" render={({ field }) => (
+                         <FormItem>
+                           <FormLabel>Model Name</FormLabel>
+                           <FormControl><Input placeholder="e.g., gemini-2.0-flash" {...field} /></FormControl>
+                           <FormMessage />
+                         </FormItem>
+                       )} />
+                   </div>
+                </div>
+                <Separator className="my-6" />
+                <div>
                   <h3 className="font-semibold mb-2">ATS Score Checker</h3>
                   <AtsChecker />
                 </div>
+                <Separator className="my-6" />
                 <div>
                   <h3 className="font-semibold mb-2">AI Cover Letter Generator</h3>
                    <div className="space-y-4">

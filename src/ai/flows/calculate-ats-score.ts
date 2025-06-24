@@ -10,6 +10,8 @@
  */
 
 import {ai} from '@/ai/genkit';
+import {googleAI} from '@genkit-ai/googleai';
+import {aiConfigSchema} from '@/lib/schemas';
 import {z} from 'genkit';
 
 const CalculateAtsScoreInputSchema = z.object({
@@ -17,6 +19,7 @@ const CalculateAtsScoreInputSchema = z.object({
   jobDescription: z
     .string()
     .describe('The job description to compare the resume against.'),
+  aiConfig: aiConfigSchema,
 });
 
 export type CalculateAtsScoreInput = z.infer<
@@ -58,11 +61,7 @@ export async function calculateAtsScore(
   return calculateAtsScoreFlow(input);
 }
 
-const calculateAtsScorePrompt = ai.definePrompt({
-  name: 'calculateAtsScorePrompt',
-  input: {schema: CalculateAtsScoreInputSchema},
-  output: {schema: CalculateAtsScoreOutputSchema},
-  prompt: `You are an advanced Applicant Tracking System (ATS) simulator. Your task is to analyze the provided resume against the given job description and provide a detailed evaluation.
+const promptText = `You are an advanced Applicant Tracking System (ATS) simulator. Your task is to analyze the provided resume against the given job description and provide a detailed evaluation.
 
   **Instructions:**
   1.  **Calculate Score:** Assign a score from 0 to 100 based on the relevance of the resume's content (experience, skills) to the job description. A higher score means a better match.
@@ -75,8 +74,7 @@ const calculateAtsScorePrompt = ai.definePrompt({
 
   **Resume Text:**
   {{{resumeText}}}
-`,
-});
+`;
 
 const calculateAtsScoreFlow = ai.defineFlow(
   {
@@ -85,7 +83,24 @@ const calculateAtsScoreFlow = ai.defineFlow(
     outputSchema: CalculateAtsScoreOutputSchema,
   },
   async input => {
-    const {output} = await calculateAtsScorePrompt(input);
+    const {provider, apiKey, model: modelName} = input.aiConfig;
+    if (provider !== 'Google AI') {
+      throw new Error('Only the Google AI provider is supported at this time.');
+    }
+    if (!apiKey) {
+      throw new Error('An API key is required for the selected provider.');
+    }
+    const model = googleAI({apiKey}).model(modelName || 'gemini-2.0-flash');
+
+    const prompt = promptText
+      .replace('{{{jobDescription}}}', input.jobDescription)
+      .replace('{{{resumeText}}}', input.resumeText);
+
+    const {output} = await ai.generate({
+      model,
+      prompt,
+      output: {schema: CalculateAtsScoreOutputSchema},
+    });
     return output!;
   }
 );

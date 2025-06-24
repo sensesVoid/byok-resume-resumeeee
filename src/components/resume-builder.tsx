@@ -60,15 +60,15 @@ export function ResumeBuilder() {
       }
       startUploadingTransition(async () => {
         try {
-          const parsedData = await parseResumeAction({ resumeText: text });
+          const { aiConfig } = form.getValues();
+          const parsedData = await parseResumeAction({ resumeText: text, aiConfig });
           
           const finalData = {
-            ...parsedData,
+            ...form.getValues(), // preserve existing values
+            ...parsedData, // overwrite with parsed data
             experience: parsedData.experience.map(exp => ({...exp, id: crypto.randomUUID()})),
             education: parsedData.education.map(edu => ({...edu, id: crypto.randomUUID()})),
             skills: parsedData.skills.map(skill => ({...skill, id: crypto.randomUUID()})),
-            jobDescription: form.getValues('jobDescription'), 
-            coverLetter: form.getValues('coverLetter'),
           };
 
           form.reset(finalData);
