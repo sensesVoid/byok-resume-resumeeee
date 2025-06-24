@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils';
 const fontSans = Inter({
   subsets: ['latin'],
   variable: '--font-sans',
+  display: 'swap',
 });
 
 export const metadata: Metadata = {
