@@ -66,7 +66,9 @@ export function ResumeBuilder() {
 
   const aiPowered = form.watch('aiPowered');
   const coverLetter = form.watch('coverLetter');
-  const donationUrl = form.watch('donationUrl');
+  const donationConfig = form.watch('donationConfig');
+  const isDonationEnabled = donationConfig?.maya?.enabled || donationConfig?.paypal?.enabled;
+
 
   // Load state from localStorage on initial render
   useEffect(() => {
@@ -147,7 +149,7 @@ export function ResumeBuilder() {
 
       try {
           const canvas = await html2canvas(clone, {
-              scale: 2, 
+              scale: 2,
               useCORS: true,
               logging: false,
           });
@@ -460,7 +462,7 @@ export function ResumeBuilder() {
           onDownloadCoverLetter={() => handleDownloadPdf('cover-letter')}
           isCoverLetterEmpty={!coverLetter}
           isDownloading={isDownloading}
-          donationUrl={donationUrl}
+          isDonationEnabled={isDonationEnabled}
           onAboutClick={() => setIsAboutModalOpen(true)}
         />
         <main className="flex-1 overflow-hidden">

@@ -20,6 +20,8 @@ import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Switch } from './ui/switch';
+import { MayaIcon, PayPalIcon } from './payment-icons';
+
 
 const fontStyles = [
   { value: 'inter', label: 'Inter (Sans-serif)' },
@@ -49,6 +51,7 @@ export function ResumeForm() {
   const aiProvider = form.watch('aiConfig.provider');
   const selectedTemplate = form.watch('template');
   const advertisements = form.watch('advertisements');
+  const donationConfig = form.watch('donationConfig');
   const templatesWithPhoto: ResumeSchema['template'][] = ['professional', 'creative'];
   const showPhotoUpload = templatesWithPhoto.includes(selectedTemplate);
 
@@ -401,28 +404,82 @@ export function ResumeForm() {
           <AccordionItem value="monetization">
             <AccordionTrigger><DollarSign className="mr-3 text-primary" /> Monetization</AccordionTrigger>
             <AccordionContent className="space-y-6">
-               <div className="space-y-4 rounded-lg border p-4">
-                <h4 className="font-semibold">Donation Button</h4>
-                <FormField
-                  control={form.control}
-                  name="donationUrl"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Donation Page URL</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          placeholder="https://your-donation-link.com"
+              <div>
+                <h3 className="text-lg font-semibold text-foreground px-1">Donations</h3>
+                <p className="text-sm text-muted-foreground px-1 mb-4">Enable donation methods to receive support. A "Donate" button will appear in the header.</p>
+                
+                {/* PayPal Section */}
+                <div className="space-y-4 rounded-lg border p-4">
+                    <div className="flex items-center justify-between">
+                        <h4 className="font-semibold flex items-center gap-2"><PayPalIcon className="h-5 w-5" /> PayPal</h4>
+                        <FormField
+                            control={form.control}
+                            name="donationConfig.paypal.enabled"
+                            render={({ field }) => (
+                            <FormItem className="flex items-center gap-2 space-y-0">
+                                <FormControl>
+                                <Switch checked={field.value} onCheckedChange={field.onChange} />
+                                </FormControl>
+                                <FormLabel>{field.value ? 'Enabled' : 'Disabled'}</FormLabel>
+                            </FormItem>
+                            )}
                         />
-                      </FormControl>
-                      <FormDescription>
-                        Provide a link to your donation page (e.g., Buy Me a Coffee, Patreon, Maya). If provided, a "Donate" button will appear in the header.
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                    </div>
+                    <FormField
+                        control={form.control}
+                        name="donationConfig.paypal.username"
+                        render={({ field }) => (
+                            <FormItem>
+                            <FormLabel>PayPal.me Username</FormLabel>
+                            <FormControl>
+                                <Input {...field} placeholder="your-username" disabled={!donationConfig.paypal.enabled} />
+                            </FormControl>
+                             <FormDescription>
+                                Find this at <a href="https://www.paypal.com/paypalme" target="_blank" rel="noopener noreferrer" className="underline">paypal.com/paypalme</a>. Enter only your username.
+                             </FormDescription>
+                            <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                </div>
+
+                {/* Maya Section */}
+                <div className="space-y-4 rounded-lg border p-4 mt-4">
+                    <div className="flex items-center justify-between">
+                        <h4 className="font-semibold flex items-center gap-2"><MayaIcon className="h-5 w-5 text-[#00a9e0]" /> Maya</h4>
+                        <FormField
+                            control={form.control}
+                            name="donationConfig.maya.enabled"
+                            render={({ field }) => (
+                            <FormItem className="flex items-center gap-2 space-y-0">
+                                <FormControl>
+                                <Switch checked={field.value} onCheckedChange={field.onChange} />
+                                </FormControl>
+                                <FormLabel>{field.value ? 'Enabled' : 'Disabled'}</FormLabel>
+                            </FormItem>
+                            )}
+                        />
+                    </div>
+                    <FormField
+                        control={form.control}
+                        name="donationConfig.maya.number"
+                        render={({ field }) => (
+                            <FormItem>
+                            <FormLabel>Maya Phone Number</FormLabel>
+                            <FormControl>
+                                <Input {...field} placeholder="09123456789" disabled={!donationConfig.maya.enabled} />
+                            </FormControl>
+                             <FormDescription>
+                                Your public Maya number for receiving payments. The app will generate a QR code from this number.
+                             </FormDescription>
+                            <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                </div>
               </div>
+
+
               <Separator className="my-4" />
               <h3 className="text-lg font-semibold text-foreground px-1">Advertisements</h3>
               {/* Top Ad Section */}
