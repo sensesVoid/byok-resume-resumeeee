@@ -39,6 +39,8 @@ const fontClassMap: { [key: string]: string } = {
   merriweather: 'font-serif',
 }
 
+type DraggableItem = 'photo' | 'header' | 'summary' | 'experience' | 'education' | 'skills';
+
 const EditableField = ({
   name,
   placeholder,
@@ -91,7 +93,7 @@ export function DiyTemplate({ data }: { data: ResumeSchema }) {
   const { toast } = useToast();
   const photoInputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
-  const [draggedItem, setDraggedItem] = useState<string | null>(null);
+  const [draggedItem, setDraggedItem] = useState<DraggableItem | null>(null);
 
   const {
     fields: experienceFields,
@@ -183,19 +185,22 @@ export function DiyTemplate({ data }: { data: ResumeSchema }) {
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
+    setIsDragging(false);
 
-    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0 && draggedItem === 'photo') {
       handleFile(e.dataTransfer.files[0]);
-    } else if (draggedItem === 'photo') {
+    } else if (draggedItem) {
       const dropZone = e.currentTarget.getBoundingClientRect();
-      const photoSize = 112; // w-28 is 7rem = 112px
-      const newX = e.clientX - dropZone.left - photoSize / 2;
-      const newY = e.clientY - dropZone.top - photoSize / 2;
-      setValue('personalInfo.photoX', newX, { shouldValidate: true });
-      setValue('personalInfo.photoY', newY, { shouldValidate: true });
+      // Adjust for the element's own dimensions to center it on the cursor
+      const element = (e.target as HTMLElement).querySelector(`[data-drag-id="${draggedItem}"]`) || e.target as HTMLElement;
+      const elRect = element.getBoundingClientRect();
+
+      const newX = e.clientX - dropZone.left - (elRect.width / 2);
+      const newY = e.clientY - dropZone.top - (elRect.height / 2);
+      setValue(`diyLayout.${draggedItem}.x`, newX, { shouldValidate: true });
+      setValue(`diyLayout.${draggedItem}.y`, newY, { shouldValidate: true });
     }
     
-    setIsDragging(false);
     setDraggedItem(null);
   };
 
@@ -207,7 +212,7 @@ export function DiyTemplate({ data }: { data: ResumeSchema }) {
   const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    if (e.dataTransfer.items && e.dataTransfer.items.length > 0) {
+    if ((e.dataTransfer.items && e.dataTransfer.items.length > 0) || draggedItem) {
       setIsDragging(true);
     }
   };
@@ -218,12 +223,44 @@ export function DiyTemplate({ data }: { data: ResumeSchema }) {
     setIsDragging(false);
   };
 
-  const handlePhotoDragStart = (e: React.DragEvent<HTMLDivElement>) => {
-    setDraggedItem('photo');
+  const handleDragStart = (e: React.DragEvent<HTMLDivElement>, item: DraggableItem) => {
+    setDraggedItem(item);
     // Use a transparent image as drag ghost to show the real element being dragged
     const img = new Image();
     img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
     e.dataTransfer.setDragImage(img, 0, 0);
+  };
+
+
+  const DraggableWrapper = ({
+    name,
+    children,
+    className
+  }: {
+    name: DraggableItem;
+    children: React.ReactNode;
+    className?: string;
+  }) => {
+    const position = watch(`diyLayout.${name}`);
+    return (
+      <div
+        data-drag-id={name}
+        draggable
+        onDragStart={(e) => handleDragStart(e, name)}
+        className={cn(
+          "group absolute cursor-grab p-2",
+          draggedItem === name && "opacity-50",
+          className
+        )}
+        style={{
+          left: `${position?.x ?? 0}px`,
+          top: `${position?.y ?? 0}px`,
+        }}
+      >
+        <div className="absolute inset-0 border-2 border-dashed border-transparent group-hover:border-primary/50 transition-colors pointer-events-none" />
+        {children}
+      </div>
+    );
   };
 
 
@@ -236,36 +273,32 @@ export function DiyTemplate({ data }: { data: ResumeSchema }) {
       onDragEnter={handleDragEnter}
       onDragLeave={handleDragLeave}
     >
-      <div
-          draggable
-          onDragStart={handlePhotoDragStart}
-          className={cn(
-              "group absolute w-28 h-28 rounded-full transition-all cursor-grab",
-              isDragging && "ring-4 ring-primary ring-offset-2 scale-105"
-          )}
-          style={{
-            left: `${watch('personalInfo.photoX') ?? 250}px`,
-            top: `${watch('personalInfo.photoY') ?? 20}px`,
-          }}
-        >
-          <Avatar className="h-full w-full pointer-events-none">
-              <AvatarImage src={watch('personalInfo.photo') || undefined} alt={watch('personalInfo.name') || 'User photo'} />
-              <AvatarFallback className="h-full w-full">
-                  <User className="h-12 w-12 text-muted-foreground" />
-              </AvatarFallback>
-          </Avatar>
-          
-          <div className="absolute inset-0 rounded-full bg-black/50 flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity cursor-default">
-              <Button type="button" size="icon" onClick={() => photoInputRef.current?.click()} aria-label="Upload photo">
-                  <Upload className="h-5 w-5" />
-              </Button>
-              {watch('personalInfo.photo') && (
-                  <Button type="button" size="icon" variant="destructive" onClick={() => setValue('personalInfo.photo', '', { shouldValidate: true })} aria-label="Remove photo">
-                      <Trash2 className="h-5 w-5" />
-                  </Button>
-              )}
+      <DraggableWrapper name="photo" className="w-28 h-28 rounded-full">
+          <div
+            className={cn(
+                "relative w-full h-full rounded-full transition-all",
+                isDragging && "ring-4 ring-primary ring-offset-2 scale-105"
+            )}
+            >
+            <Avatar className="h-full w-full pointer-events-none">
+                <AvatarImage src={watch('personalInfo.photo') || undefined} alt={watch('personalInfo.name') || 'User photo'} />
+                <AvatarFallback className="h-full w-full">
+                    <User className="h-12 w-12 text-muted-foreground" />
+                </AvatarFallback>
+            </Avatar>
+            
+            <div className="absolute inset-0 rounded-full bg-black/50 flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity cursor-default">
+                <Button type="button" size="icon" onClick={() => photoInputRef.current?.click()} aria-label="Upload photo">
+                    <Upload className="h-5 w-5" />
+                </Button>
+                {watch('personalInfo.photo') && (
+                    <Button type="button" size="icon" variant="destructive" onClick={() => setValue('personalInfo.photo', '', { shouldValidate: true })} aria-label="Remove photo">
+                        <Trash2 className="h-5 w-5" />
+                    </Button>
+                )}
+            </div>
           </div>
-      </div>
+      </DraggableWrapper>
       <input
           type="file"
           ref={photoInputRef}
@@ -274,52 +307,54 @@ export function DiyTemplate({ data }: { data: ResumeSchema }) {
           className="hidden"
       />
 
-      <header className="text-center pt-40">
-        <div style={headingStyle}>
+      <DraggableWrapper name="header" className="w-[calc(100%-3rem)]">
+        <header className="text-center">
+          <div style={headingStyle}>
+            <EditableField
+              name="personalInfo.name"
+              placeholder="Your Name"
+              className="text-4xl font-bold tracking-tight text-center"
+            />
+          </div>
+          <div className="mt-2 flex flex-wrap justify-center gap-x-4 gap-y-1 text-sm text-gray-500">
+            <span className="inline-flex items-center gap-1.5">
+              <AtSign size={14} />
+              <EditableField name="personalInfo.email" placeholder="Email" />
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <Phone size={14} />
+              <EditableField name="personalInfo.phone" placeholder="Phone" />
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <Globe size={14} />
+              <EditableField
+                name="personalInfo.website"
+                placeholder="Website"
+              />
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <MapPin size={14} />
+              <EditableField
+                name="personalInfo.location"
+                placeholder="Location"
+              />
+            </span>
+          </div>
+        </header>
+      </DraggableWrapper>
+
+      <DraggableWrapper name="summary" className="w-[calc(100%-3rem)]">
+        <section>
           <EditableField
-            name="personalInfo.name"
-            placeholder="Your Name"
-            className="text-4xl font-bold tracking-tight text-center"
+            name="summary"
+            as="textarea"
+            placeholder="Your professional summary..."
+            className="text-center text-sm"
           />
-        </div>
-        <div className="mt-2 flex flex-wrap justify-center gap-x-4 gap-y-1 text-sm text-gray-500">
-          <span className="inline-flex items-center gap-1.5">
-            <AtSign size={14} />
-            <EditableField name="personalInfo.email" placeholder="Email" />
-          </span>
-          <span className="inline-flex items-center gap-1.5">
-            <Phone size={14} />
-            <EditableField name="personalInfo.phone" placeholder="Phone" />
-          </span>
-          <span className="inline-flex items-center gap-1.5">
-            <Globe size={14} />
-            <EditableField
-              name="personalInfo.website"
-              placeholder="Website"
-            />
-          </span>
-          <span className="inline-flex items-center gap-1.5">
-            <MapPin size={14} />
-            <EditableField
-              name="personalInfo.location"
-              placeholder="Location"
-            />
-          </span>
-        </div>
-      </header>
+        </section>
+      </DraggableWrapper>
 
-      <section className="mt-8">
-        <EditableField
-          name="summary"
-          as="textarea"
-          placeholder="Your professional summary..."
-          className="text-center text-sm"
-        />
-      </section>
-
-      <Separator className="my-6 bg-gray-200" />
-
-      <div className="space-y-8">
+      <DraggableWrapper name="experience" className="w-[calc(100%-3rem)]">
         <section>
           <h2 className="mb-4 flex items-center gap-2 text-xl font-bold" style={headingStyle}>
             <Briefcase size={20} /> Work Experience
@@ -392,7 +427,9 @@ export function DiyTemplate({ data }: { data: ResumeSchema }) {
             </Button>
           </div>
         </section>
+      </DraggableWrapper>
 
+      <DraggableWrapper name="education" className="w-[calc(100%-3rem)]">
         <section>
           <h2 className="mb-4 flex items-center gap-2 text-xl font-bold" style={headingStyle}>
             <GraduationCap size={20} /> Education
@@ -453,7 +490,9 @@ export function DiyTemplate({ data }: { data: ResumeSchema }) {
             </Button>
           </div>
         </section>
+      </DraggableWrapper>
 
+      <DraggableWrapper name="skills" className="w-[calc(100%-3rem)]">
         <section>
           <h2 className="mb-4 flex items-center gap-2 text-xl font-bold" style={headingStyle}>
             <Star size={20} /> Skills
@@ -491,7 +530,7 @@ export function DiyTemplate({ data }: { data: ResumeSchema }) {
             </div>
           </div>
         </section>
-      </div>
+      </DraggableWrapper>
     </div>
   );
 }

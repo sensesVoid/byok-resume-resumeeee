@@ -7,8 +7,6 @@ export const personalInfoSchema = z.object({
   website: z.string().url('Invalid URL').optional(),
   location: z.string().optional(),
   photo: z.string().optional(),
-  photoX: z.number().optional(),
-  photoY: z.number().optional(),
 });
 
 export const experienceSchema = z.object({
@@ -46,6 +44,10 @@ export const donationConfigSchema = z.object({
   }),
 });
 
+const positionSchema = z.object({
+  x: z.number(),
+  y: z.number(),
+});
 
 export const resumeSchema = z.object({
   aiPowered: z.boolean().default(false),
@@ -81,6 +83,14 @@ export const resumeSchema = z.object({
   jobDescription: z.string().optional(),
   coverLetter: z.string().optional(),
   donationConfig: donationConfigSchema,
+  diyLayout: z.object({
+    photo: positionSchema,
+    header: positionSchema,
+    summary: positionSchema,
+    experience: positionSchema,
+    education: positionSchema,
+    skills: positionSchema,
+  }),
 });
 
 export const aiConfigSchema = resumeSchema.shape.aiConfig;
@@ -105,8 +115,6 @@ export const defaultResumeData: ResumeSchema = {
     website: 'https://johndoe.dev',
     location: 'San Francisco, CA',
     photo: '',
-    photoX: 470,
-    photoY: 20,
   },
   summary:
     'Innovative and deadline-driven Software Engineer with 5+ years of experience designing and developing user-centered digital products from initial concept to final, polished deliverable.',
@@ -158,4 +166,12 @@ export const defaultResumeData: ResumeSchema = {
         number: '09625449481'
     }
   },
+  diyLayout: {
+    photo: { x: 470, y: 20 },
+    header: { x: 0, y: 150 },
+    summary: { x: 0, y: 270 },
+    experience: { x: 0, y: 350 },
+    education: { x: 0, y: 600 },
+    skills: { x: 0, y: 800 },
+  }
 };
