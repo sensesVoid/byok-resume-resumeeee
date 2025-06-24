@@ -12,13 +12,17 @@ import {
   Plus,
   Star,
   Trash2,
+  User,
+  Upload
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import type * as React from 'react';
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+import { useToast } from '@/hooks/use-toast';
 
 const fontMap: { [key: string]: string } = {
   inter: "'Inter', sans-serif",
@@ -82,7 +86,10 @@ const EditableField = ({
 };
 
 export function DiyTemplate({ data }: { data: ResumeSchema }) {
-  const { control, watch } = useFormContext<ResumeSchema>();
+  const { control, watch, setValue } = useFormContext<ResumeSchema>();
+  const { toast } = useToast();
+  const photoInputRef = useRef<HTMLInputElement>(null);
+
   const {
     fields: experienceFields,
     append: appendExperience,
@@ -123,12 +130,82 @@ export function DiyTemplate({ data }: { data: ResumeSchema }) {
     }
   };
 
+  const handlePhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+        toast({
+            variant: 'destructive',
+            title: 'Invalid File Type',
+            description: 'Please upload an image file (e.g., PNG, JPG).',
+        });
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        const dataUrl = e.target?.result as string;
+        if (!dataUrl) {
+            toast({
+                variant: 'destructive',
+                title: 'Error Reading File',
+                description: 'Could not read the selected file.',
+            });
+            return;
+        }
+        setValue('personalInfo.photo', dataUrl, { shouldValidate: true });
+        toast({
+            title: 'Photo Uploaded!',
+            description: 'Your photo has been added to the resume.',
+        });
+    };
+    reader.onerror = () => {
+        toast({
+            variant: 'destructive',
+            title: 'Error reading file',
+            description: 'Could not read the content from the selected file.',
+        });
+    };
+    reader.readAsDataURL(file);
+
+    if (event.target) {
+        event.target.value = '';
+    }
+  };
+
   return (
     <div 
       className={cn("p-6 sm:p-8 bg-white", fontClassMap[fontStyle] || 'font-sans')}
       style={rootStyle}
     >
       <header className="text-center">
+         <div className="group relative w-28 h-28 mx-auto mb-4 rounded-full">
+            <Avatar className="h-full w-full">
+                <AvatarImage src={watch('personalInfo.photo') || undefined} alt={watch('personalInfo.name') || 'User photo'} />
+                <AvatarFallback className="h-full w-full">
+                    <User className="h-12 w-12 text-muted-foreground" />
+                </AvatarFallback>
+            </Avatar>
+            <div className="absolute inset-0 rounded-full bg-black/50 flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                <Button type="button" size="icon" onClick={() => photoInputRef.current?.click()} aria-label="Upload photo">
+                    <Upload className="h-5 w-5" />
+                </Button>
+                {watch('personalInfo.photo') && (
+                    <Button type="button" size="icon" variant="destructive" onClick={() => setValue('personalInfo.photo', '', { shouldValidate: true })} aria-label="Remove photo">
+                        <Trash2 className="h-5 w-5" />
+                    </Button>
+                )}
+            </div>
+            <input
+                type="file"
+                ref={photoInputRef}
+                onChange={handlePhotoUpload}
+                accept="image/png, image/jpeg"
+                className="hidden"
+            />
+        </div>
+
         <div style={headingStyle}>
           <EditableField
             name="personalInfo.name"
@@ -186,6 +263,7 @@ export function DiyTemplate({ data }: { data: ResumeSchema }) {
                   size="icon"
                   className="absolute -top-2 right-0 h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
                   onClick={() => removeExperience(index)}
+                  aria-label="Remove experience item"
                 >
                   <Trash2 className="h-4 w-4 text-destructive" />
                 </Button>
@@ -258,6 +336,7 @@ export function DiyTemplate({ data }: { data: ResumeSchema }) {
                   size="icon"
                   className="absolute -top-2 right-0 h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
                   onClick={() => removeEducation(index)}
+                  aria-label="Remove education item"
                 >
                   <Trash2 className="h-4 w-4 text-destructive" />
                 </Button>
@@ -321,6 +400,7 @@ export function DiyTemplate({ data }: { data: ResumeSchema }) {
                   type="button"
                   onClick={() => removeSkill(index)}
                   className="text-gray-400 hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
+                  aria-label={`Remove skill: ${watch(`skills.${index}.name`)}`}
                 >
                   <Trash2 className="h-3 w-3" />
                 </button>
