@@ -56,7 +56,7 @@ export function ElegantTemplate({ data }: TemplateProps) {
 
       {summary && (
         <section className="mb-8">
-          <p className="text-center text-sm italic">{summary}</p>
+          <p className="text-center text-sm italic text-gray-700">{summary}</p>
         </section>
       )}
       

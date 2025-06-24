@@ -59,7 +59,7 @@ export function TechnicalTemplate({ data }: TemplateProps) {
       {summary && (
         <section className="mb-6">
             <h2 className="text-xs uppercase font-bold tracking-widest text-gray-500 mb-2">About</h2>
-            <p className="text-sm">{summary}</p>
+            <p className="text-sm text-gray-700">{summary}</p>
         </section>
       )}
       

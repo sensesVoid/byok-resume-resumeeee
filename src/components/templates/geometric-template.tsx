@@ -66,7 +66,7 @@ export function GeometricTemplate({ data }: TemplateProps) {
             <main className="space-y-8">
                 {summary && (
                     <section>
-                        <p className="text-sm text-center border-y border-gray-200 py-4">{summary}</p>
+                        <p className="text-sm text-center border-y border-gray-200 py-4 text-gray-700">{summary}</p>
                     </section>
                 )}
                 

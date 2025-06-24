@@ -57,7 +57,7 @@ export function ModernTemplate({ data }: TemplateProps) {
 
       {summary && (
         <section className="mt-8">
-          <p className="text-center text-sm">{summary}</p>
+          <p className="text-center text-sm text-gray-700">{summary}</p>
         </section>
       )}
 

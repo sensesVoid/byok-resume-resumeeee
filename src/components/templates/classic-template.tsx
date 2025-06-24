@@ -57,7 +57,7 @@ export function ClassicTemplate({ data }: TemplateProps) {
       {summary && (
         <section className="mb-6">
           <h2 className="text-sm font-bold uppercase tracking-widest text-center border-b-2 border-current pb-1 mb-2">Summary</h2>
-          <p className="text-sm text-center">{summary}</p>
+          <p className="text-sm text-center text-gray-700">{summary}</p>
         </section>
       )}
       
