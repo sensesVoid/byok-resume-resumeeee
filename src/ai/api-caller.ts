@@ -104,9 +104,13 @@ export async function callApi({
       throw new Error('No content received from the AI model.');
     }
 
-    // The text should already be a JSON string because we requested it.
-    // No need to find it with a regex.
-    return text;
+    // The text should be a JSON string, but sometimes models wrap it in markdown.
+    // This regex will extract the JSON content if it's wrapped.
+    const jsonRegex = /```json\s*([\s\S]*?)\s*```/;
+    const match = text.match(jsonRegex);
+    const jsonString = match ? match[1] : text;
+
+    return jsonString;
   } catch (error: any) {
     console.error(`API call failed for ${provider}:`, error);
     // Re-throw the error with a more user-friendly message
