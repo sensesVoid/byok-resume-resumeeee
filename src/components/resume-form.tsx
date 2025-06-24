@@ -20,7 +20,6 @@ import { Separator } from './ui/separator';
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Switch } from './ui/switch';
 import { Label } from '@/components/ui/label';
 
 
