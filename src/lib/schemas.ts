@@ -33,17 +33,6 @@ const baseAiConfigSchema = z.object({
   model: z.string().optional(),
 });
 
-export const advertisementSlotSchema = z.object({
-  enabled: z.boolean().default(false),
-  imageUrl: z.string().url('Must be a valid URL').optional().or(z.literal('')),
-  linkUrl: z.string().url('Must be a valid URL').optional().or(z.literal('')),
-});
-
-export const advertisementSchema = z.object({
-  topAd: advertisementSlotSchema,
-  bottomAd: advertisementSlotSchema,
-});
-
 export const donationConfigSchema = z.object({
   paypal: z.object({
     enabled: z.boolean().default(false),
@@ -89,7 +78,6 @@ export const resumeSchema = z.object({
   jobDescription: z.string().optional(),
   coverLetter: z.string().optional(),
   donationConfig: donationConfigSchema,
-  advertisements: advertisementSchema,
 });
 
 export const aiConfigSchema = resumeSchema.shape.aiConfig;
@@ -164,17 +152,5 @@ export const defaultResumeData: ResumeSchema = {
         enabled: true,
         number: '09625449481'
     }
-  },
-  advertisements: {
-    topAd: {
-      enabled: false,
-      imageUrl: '',
-      linkUrl: '',
-    },
-    bottomAd: {
-      enabled: false,
-      imageUrl: '',
-      linkUrl: '',
-    },
   },
 };

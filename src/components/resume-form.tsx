@@ -50,7 +50,6 @@ export function ResumeForm() {
   const aiPowered = form.watch('aiPowered');
   const aiProvider = form.watch('aiConfig.provider');
   const selectedTemplate = form.watch('template');
-  const advertisements = form.watch('advertisements');
   const templatesWithPhoto: ResumeSchema['template'][] = ['professional', 'creative'];
   const showPhotoUpload = templatesWithPhoto.includes(selectedTemplate);
 
@@ -247,16 +246,6 @@ export function ResumeForm() {
   return (
     <Form {...form}>
       <div className="space-y-4">
-        <div className="flex h-24 items-center justify-center rounded-lg border-2 border-dashed bg-muted/50 p-2 text-muted-foreground">
-          {advertisements.topAd.enabled && advertisements.topAd.imageUrl ? (
-            <a href={advertisements.topAd.linkUrl || '#'} target="_blank" rel="noopener noreferrer" className="h-full w-full">
-              <img src={advertisements.topAd.imageUrl} alt="Top Advertisement" className="h-full w-full object-contain" />
-            </a>
-          ) : (
-            <span>Place your ad here!</span>
-          )}
-        </div>
-
         <Accordion type="multiple" defaultValue={['ai-tools', 'design', 'personal', 'ats-tools']} className="w-full">
           
           <AccordionItem value="ai-tools">
@@ -620,16 +609,6 @@ export function ResumeForm() {
           </AccordionItem>
 
         </Accordion>
-
-        <div className="flex h-24 items-center justify-center rounded-lg border-2 border-dashed bg-muted/50 p-2 text-muted-foreground">
-           {advertisements.bottomAd.enabled && advertisements.bottomAd.imageUrl ? (
-            <a href={advertisements.bottomAd.linkUrl || '#'} target="_blank" rel="noopener noreferrer" className="h-full w-full">
-              <img src={advertisements.bottomAd.imageUrl} alt="Bottom Advertisement" className="h-full w-full object-contain" />
-            </a>
-          ) : (
-            <span>Place your ad here!</span>
-          )}
-        </div>
 
         <Dialog open={isSuggestionModalOpen} onOpenChange={setIsSuggestionModalOpen}>
             <DialogContent className="sm:max-w-[625px] bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl">
