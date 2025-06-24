@@ -62,10 +62,10 @@ export function GeometricTemplate({ data }: TemplateProps) {
                 <div className="relative z-10">
                     <h1 className="text-4xl font-extrabold tracking-tighter" style={headingStyle}>{personalInfo?.name || 'Your Name'}</h1>
                     <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-600">
-                        {personalInfo?.email && <a href={`mailto:${personalInfo.email}`} className="flex items-center gap-1.5 hover:text-primary"><AtSign size={14} />{personalInfo.email}</a>}
-                        {personalInfo?.phone && <span className="flex items-center gap-1.5"><Phone size={14} />{personalInfo.phone}</span>}
-                        {personalInfo?.website && <a href={personalInfo.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 hover:text-primary"><Globe size={14} />{personalInfo.website}</a>}
-                        {personalInfo?.location && <span className="flex items-center gap-1.5"><MapPin size={14} />{personalInfo.location}</span>}
+                        {personalInfo?.email && <a href={`mailto:${personalInfo.email}`} className="inline-flex items-center gap-1.5 hover:text-primary"><AtSign size={14} />{personalInfo.email}</a>}
+                        {personalInfo?.phone && <span className="inline-flex items-center gap-1.5"><Phone size={14} />{personalInfo.phone}</span>}
+                        {personalInfo?.website && <a href={personalInfo.website} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 hover:text-primary"><Globe size={14} />{personalInfo.website}</a>}
+                        {personalInfo?.location && <span className="inline-flex items-center gap-1.5"><MapPin size={14} />{personalInfo.location}</span>}
                     </div>
                 </div>
             </header>
