@@ -35,7 +35,7 @@ const AccordionTrigger = React.forwardRef<
         )}
         {...props}
       >
-        <div className="absolute inset-0 z-0 bg-gradient-to-r from-blue-400/20 via-sky-400/20 to-cyan-400/20 bg-[length:200%_200%] opacity-0 transition-opacity duration-500 group-hover:opacity-100 group-data-[state=open]:opacity-100 animate-flow-glow blur-lg" />
+        <div className="absolute inset-0 z-0 bg-gradient-to-r from-blue-400/20 via-sky-400/20 to-cyan-400/20 bg-[length:200%_200%] opacity-0 transition-opacity duration-500 group-hover:opacity-100 group-data-[state=open]:opacity-100 group-data-[powered=true]:opacity-100 animate-flow-glow blur-lg" />
         <div className="relative z-10 flex w-full items-center justify-between">
           {children}
           <ChevronDown className="h-5 w-5 shrink-0 transition-transform duration-200 group-data-[state=open]:rotate-180" />
@@ -62,3 +62,5 @@ const AccordionContent = React.forwardRef<
 AccordionContent.displayName = AccordionPrimitive.Content.displayName
 
 export { Accordion, AccordionItem, AccordionTrigger, AccordionContent }
+
+    

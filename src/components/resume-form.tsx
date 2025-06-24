@@ -260,7 +260,9 @@ export function ResumeForm() {
         <Accordion type="multiple" defaultValue={['ai-tools', 'ats-tools', 'design', 'personal']} className="w-full">
           
           <AccordionItem value="ai-tools">
-             <AccordionTrigger><h2 className="text-lg font-semibold flex items-center"><Bot className="mr-3 text-primary" /> Power your Agent</h2></AccordionTrigger>
+             <AccordionTrigger data-powered={aiPowered}>
+                <div className="flex items-center"><Bot className="mr-3 text-primary" /> Power your Agent</div>
+            </AccordionTrigger>
              <AccordionContent>
                 <div className="pt-4">
                   <div className="mb-4">
@@ -338,14 +340,16 @@ export function ResumeForm() {
           </AccordionItem>
 
           <AccordionItem value="ats-tools">
-            <AccordionTrigger><h2 className="text-lg font-semibold flex items-center"><ScanSearch className="mr-3 text-primary" /> ATS & Job Matching</h2></AccordionTrigger>
+            <AccordionTrigger data-powered={aiPowered}>
+                <div className="flex items-center"><ScanSearch className="mr-3 text-primary" /> ATS & Job Matching</div>
+            </AccordionTrigger>
             <AccordionContent>
                 <div className="space-y-4 pt-4">
                 <FormField control={form.control} name="jobDescription" render={({ field }) => (
                     <FormItem>
                     <FormLabel>Job Description</FormLabel>
                     <FormDescription>Paste the job description here to check your ATS score and generate a tailored cover letter.</FormDescription>
-                    <FormControl><Textarea rows={8} {...field} /></FormControl>
+                    <FormControl><Textarea rows={8} {...field} disabled={!aiPowered} /></FormControl>
                     <FormMessage />
                     </FormItem>
                 )} />
@@ -354,7 +358,9 @@ export function ResumeForm() {
           </AccordionItem>
 
           <AccordionItem value="cover-letter-generator">
-            <AccordionTrigger><h2 className="text-lg font-semibold flex items-center"><Mail className="mr-3 text-primary" /> AI Cover Letter Generator</h2></AccordionTrigger>
+            <AccordionTrigger data-powered={aiPowered}>
+                <div className="flex items-center"><Mail className="mr-3 text-primary" /> AI Cover Letter Generator</div>
+            </AccordionTrigger>
             <AccordionContent>
                 <div className="space-y-4 pt-4">
                 <p className="text-sm text-muted-foreground">
@@ -371,7 +377,9 @@ export function ResumeForm() {
           </AccordionItem>
           
           <AccordionItem value="design">
-            <AccordionTrigger><h2 className="text-lg font-semibold flex items-center"><Brush className="mr-3 text-primary" /> Design & Style</h2></AccordionTrigger>
+            <AccordionTrigger>
+                <div className="flex items-center"><Brush className="mr-3 text-primary" /> Design & Style</div>
+            </AccordionTrigger>
             <AccordionContent className="space-y-6 pt-4">
               <TemplateSwitcher />
               <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
@@ -435,7 +443,9 @@ export function ResumeForm() {
           </AccordionItem>
 
           <AccordionItem value="personal">
-            <AccordionTrigger><h2 className="text-lg font-semibold flex items-center"><User className="mr-3 text-primary" /> Personal Information</h2></AccordionTrigger>
+            <AccordionTrigger>
+                <div className="flex items-center"><User className="mr-3 text-primary" /> Personal Information</div>
+            </AccordionTrigger>
             <AccordionContent>
               <div className="space-y-4 pt-4">
                  {showPhotoUpload && (
@@ -504,7 +514,9 @@ export function ResumeForm() {
           </AccordionItem>
 
           <AccordionItem value="summary">
-            <AccordionTrigger><h2 className="text-lg font-semibold flex items-center"><Info className="mr-3 text-primary" /> Professional Summary</h2></AccordionTrigger>
+            <AccordionTrigger>
+                <div className="flex items-center"><Info className="mr-3 text-primary" /> Professional Summary</div>
+            </AccordionTrigger>
             <AccordionContent>
               <FormField control={form.control} name="summary" render={({ field }) => (
                 <FormItem className="pt-4">
@@ -536,7 +548,9 @@ export function ResumeForm() {
           </AccordionItem>
           
           <AccordionItem value="experience">
-            <AccordionTrigger><h2 className="text-lg font-semibold flex items-center"><Briefcase className="mr-3 text-primary" /> Work Experience</h2></AccordionTrigger>
+            <AccordionTrigger>
+                <div className="flex items-center"><Briefcase className="mr-3 text-primary" /> Work Experience</div>
+            </AccordionTrigger>
             <AccordionContent>
               <div className="space-y-6 pt-4">
                 {experienceFields.map((field, index) => (
@@ -575,7 +589,9 @@ export function ResumeForm() {
           </AccordionItem>
           
           <AccordionItem value="education">
-            <AccordionTrigger><h2 className="text-lg font-semibold flex items-center"><GraduationCap className="mr-3 text-primary" /> Education</h2></AccordionTrigger>
+            <AccordionTrigger>
+                <div className="flex items-center"><GraduationCap className="mr-3 text-primary" /> Education</div>
+            </AccordionTrigger>
             <AccordionContent>
               <div className="space-y-6 pt-4">
                 {educationFields.map((field, index) => (
@@ -600,7 +616,9 @@ export function ResumeForm() {
           </AccordionItem>
           
           <AccordionItem value="skills">
-            <AccordionTrigger><h2 className="text-lg font-semibold flex items-center"><Star className="mr-3 text-primary" /> Skills</h2></AccordionTrigger>
+            <AccordionTrigger>
+                <div className="flex items-center"><Star className="mr-3 text-primary" /> Skills</div>
+            </AccordionTrigger>
             <AccordionContent>
               <div className="space-y-4 pt-4">
                 <div className="space-y-2">
@@ -623,7 +641,9 @@ export function ResumeForm() {
           </AccordionItem>
 
           <AccordionItem value="certifications">
-            <AccordionTrigger><h2 className="text-lg font-semibold flex items-center"><Award className="mr-3 text-primary" /> Certifications (Optional)</h2></AccordionTrigger>
+            <AccordionTrigger>
+                <div className="flex items-center"><Award className="mr-3 text-primary" /> Certifications (Optional)</div>
+            </AccordionTrigger>
             <AccordionContent>
               <div className="space-y-6 pt-4">
                 {certificationFields.map((field, index) => (
@@ -646,7 +666,9 @@ export function ResumeForm() {
           </AccordionItem>
 
           <AccordionItem value="projects">
-            <AccordionTrigger><h2 className="text-lg font-semibold flex items-center"><KanbanSquare className="mr-3 text-primary" /> Projects (Optional)</h2></AccordionTrigger>
+            <AccordionTrigger>
+                <div className="flex items-center"><KanbanSquare className="mr-3 text-primary" /> Projects (Optional)</div>
+            </AccordionTrigger>
             <AccordionContent>
               <div className="space-y-6 pt-4">
                 {projectFields.map((field, index) => (
@@ -699,3 +721,5 @@ export function ResumeForm() {
     </Form>
   );
 }
+
+    
