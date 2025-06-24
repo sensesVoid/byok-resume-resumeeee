@@ -244,8 +244,8 @@ export function ResumeForm() {
                        )} />
                    </div>
                    <Separator className="my-6" />
-                   <div className="flex flex-col items-center gap-4">
-                      <p className="text-sm text-muted-foreground text-center">Provide your API key, then click the power button to validate it and enable AI features.</p>
+                   <div className="flex items-center justify-between gap-4">
+                      <p className="text-sm text-muted-foreground">Provide your API key, then click the power button to validate it and enable AI features.</p>
                       <Button
                           size="icon"
                           onClick={handlePowerToggle}
