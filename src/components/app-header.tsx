@@ -56,16 +56,16 @@ export function AppHeader({
           {isUploading ? <Loader2 className="animate-spin" /> : <Upload />}
           <span className="ml-2 hidden sm:inline">Upload Resume</span>
         </Button>
+        <Button onClick={handlePrint} disabled={isPrinting || isUploading || isCalculatingAts}>
+          {isPrinting ? <Loader2 className="animate-spin" /> : <FileDown />}
+          <span className="ml-2 hidden sm:inline">Download PDF</span>
+        </Button>
         <Button 
           onClick={onCalculateAtsScore}
           disabled={!isAiPowered || isCalculatingAts || isPrinting || isUploading}
         >
           {isCalculatingAts ? <Loader2 className="animate-spin" /> : <ScanSearch />}
            <span className="ml-2 hidden sm:inline">Calculate ATS</span>
-        </Button>
-        <Button onClick={handlePrint} disabled={isPrinting || isUploading || isCalculatingAts}>
-          {isPrinting ? <Loader2 className="animate-spin" /> : <FileDown />}
-          <span className="ml-2 hidden sm:inline">Download PDF</span>
         </Button>
       </div>
     </header>
