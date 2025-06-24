@@ -91,6 +91,7 @@ export function DiyTemplate({ data }: { data: ResumeSchema }) {
   const { toast } = useToast();
   const photoInputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [draggedItem, setDraggedItem] = useState<string | null>(null);
 
   const {
     fields: experienceFields,
@@ -179,12 +180,23 @@ export function DiyTemplate({ data }: { data: ResumeSchema }) {
     }
   };
 
-  const handlePhotoDrop = (e: React.DragEvent<HTMLDivElement>) => {
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    setIsDragging(false);
+
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      handleFile(e.dataTransfer.files[0]);
+    } else if (draggedItem === 'photo') {
+      const dropZone = e.currentTarget.getBoundingClientRect();
+      const photoSize = 112; // w-28 is 7rem = 112px
+      const newX = e.clientX - dropZone.left - photoSize / 2;
+      const newY = e.clientY - dropZone.top - photoSize / 2;
+      setValue('personalInfo.photoX', newX, { shouldValidate: true });
+      setValue('personalInfo.photoY', newY, { shouldValidate: true });
+    }
     
-    handleFile(e.dataTransfer.files?.[0]);
+    setIsDragging(false);
+    setDraggedItem(null);
   };
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
@@ -195,7 +207,6 @@ export function DiyTemplate({ data }: { data: ResumeSchema }) {
   const handleDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    // Check if files are being dragged
     if (e.dataTransfer.items && e.dataTransfer.items.length > 0) {
       setIsDragging(true);
     }
@@ -207,56 +218,63 @@ export function DiyTemplate({ data }: { data: ResumeSchema }) {
     setIsDragging(false);
   };
 
+  const handlePhotoDragStart = (e: React.DragEvent<HTMLDivElement>) => {
+    setDraggedItem('photo');
+    // Use a transparent image as drag ghost to show the real element being dragged
+    const img = new Image();
+    img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+    e.dataTransfer.setDragImage(img, 0, 0);
+  };
+
+
   return (
     <div 
-      className={cn("p-6 sm:p-8 bg-white", fontClassMap[fontStyle] || 'font-sans')}
+      className={cn("p-6 sm:p-8 bg-white relative min-h-[1123px]", fontClassMap[fontStyle] || 'font-sans')}
       style={rootStyle}
+      onDrop={handleDrop}
+      onDragOver={handleDragOver}
+      onDragEnter={handleDragEnter}
+      onDragLeave={handleDragLeave}
     >
-      <header className="text-center">
-         <div
-            className={cn(
-                "group relative w-28 h-28 mx-auto mb-4 rounded-full transition-all",
-                isDragging && "ring-4 ring-primary ring-offset-2 scale-105"
-            )}
-            onDrop={handlePhotoDrop}
-            onDragOver={handleDragOver}
-            onDragEnter={handleDragEnter}
-            onDragLeave={handleDragLeave}
-         >
-            <Avatar className="h-full w-full">
-                <AvatarImage src={watch('personalInfo.photo') || undefined} alt={watch('personalInfo.name') || 'User photo'} />
-                <AvatarFallback className="h-full w-full">
-                    <User className="h-12 w-12 text-muted-foreground" />
-                </AvatarFallback>
-            </Avatar>
-            
-            <div className="absolute inset-0 rounded-full bg-black/50 flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                <Button type="button" size="icon" onClick={() => photoInputRef.current?.click()} aria-label="Upload photo">
-                    <Upload className="h-5 w-5" />
-                </Button>
-                {watch('personalInfo.photo') && (
-                    <Button type="button" size="icon" variant="destructive" onClick={() => setValue('personalInfo.photo', '', { shouldValidate: true })} aria-label="Remove photo">
-                        <Trash2 className="h-5 w-5" />
-                    </Button>
-                )}
-            </div>
+      <div
+          draggable
+          onDragStart={handlePhotoDragStart}
+          className={cn(
+              "group absolute w-28 h-28 rounded-full transition-all cursor-grab",
+              isDragging && "ring-4 ring-primary ring-offset-2 scale-105"
+          )}
+          style={{
+            left: `${watch('personalInfo.photoX') ?? 250}px`,
+            top: `${watch('personalInfo.photoY') ?? 20}px`,
+          }}
+        >
+          <Avatar className="h-full w-full pointer-events-none">
+              <AvatarImage src={watch('personalInfo.photo') || undefined} alt={watch('personalInfo.name') || 'User photo'} />
+              <AvatarFallback className="h-full w-full">
+                  <User className="h-12 w-12 text-muted-foreground" />
+              </AvatarFallback>
+          </Avatar>
+          
+          <div className="absolute inset-0 rounded-full bg-black/50 flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity cursor-default">
+              <Button type="button" size="icon" onClick={() => photoInputRef.current?.click()} aria-label="Upload photo">
+                  <Upload className="h-5 w-5" />
+              </Button>
+              {watch('personalInfo.photo') && (
+                  <Button type="button" size="icon" variant="destructive" onClick={() => setValue('personalInfo.photo', '', { shouldValidate: true })} aria-label="Remove photo">
+                      <Trash2 className="h-5 w-5" />
+                  </Button>
+              )}
+          </div>
+      </div>
+      <input
+          type="file"
+          ref={photoInputRef}
+          onChange={handlePhotoUpload}
+          accept="image/png, image/jpeg"
+          className="hidden"
+      />
 
-            {isDragging && (
-              <div className="absolute inset-0 rounded-full bg-primary/30 flex flex-col items-center justify-center pointer-events-none text-white text-xs font-bold">
-                <Upload className="h-8 w-8 mb-1" />
-                Drop to upload
-              </div>
-            )}
-            
-            <input
-                type="file"
-                ref={photoInputRef}
-                onChange={handlePhotoUpload}
-                accept="image/png, image/jpeg"
-                className="hidden"
-            />
-        </div>
-
+      <header className="text-center pt-40">
         <div style={headingStyle}>
           <EditableField
             name="personalInfo.name"

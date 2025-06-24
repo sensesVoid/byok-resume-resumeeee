@@ -7,6 +7,8 @@ export const personalInfoSchema = z.object({
   website: z.string().url('Invalid URL').optional(),
   location: z.string().optional(),
   photo: z.string().optional(),
+  photoX: z.number().optional(),
+  photoY: z.number().optional(),
 });
 
 export const experienceSchema = z.object({
@@ -103,6 +105,8 @@ export const defaultResumeData: ResumeSchema = {
     website: 'https://johndoe.dev',
     location: 'San Francisco, CA',
     photo: '',
+    photoX: 470,
+    photoY: 20,
   },
   summary:
     'Innovative and deadline-driven Software Engineer with 5+ years of experience designing and developing user-centered digital products from initial concept to final, polished deliverable.',
@@ -133,7 +137,7 @@ export const defaultResumeData: ResumeSchema = {
     { id: '2', name: 'Node.js' },
     { id: '3', name: 'TypeScript' },
     { id: '4', name: 'Next.js' },
-    { id: '5', name: 'GraphQL' },
+    { id: '5', 'name': 'GraphQL' },
     { id: '6', name: 'Cloud Services (AWS, GCP)' },
   ],
   jobDescription: '',
