@@ -51,7 +51,7 @@ export function DonationModal({ isOpen, onOpenChange }: DonationModalProps) {
                 <Card>
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
-                      <Image src="/images/paypal.png" alt="PayPal Logo" width={24} height={24} />
+                      <Image src="/images/paypal.png" alt="PayPal Logo" width={32} height={32} />
                        Donate with PayPal
                     </CardTitle>
                   </CardHeader>
@@ -73,7 +73,7 @@ export function DonationModal({ isOpen, onOpenChange }: DonationModalProps) {
                 <Card>
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
-                      <Image src="/images/maya.png" alt="Maya Logo" width={24} height={24} />
+                      <Image src="/images/maya.png" alt="Maya Logo" width={32} height={32} />
                        Donate with Maya
                     </CardTitle>
                   </CardHeader>
