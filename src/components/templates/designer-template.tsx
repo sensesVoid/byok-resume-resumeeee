@@ -28,6 +28,7 @@ export function DesignerTemplate({ data }: TemplateProps) {
     experience,
     education,
     skills,
+    certifications,
     fontStyle,
     headingColor,
     bodyColor,
@@ -147,6 +148,21 @@ export function DesignerTemplate({ data }: TemplateProps) {
                     ))}
                 </div>
                 </section>
+            )}
+
+            {certifications?.length > 0 && (
+              <section>
+              <h2 className="text-sm font-bold tracking-[0.2em] uppercase mb-3" style={headingStyle}>Certifications</h2>
+              <div className="space-y-3">
+                  {certifications.map((cert) => (
+                  <div key={cert.id}>
+                      <h3 className="font-semibold text-md">{cert.name}</h3>
+                      <p className="text-sm">{cert.issuer}</p>
+                      <p className="text-xs text-gray-500">{cert.date}</p>
+                  </div>
+                  ))}
+              </div>
+              </section>
             )}
         </div>
       </div>

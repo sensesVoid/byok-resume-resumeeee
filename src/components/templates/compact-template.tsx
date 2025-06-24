@@ -1,3 +1,4 @@
+
 'use client';
 
 import { type ResumeSchema } from '@/lib/schemas';
@@ -27,6 +28,7 @@ export function CompactTemplate({ data }: TemplateProps) {
     experience,
     education,
     skills,
+    certifications,
     fontStyle,
     headingColor,
     bodyColor,
@@ -175,6 +177,22 @@ export function CompactTemplate({ data }: TemplateProps) {
             <p className="text-xs mt-1.5">
               {skills.map((skill) => skill.name).join(' | ')}
             </p>
+          </section>
+        )}
+
+        {certifications?.length > 0 && (
+          <section>
+            <h2 className="text-sm font-bold uppercase tracking-wider border-b" style={{...headingStyle, borderColor: accentColor}}>
+              Certifications
+            </h2>
+            <div className="space-y-2 mt-1.5">
+              {certifications.map((cert) => (
+                <div key={cert.id}>
+                  <h3 className="text-sm font-semibold">{cert.name}</h3>
+                  <p className="text-xs font-medium">{cert.issuer}{cert.date ? ` | ${cert.date}` : ''}</p>
+                </div>
+              ))}
+            </div>
           </section>
         )}
       </div>

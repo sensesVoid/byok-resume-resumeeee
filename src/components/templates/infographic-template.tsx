@@ -1,7 +1,8 @@
+
 'use client';
 
 import { type ResumeSchema } from '@/lib/schemas';
-import { AtSign, Globe, MapPin, Phone, Briefcase, GraduationCap, Star, User } from 'lucide-react';
+import { AtSign, Globe, MapPin, Phone, Briefcase, GraduationCap, Star, User, Award } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type * as React from 'react';
 
@@ -21,7 +22,7 @@ const fontClassMap: { [key: string]: string } = {
 };
 
 export function InfographicTemplate({ data }: TemplateProps) {
-  const { personalInfo, summary, experience, education, skills, fontStyle, headingColor, bodyColor, accentColor } = data;
+  const { personalInfo, summary, experience, education, skills, certifications, fontStyle, headingColor, bodyColor, accentColor } = data;
   
   const rootStyle = {
     color: bodyColor || '#374151',
@@ -125,6 +126,20 @@ export function InfographicTemplate({ data }: TemplateProps) {
             </section>
             )}
         </div>
+
+        {certifications?.length > 0 && (
+          <section>
+            <h2 className="flex items-center gap-2 text-xl font-bold mb-4" style={headingStyle}><Award style={accentTextStyle} /> Certifications</h2>
+            <div className="space-y-4">
+            {certifications.map((cert) => (
+              <div key={cert.id}>
+                <h3 className="text-lg font-semibold">{cert.name}</h3>
+                <p className="text-md font-medium text-gray-600">{cert.issuer}{cert.date ? ` - ${cert.date}` : ''}</p>
+              </div>
+            ))}
+            </div>
+          </section>
+        )}
       </div>
     </div>
   );

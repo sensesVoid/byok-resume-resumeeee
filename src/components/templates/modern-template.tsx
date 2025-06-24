@@ -3,7 +3,7 @@
 
 import { type ResumeSchema } from '@/lib/schemas';
 import { Separator } from '@/components/ui/separator';
-import { AtSign, Globe, MapPin, Phone, Briefcase, GraduationCap, Star } from 'lucide-react';
+import { AtSign, Globe, MapPin, Phone, Briefcase, GraduationCap, Star, Award } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type * as React from 'react';
 
@@ -23,7 +23,7 @@ const fontClassMap: { [key: string]: string } = {
 };
 
 export function ModernTemplate({ data }: TemplateProps) {
-  const { personalInfo, summary, experience, education, skills, fontStyle, headingColor, bodyColor, accentColor } = data;
+  const { personalInfo, summary, experience, education, skills, certifications, fontStyle, headingColor, bodyColor, accentColor } = data;
 
   const rootStyle = {
     color: bodyColor || '#374151',
@@ -118,6 +118,20 @@ export function ModernTemplate({ data }: TemplateProps) {
             <div className="flex flex-wrap gap-2">
               {skills.map((skill) => (
                 <span key={skill.id} className="rounded-md bg-gray-100 px-3 py-1 text-sm font-medium text-gray-800">{skill.name}</span>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {certifications?.length > 0 && (
+          <section>
+            <h2 className="mb-4 flex items-center gap-2 text-xl font-bold" style={headingStyle}><Award size={20} /> Certifications</h2>
+            <div className="space-y-4">
+              {certifications.map((cert) => (
+                <div key={cert.id}>
+                  <h3 className="text-lg font-semibold">{cert.name}</h3>
+                  <p className="text-md font-medium text-gray-600">{cert.issuer}{cert.date ? ` - ${cert.date}`: ''}</p>
+                </div>
               ))}
             </div>
           </section>

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { type ResumeSchema } from '@/lib/schemas';
@@ -21,7 +22,7 @@ const fontClassMap: { [key: string]: string } = {
 };
 
 export function GeometricTemplate({ data }: TemplateProps) {
-    const { personalInfo, summary, experience, education, skills, fontStyle, headingColor, bodyColor, accentColor } = data;
+    const { personalInfo, summary, experience, education, skills, certifications, fontStyle, headingColor, bodyColor, accentColor } = data;
 
     const rootStyle = {
       color: bodyColor || '#374151',
@@ -128,6 +129,23 @@ export function GeometricTemplate({ data }: TemplateProps) {
                     <div className="flex flex-wrap gap-2">
                     {skills.map((skill) => (
                         <span key={skill.id} className="rounded-sm bg-gray-100 px-3 py-1 text-sm font-medium text-gray-800">{skill.name}</span>
+                    ))}
+                    </div>
+                </section>
+                )}
+
+                {certifications?.length > 0 && (
+                <section>
+                    <h2 className="mb-4 flex items-center gap-3 text-xl font-bold" style={headingStyle}>
+                        <span className="h-3 w-3 rotate-45" style={{ backgroundColor: headingColor || 'hsl(var(--primary))' }}></span>
+                        Certifications
+                    </h2>
+                    <div className="space-y-3">
+                    {certifications.map((cert) => (
+                        <div key={cert.id} className="pl-4">
+                            <h3 className="text-lg font-semibold">{cert.name}</h3>
+                            <p className="text-md font-medium text-gray-600">{cert.issuer}{cert.date ? ` - ${cert.date}` : ''}</p>
+                        </div>
                     ))}
                     </div>
                 </section>

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { type ResumeSchema } from '@/lib/schemas';
@@ -21,7 +22,7 @@ const fontClassMap: { [key: string]: string } = {
 };
 
 export function TechnicalTemplate({ data }: TemplateProps) {
-  const { personalInfo, summary, experience, education, skills, fontStyle, headingColor, bodyColor } = data;
+  const { personalInfo, summary, experience, education, skills, certifications, fontStyle, headingColor, bodyColor } = data;
 
   const rootStyle = {
     color: bodyColor || '#374151',
@@ -107,6 +108,23 @@ export function TechnicalTemplate({ data }: TemplateProps) {
               {skills.map((skill) => (
                 <span key={skill.id}>{skill.name}</span>
               ))}
+            </div>
+          </section>
+        )}
+
+        {certifications?.length > 0 && (
+          <section>
+            <h2 className="text-xs uppercase font-bold tracking-widest text-gray-500 mb-3" style={headingStyle}>Certifications</h2>
+            <div className="space-y-3">
+                {certifications.map((cert) => (
+                <div key={cert.id}>
+                    <h3 className="text-md font-semibold">{cert.name}</h3>
+                    <div className="text-sm text-gray-600 flex justify-between">
+                    <span>{cert.issuer}</span>
+                    <span className="shrink-0 whitespace-nowrap">{cert.date}</span>
+                    </div>
+                </div>
+                ))}
             </div>
           </section>
         )}

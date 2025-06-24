@@ -1,3 +1,4 @@
+
 'use client';
 
 import { type ResumeSchema } from '@/lib/schemas';
@@ -21,7 +22,7 @@ const fontClassMap: { [key: string]: string } = {
 };
 
 export function ClassicTemplate({ data }: TemplateProps) {
-  const { personalInfo, summary, experience, education, skills, fontStyle, headingColor, bodyColor, accentColor } = data;
+  const { personalInfo, summary, experience, education, skills, certifications, fontStyle, headingColor, bodyColor, accentColor } = data;
   
   const rootStyle = {
     color: bodyColor || '#374151',
@@ -113,6 +114,20 @@ export function ClassicTemplate({ data }: TemplateProps) {
             <p className="text-sm">
               {skills.map((skill) => skill.name).join(' | ')}
             </p>
+          </section>
+        )}
+
+        {certifications?.length > 0 && (
+          <section>
+            <h2 className="text-sm font-bold uppercase tracking-widest border-b-2 pb-1 mb-2" style={headingWithAccentBorderStyle}>Certifications</h2>
+            <div className="space-y-2">
+              {certifications.map((cert) => (
+                <div key={cert.id}>
+                   <h3 className="text-md font-bold">{cert.name}</h3>
+                   <p className="text-sm">{cert.issuer}{cert.date ? ` | ${cert.date}` : ''}</p>
+                </div>
+              ))}
+            </div>
           </section>
         )}
       </div>

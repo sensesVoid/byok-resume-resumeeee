@@ -1,3 +1,4 @@
+
 'use client';
 
 import { type ResumeSchema } from '@/lib/schemas';
@@ -27,6 +28,7 @@ export function MinimalistTemplate({ data }: TemplateProps) {
     experience,
     education,
     skills,
+    certifications,
     fontStyle,
     headingColor,
     bodyColor,
@@ -191,6 +193,22 @@ export function MinimalistTemplate({ data }: TemplateProps) {
             <p className="text-sm">
               {skills.map((skill) => skill.name).join(' · ')}
             </p>
+          </section>
+        )}
+
+        {certifications?.length > 0 && (
+          <section>
+            <h2 className="text-base font-semibold tracking-widest uppercase text-gray-500 mb-3">
+              Certifications
+            </h2>
+            <div className="space-y-2">
+              {certifications.map((cert) => (
+                <div key={cert.id}>
+                  <h3 className="text-md font-semibold">{cert.name}</h3>
+                  <p className="text-sm">{cert.issuer}{cert.date ? ` - ${cert.date}` : ''}</p>
+                </div>
+              ))}
+            </div>
           </section>
         )}
       </div>

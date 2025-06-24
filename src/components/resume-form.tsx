@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
-import { Bot, Brush, GraduationCap, Info, Loader2, Plus, Trash2, User, Wand2, Briefcase, Star, KeyRound, Power, PowerOff, HelpCircle, Upload, ScanSearch, Mail } from 'lucide-react';
+import { Bot, Brush, GraduationCap, Info, Loader2, Plus, Trash2, User, Wand2, Briefcase, Star, KeyRound, Power, PowerOff, HelpCircle, Upload, ScanSearch, Mail, Award } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { generateCoverLetterAction, improveContentAction, validateApiKeyAction } from '@/app/actions';
 import { useState, useTransition, useRef } from 'react';
@@ -50,6 +50,7 @@ export function ResumeForm() {
   const { fields: experienceFields, append: appendExperience, remove: removeExperience } = useFieldArray({ control: form.control, name: 'experience' });
   const { fields: educationFields, append: appendEducation, remove: removeEducation } = useFieldArray({ control: form.control, name: 'education' });
   const { fields: skillFields, append: appendSkill, remove: removeSkill } = useFieldArray({ control: form.control, name: 'skills' });
+  const { fields: certificationFields, append: appendCertification, remove: removeCertification } = useFieldArray({ control: form.control, name: 'certifications' });
   const [newSkill, setNewSkill] = useState('');
 
   const aiPowered = form.watch('aiPowered');
@@ -580,6 +581,29 @@ export function ResumeForm() {
                     </div>
                   ))}
                 </div>
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+
+          <AccordionItem value="certifications">
+            <AccordionTrigger><h2 className="text-lg font-semibold flex items-center"><Award className="mr-3 text-primary" /> Certifications</h2></AccordionTrigger>
+            <AccordionContent>
+              <div className="space-y-6">
+                {certificationFields.map((field, index) => (
+                  <div key={field.id} className="rounded-lg border border-border/50 p-4 space-y-4 bg-background/30">
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                      <FormField control={form.control} name={`certifications.${index}.name`} render={({ field }) => (<FormItem><FormLabel>Certification Name</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                      <FormField control={form.control} name={`certifications.${index}.issuer`} render={({ field }) => (<FormItem><FormLabel>Issuer</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                    </div>
+                    <FormField control={form.control} name={`certifications.${index}.date`} render={({ field }) => (<FormItem><FormLabel>Date Issued</FormLabel><FormControl><Input placeholder="e.g., June 2023" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                    <div className="flex justify-end pt-2">
+                        <Button type="button" variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive" onClick={() => removeCertification(index)} aria-label="Remove certification entry">
+                            <Trash2 className="h-4 w-4" />
+                        </Button>
+                    </div>
+                  </div>
+                ))}
+                <Button type="button" variant="secondary" onClick={() => appendCertification({ id: crypto.randomUUID(), name: '', issuer: '', date: '' })}><Plus className="mr-2 h-4 w-4" /> Add Certification</Button>
               </div>
             </AccordionContent>
           </AccordionItem>

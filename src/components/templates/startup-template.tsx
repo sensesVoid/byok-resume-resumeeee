@@ -1,3 +1,4 @@
+
 'use client';
 
 import { type ResumeSchema } from '@/lib/schemas';
@@ -27,6 +28,7 @@ export function StartupTemplate({ data }: TemplateProps) {
     experience,
     education,
     skills,
+    certifications,
     fontStyle,
     headingColor,
     bodyColor,
@@ -132,6 +134,20 @@ export function StartupTemplate({ data }: TemplateProps) {
                     <h3 className="font-semibold text-md">{edu.degree}</h3>
                     <p className="text-sm">{edu.institution}</p>
                     <p className="text-xs text-gray-500">{edu.graduationDate}</p>
+                    </div>
+                ))}
+                </div>
+            </section>
+            )}
+            {certifications?.length > 0 && (
+            <section>
+                <h2 className="text-sm font-bold tracking-widest uppercase mb-3" style={headingStyle}>Certifications</h2>
+                <div className="space-y-3">
+                {certifications.map((cert) => (
+                    <div key={cert.id}>
+                    <h3 className="font-semibold text-md">{cert.name}</h3>
+                    <p className="text-sm">{cert.issuer}</p>
+                    <p className="text-xs text-gray-500">{cert.date}</p>
                     </div>
                 ))}
                 </div>

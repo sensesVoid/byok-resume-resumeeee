@@ -1,3 +1,4 @@
+
 'use client';
 
 import { type ResumeSchema } from '@/lib/schemas';
@@ -27,6 +28,7 @@ export function MedicalTemplate({ data }: TemplateProps) {
     experience,
     education,
     skills,
+    certifications,
     fontStyle,
     headingColor,
     bodyColor,
@@ -163,13 +165,24 @@ export function MedicalTemplate({ data }: TemplateProps) {
         {skills?.length > 0 && (
           <section>
             <h2 className="text-md font-bold uppercase tracking-wider text-gray-600 mb-3" style={headingStyle}>
+              Skills
+            </h2>
+            <p className="text-sm">
+              {skills.map((skill) => skill.name).join(', ')}
+            </p>
+          </section>
+        )}
+
+        {certifications?.length > 0 && (
+          <section>
+            <h2 className="text-md font-bold uppercase tracking-wider text-gray-600 mb-3" style={headingStyle}>
               Licenses & Certifications
             </h2>
              <ul className="space-y-1 text-sm">
-                {skills.map((skill) => (
-                    <li key={skill.id} className="flex items-center gap-2">
+                {certifications.map((cert) => (
+                    <li key={cert.id} className="flex items-center gap-2">
                         <Award size={14} className="text-gray-500" />
-                        <span>{skill.name}</span>
+                        <span>{cert.name} from {cert.issuer}{cert.date ? ` (${cert.date})` : ''}</span>
                     </li>
                 ))}
             </ul>

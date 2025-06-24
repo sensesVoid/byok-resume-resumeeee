@@ -22,7 +22,7 @@ const fontClassMap: { [key: string]: string } = {
 };
 
 export function ExecutiveTemplate({ data }: TemplateProps) {
-  const { personalInfo, summary, experience, education, skills, fontStyle, headingColor, bodyColor, accentColor } = data;
+  const { personalInfo, summary, experience, education, skills, certifications, fontStyle, headingColor, bodyColor, accentColor } = data;
   
   const rootStyle = {
     color: bodyColor || '#374151',
@@ -163,6 +163,20 @@ export function ExecutiveTemplate({ data }: TemplateProps) {
             </section>
             )}
         </div>
+
+        {certifications?.length > 0 && (
+          <section>
+            <h2 className="text-sm font-bold uppercase tracking-[0.2em] border-b-2 pb-2 mb-4" style={headingWithAccentLineStyle}>Certifications</h2>
+            <div className="grid grid-cols-2 gap-4 text-sm">
+              {certifications.map((cert) => (
+                <div key={cert.id}>
+                  <h3 className="font-bold">{cert.name}</h3>
+                  <p>{cert.issuer}{cert.date ? ` - ${cert.date}` : ''}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
       </div>
     </div>
   );

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { type ResumeSchema } from '@/lib/schemas';
@@ -27,6 +28,7 @@ export function TwoToneTemplate({ data }: TemplateProps) {
     experience,
     education,
     skills,
+    certifications,
     fontStyle,
     headingColor,
     bodyColor,
@@ -165,6 +167,23 @@ export function TwoToneTemplate({ data }: TemplateProps) {
               </div>
             </section>
           )}
+        
+        {certifications?.length > 0 && (
+            <section>
+                <h2 className="text-xl font-bold mb-3" style={headingStyle}>
+                Certifications
+                </h2>
+                <div className="space-y-3">
+                {certifications.map((cert) => (
+                    <div key={cert.id}>
+                    <h3 className="font-semibold text-md">{cert.name}</h3>
+                    <p className="text-sm">{cert.issuer}</p>
+                    <p className="text-xs text-gray-500">{cert.date}</p>
+                    </div>
+                ))}
+                </div>
+            </section>
+        )}
       </div>
     </div>
   );

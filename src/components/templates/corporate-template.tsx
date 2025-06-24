@@ -28,6 +28,7 @@ export function CorporateTemplate({ data }: TemplateProps) {
     experience,
     education,
     skills,
+    certifications,
     fontStyle,
     headingColor,
     bodyColor,
@@ -116,6 +117,22 @@ export function CorporateTemplate({ data }: TemplateProps) {
                     <li key={skill.id}>{skill.name}</li>
                 ))}
             </ul>
+          </section>
+        )}
+
+        {certifications?.length > 0 && (
+          <section>
+              <h2 className="text-base font-bold uppercase tracking-wider border-b-2 pb-1 mb-3" style={{...headingStyle, borderColor: accentColor}}>
+              Certifications
+              </h2>
+              <div className="space-y-2 text-sm">
+              {certifications.map((cert) => (
+                  <div key={cert.id}>
+                  <h3 className="font-semibold">{cert.name}</h3>
+                  <p className="text-xs text-gray-500">{cert.issuer}{cert.date ? ` - ${cert.date}` : ''}</p>
+                  </div>
+              ))}
+              </div>
           </section>
         )}
       </div>

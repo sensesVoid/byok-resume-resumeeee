@@ -1,3 +1,4 @@
+
 import { z } from 'zod';
 
 export const personalInfoSchema = z.object({
@@ -26,6 +27,13 @@ export const educationSchema = z.object({
   location: z.string().optional(),
   graduationDate: z.string().min(1, 'Graduation date is required'),
   description: z.string().optional(),
+});
+
+export const certificationSchema = z.object({
+  id: z.string(),
+  name: z.string().min(1, 'Certification name is required'),
+  issuer: z.string().min(1, 'Issuer is required'),
+  date: z.string().optional(),
 });
 
 const baseAiConfigSchema = z.object({
@@ -86,6 +94,7 @@ export const resumeSchema = z.object({
   experience: z.array(experienceSchema),
   education: z.array(educationSchema),
   skills: z.array(z.object({ id: z.string(), name: z.string() })),
+  certifications: z.array(certificationSchema),
   jobDescription: z.string().optional(),
   coverLetter: z.string().optional(),
   donationConfig: donationConfigSchema,
@@ -149,6 +158,7 @@ export const defaultResumeData: ResumeSchema = {
     { id: '5', name: 'GraphQL' },
     { id: '6', name: 'Cloud Services (AWS, GCP)' },
   ],
+  certifications: [],
   jobDescription: '',
   coverLetter: '',
   aiConfig: {
