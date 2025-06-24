@@ -190,22 +190,9 @@ export function ResumeForm() {
              <AccordionTrigger><Bot className="mr-3 text-primary" /> Power your Agent</AccordionTrigger>
              <AccordionContent>
                 <div>
-                   <div className="flex items-center justify-between mb-4">
-                     <h3 className="font-semibold flex items-center gap-2"><KeyRound/> API Configuration</h3>
-                     <Button
-                        size="icon"
-                        onClick={handlePowerToggle}
-                        disabled={isValidating}
-                        className={cn('transition-all',
-                            aiPowered
-                            ? 'bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 bg-[length:200%_200%] text-white animate-flow-glow animate-pulse-glow'
-                            : 'bg-destructive hover:bg-destructive/90 text-destructive-foreground'
-                        )}
-                      >
-                       {isValidating ? <Loader2 className="animate-spin" /> : aiPowered ? <Power /> : <PowerOff />}
-                     </Button>
-                   </div>
-                   <p className="text-sm text-muted-foreground mb-4">Provide your API key, then click the power button to validate it and enable AI features.</p>
+                  <div className="mb-4">
+                    <h3 className="font-semibold flex items-center gap-2"><KeyRound/> API Configuration</h3>
+                  </div>
                    <div className="space-y-4">
                         <FormField control={form.control} name="aiConfig.provider" render={({ field }) => (
                             <FormItem>
@@ -255,6 +242,22 @@ export function ResumeForm() {
                            <FormMessage />
                          </FormItem>
                        )} />
+                   </div>
+                   <Separator className="my-6" />
+                   <div className="flex flex-col items-center gap-4">
+                      <p className="text-sm text-muted-foreground text-center">Provide your API key, then click the power button to validate it and enable AI features.</p>
+                      <Button
+                          size="icon"
+                          onClick={handlePowerToggle}
+                          disabled={isValidating}
+                          className={cn('transition-all',
+                              aiPowered
+                              ? 'bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 bg-[length:200%_200%] text-white animate-flow-glow animate-pulse-glow'
+                              : 'bg-destructive hover:bg-destructive/90 text-destructive-foreground'
+                          )}
+                        >
+                        {isValidating ? <Loader2 className="animate-spin" /> : aiPowered ? <Power /> : <PowerOff />}
+                      </Button>
                    </div>
                 </div>
              </AccordionContent>
