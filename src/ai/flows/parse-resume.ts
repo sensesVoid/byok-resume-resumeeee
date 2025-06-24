@@ -44,7 +44,7 @@ const ParsedCertificationSchema = z.object({
 const ParsedProjectSchema = z.object({
     name: z.string().describe('The name of the project.'),
     description: z.string().optional().describe('A brief description of the project.'),
-    link: z.string().url().optional().describe('A URL link to the project.'),
+    link: z.string().url().optional().or(z.literal('')).describe('A URL link to the project.'),
 });
 
 
@@ -76,8 +76,9 @@ The JSON object must strictly match the structure shown in the example below.
 **CRITICAL RULES:**
 1.  Your entire response MUST be ONLY the JSON object. Do not include any text before or after it, and do not use markdown formatting like \`\`\`json.
 2.  If an optional field is not present in the resume text (like 'phone', 'website', 'summary'), completely OMIT the key from the JSON. Do not include it with a null or empty value.
-3.  For array fields ('experience', 'education', 'skills', 'certifications', 'projects'), if the section is not found in the resume, you MUST use an empty array: [].
-4.  Inside 'description' fields, you MUST use the newline character (\\n) to represent line breaks or bullet points.
+3.  For each job in the 'experience' array, if there is no description for that specific job, the 'description' key MUST be omitted for that job object. Do not carry over descriptions from other jobs.
+4.  For array fields ('education', 'skills', 'certifications', 'projects'), if the section is not found in the resume, you MUST use an empty array: [].
+5.  Inside 'description' fields, you MUST use the newline character (\\n) to represent line breaks or bullet points.
 
 **EXAMPLE JSON OUTPUT STRUCTURE:**
 {
@@ -89,11 +90,17 @@ The JSON object must strictly match the structure shown in the example below.
   "summary": "A brief professional summary.",
   "experience": [
     {
-      "jobTitle": "Software Engineer",
+      "jobTitle": "Senior Software Engineer",
       "company": "Tech Solutions Inc.",
       "startDate": "Jan 2020",
       "endDate": "Present",
       "description": "- Developed feature A.\\n- Fixed bug B."
+    },
+    {
+      "jobTitle": "Quality Control Operator",
+      "company": "Manufacturing Co.",
+      "startDate": "Jun 2018",
+      "endDate": "Dec 2019"
     }
   ],
   "education": [
