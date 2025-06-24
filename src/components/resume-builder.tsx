@@ -19,7 +19,10 @@ import { parseResumeAction, calculateAtsScoreAction } from '@/app/actions';
 import type { CalculateAtsScoreOutput } from '@/ai/flows/calculate-ats-score';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { AtsChecker } from '@/components/ats-checker';
+import * as pdfjs from 'pdfjs-dist';
 
+// Set worker source for pdfjs-dist
+pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.mjs`;
 
 export function ResumeBuilder() {
   const form = useForm<ResumeSchema>({
@@ -48,64 +51,72 @@ export function ResumeBuilder() {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    if (file.type !== 'text/plain' && !file.name.endsWith('.txt')) {
+    if (
+      file.type !== 'text/plain' &&
+      !file.name.endsWith('.txt') &&
+      file.type !== 'application/pdf' &&
+      !file.name.endsWith('.pdf')
+    ) {
       toast({
         variant: 'destructive',
         title: 'Invalid File Type',
-        description: 'Please upload a plain text (.txt) file.',
+        description: 'Please upload a plain text (.txt) or PDF (.pdf) file.',
       });
+      if (event.target) event.target.value = '';
       return;
     }
 
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const text = e.target?.result as string;
-      if (!text) {
+    startUploadingTransition(async () => {
+      let text = '';
+      try {
+        if (file.type === 'application/pdf' || file.name.endsWith('.pdf')) {
+          const arrayBuffer = await file.arrayBuffer();
+          const pdf = await pdfjs.getDocument(arrayBuffer).promise;
+          for (let i = 1; i <= pdf.numPages; i++) {
+            const page = await pdf.getPage(i);
+            const textContent = await page.getTextContent();
+            text += textContent.items.map(item => ('str' in item ? item.str : '')).join(' ') + '\n';
+          }
+        } else {
+          text = await file.text();
+        }
+
+        if (!text.trim()) {
+          toast({
+            variant: 'destructive',
+            title: 'Empty File',
+            description: 'The file appears to be empty or contains no text.',
+          });
+          return;
+        }
+
+        const { aiConfig } = form.getValues();
+        const parsedData = await parseResumeAction({ resumeText: text, aiConfig });
+
+        const finalData = {
+          ...form.getValues(),
+          ...parsedData,
+          experience: parsedData.experience.map((exp) => ({ ...exp, id: crypto.randomUUID() })),
+          education: parsedData.education.map((edu) => ({ ...edu, id: crypto.randomUUID() })),
+          skills: parsedData.skills.map((skill) => ({ ...skill, id: crypto.randomUUID() })),
+        };
+
+        form.reset(finalData);
+        toast({
+          title: 'Success!',
+          description: 'Your resume has been parsed and loaded into the form.',
+        });
+      } catch (error) {
         toast({
           variant: 'destructive',
-          title: 'Empty File',
-          description: 'The selected file is empty.',
+          title: 'Parsing Failed',
+          description: (error as Error).message || 'Could not parse the resume. Please check the file format.',
         });
-        return;
       }
-      startUploadingTransition(async () => {
-        try {
-          const { aiConfig } = form.getValues();
-          const parsedData = await parseResumeAction({ resumeText: text, aiConfig });
-          
-          const finalData = {
-            ...form.getValues(), // preserve existing values
-            ...parsedData, // overwrite with parsed data
-            experience: parsedData.experience.map(exp => ({...exp, id: crypto.randomUUID()})),
-            education: parsedData.education.map(edu => ({...edu, id: crypto.randomUUID()})),
-            skills: parsedData.skills.map(skill => ({...skill, id: crypto.randomUUID()})),
-          };
-
-          form.reset(finalData);
-          toast({
-            title: 'Success!',
-            description: 'Your resume has been parsed and loaded into the form.',
-          });
-        } catch (error) {
-          toast({
-            variant: 'destructive',
-            title: 'Parsing Failed',
-            description: (error as Error).message,
-          });
-        }
-      });
-    };
-    reader.onerror = () => {
-        toast({
-            variant: 'destructive',
-            title: 'Error reading file',
-            description: 'Could not read the content from the selected file.',
-        });
-    };
-    reader.readAsText(file);
+    });
 
     if (event.target) {
-        event.target.value = '';
+      event.target.value = '';
     }
   };
 
@@ -175,7 +186,7 @@ export function ResumeBuilder() {
         type="file"
         ref={fileInputRef}
         onChange={handleFileChange}
-        accept=".txt"
+        accept=".txt,.pdf"
         className="hidden"
       />
       <div className="flex min-h-screen flex-col bg-background">
@@ -211,7 +222,7 @@ export function ResumeBuilder() {
                 <TabsContent value="form" className="mt-4">
                   <ResumeForm />
                 </TabsContent>
-                <TabsContent value="preview" className="mt-4">
+                <TabsContent value="preview" className="mt-4 pt-6">
                    <ResumePreview />
                 </TabsContent>
               </Tabs>
