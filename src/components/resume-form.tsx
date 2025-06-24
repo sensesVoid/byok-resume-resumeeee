@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
-import { Bot, Brush, GraduationCap, Info, Loader2, Plus, Trash2, User, Wand2, Briefcase, Star, KeyRound, Power, PowerOff, HelpCircle, Upload, ScanSearch, Mail, Award, KanbanSquare } from 'lucide-react';
+import { Bot, Brush, GraduationCap, Info, Loader2, Plus, Trash2, User, Wand2, Briefcase, Star, KeyRound, Power, PowerOff, HelpCircle, Upload, ScanSearch, Mail, Award, KanbanSquare, FileText } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { generateCoverLetterAction, improveContentAction, validateApiKeyAction } from '@/app/actions';
 import { useState, useTransition, useRef } from 'react';
@@ -252,444 +252,459 @@ export function ResumeForm() {
 
   return (
     <Form {...form}>
-      <div className="space-y-4">
+      <div className="space-y-6">
         <div className="my-4 flex h-24 items-center justify-center rounded-lg border border-dashed bg-muted/50 text-sm text-muted-foreground">
           Place your ad here!
         </div>
 
-        <Accordion type="multiple" defaultValue={['ai-tools', 'ats-tools', 'design', 'personal']} className="w-full">
-          
-          <AccordionItem value="ai-tools">
-             <AccordionTrigger data-powered={aiPowered}>
-                <div className="flex items-center"><Bot className="mr-3 text-primary" /> Power your Agent</div>
-            </AccordionTrigger>
-             <AccordionContent>
-                <div className="pt-4">
-                  <div className="mb-4">
-                    <h3 className="font-semibold flex items-center gap-2"><KeyRound/> API Configuration</h3>
-                  </div>
-                   <div className="space-y-4">
-                        <FormField control={form.control} name="aiConfig.provider" render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>AI Provider</FormLabel>
-                                <Select onValueChange={field.onChange} defaultValue={field.value} disabled={aiPowered}>
-                                    <FormControl>
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Select a provider" />
-                                        </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent>
-                                        <SelectItem value="google">Google AI</SelectItem>
-                                        <SelectItem value="openai">OpenAI</SelectItem>
-                                        <SelectItem value="openrouter">OpenRouter</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                                <FormDescription>Select the AI provider you want to use.</FormDescription>
-                                <FormMessage />
-                            </FormItem>
-                        )} />
-                       <FormField control={form.control} name="aiConfig.apiKey" render={({ field }) => (
-                         <FormItem>
-                           <div className="flex items-center gap-2">
-                            <FormLabel>API Key</FormLabel>
-                            <TooltipProvider>
-                                <Tooltip>
-                                    <TooltipTrigger asChild>
-                                      <button type="button" aria-label="API key help" className="cursor-help">
-                                        <HelpCircle className="h-4 w-4 text-muted-foreground hover:text-foreground" />
-                                      </button>
-                                    </TooltipTrigger>
-                                    <TooltipContent side="right">
-                                        {getApiKeyHelpText(aiProvider)}
-                                    </TooltipContent>
-                                </Tooltip>
-                            </TooltipProvider>
-                           </div>
-                           <FormControl><Input type="password" placeholder="Enter your API key" {...field} disabled={aiPowered} /></FormControl>
-                           <FormMessage />
-                         </FormItem>
-                       )} />
-                       <FormField control={form.control} name="aiConfig.model" render={({ field }) => (
-                         <FormItem>
-                           <FormLabel>Model Name (Optional)</FormLabel>
-                           <FormControl><Input placeholder="e.g., gemini-1.5-flash-latest" {...field} disabled={aiPowered}/></FormControl>
-                           <FormDescription>If left blank, a default model will be used.</FormDescription>
-                           <FormMessage />
-                         </FormItem>
-                       )} />
-                   </div>
-                   <Separator className="my-6" />
-                   <div className="flex items-center justify-between gap-4">
-                      <p className="text-sm text-muted-foreground">Provide your API key, then click the power button to validate it and enable AI features.</p>
-                      <Button
-                          size="icon"
-                          onClick={handlePowerToggle}
-                          disabled={isValidating}
-                          aria-label={aiPowered ? 'Disable AI Features' : 'Enable AI Features'}
-                          className={cn('transition-all shrink-0',
-                              aiPowered
-                              ? 'bg-gradient-to-r from-blue-400 via-sky-400 to-cyan-400 bg-[length:200%_200%] text-white animate-flow-glow animate-pulse-glow'
-                              : 'bg-destructive hover:bg-destructive/90 text-destructive-foreground'
-                          )}
-                        >
-                        {isValidating ? <Loader2 className="animate-spin" /> : aiPowered ? <Power /> : <PowerOff />}
-                      </Button>
-                   </div>
-                </div>
-             </AccordionContent>
-          </AccordionItem>
-
-          <AccordionItem value="ats-tools">
-            <AccordionTrigger data-powered={aiPowered}>
-                <div className="flex items-center"><ScanSearch className="mr-3 text-primary" /> ATS & Job Matching</div>
-            </AccordionTrigger>
-            <AccordionContent>
-                <div className="space-y-4 pt-4">
-                <FormField control={form.control} name="jobDescription" render={({ field }) => (
-                    <FormItem>
-                    <FormLabel>Job Description</FormLabel>
-                    <FormDescription>Paste the job description here to check your ATS score and generate a tailored cover letter.</FormDescription>
-                    <FormControl><Textarea rows={8} {...field} disabled={!aiPowered} /></FormControl>
-                    <FormMessage />
-                    </FormItem>
-                )} />
-                </div>
-            </AccordionContent>
-          </AccordionItem>
-
-          <AccordionItem value="cover-letter-generator">
-            <AccordionTrigger data-powered={aiPowered}>
-                <div className="flex items-center"><Mail className="mr-3 text-primary" /> AI Cover Letter Generator</div>
-            </AccordionTrigger>
-            <AccordionContent>
-                <div className="space-y-4 pt-4">
-                <p className="text-sm text-muted-foreground">
-                    Make sure you've added a job description in the "ATS & Job Matching" section above before generating a cover letter.
-                </p>
-                <div className="flex flex-wrap gap-2">
-                    <Button type="button" onClick={handleGenerateCoverLetter} disabled={isGenerating || !aiPowered}>
-                    {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
-                    Generate Cover Letter
-                    </Button>
-                </div>
-                </div>
-            </AccordionContent>
-          </AccordionItem>
-          
-          <AccordionItem value="design">
-            <AccordionTrigger>
-                <div className="flex items-center"><Brush className="mr-3 text-primary" /> Design & Style</div>
-            </AccordionTrigger>
-            <AccordionContent className="space-y-6 pt-4">
-              <TemplateSwitcher />
-              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                <FormField control={form.control} name="fontStyle" render={({ field }) => (
-                  <FormItem className="sm:col-span-2">
-                    <FormLabel>Font Family</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a font" /></SelectTrigger></FormControl><SelectContent>{fontStyles.map(font => (<SelectItem key={font.value} value={font.value}>{font.label}</SelectItem>))}</SelectContent></Select><FormMessage />
-                  </FormItem>
-                )} />
-                <FormField control={form.control} name="headingColor" render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Heading Color</FormLabel>
-                    <FormControl>
-                        <div className="relative h-10 w-full rounded-md border border-input">
-                            <input
-                                type="color"
-                                {...field}
-                                className="absolute w-full h-full opacity-0 cursor-pointer"
-                            />
-                            <div className="h-full w-full rounded-[inherit]" style={{ backgroundColor: field.value }}></div>
+        <div className="space-y-4">
+            <h2 className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-3">
+                <Bot className="h-6 w-6 text-primary"/>
+                AI Toolkit
+            </h2>
+            <Accordion type="multiple" defaultValue={['ai-tools']} className="w-full">
+                <AccordionItem value="ai-tools">
+                    <AccordionTrigger data-powered={aiPowered}>
+                        <div className="flex items-center"><KeyRound className="mr-3 text-primary" /> Power your Agent</div>
+                    </AccordionTrigger>
+                    <AccordionContent>
+                        <div className="pt-4">
+                        <div className="mb-4">
+                            <h3 className="font-semibold flex items-center gap-2"><KeyRound/> API Configuration</h3>
                         </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )} />
-                 <FormField control={form.control} name="bodyColor" render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Body Text Color</FormLabel>
-                    <FormControl>
-                        <div className="relative h-10 w-full rounded-md border border-input">
-                             <input
-                                type="color"
-                                {...field}
-                                className="absolute w-full h-full opacity-0 cursor-pointer"
-                            />
-                            <div className="h-full w-full rounded-[inherit]" style={{ backgroundColor: field.value }}></div>
-                        </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )} />
-                <FormField control={form.control} name="accentColor" render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Accent Color</FormLabel>
-                    <FormControl>
-                        <div className="relative h-10 w-full rounded-md border border-input">
-                            <input
-                                type="color"
-                                {...field}
-                                className="absolute w-full h-full opacity-0 cursor-pointer"
-                            />
-                            <div className="h-full w-full rounded-[inherit]" style={{ backgroundColor: field.value }}></div>
-                        </div>
-                    </FormControl>
-                    <FormDescription>For sidebars or headers.</FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )} />
-              </div>
-            </AccordionContent>
-          </AccordionItem>
-
-          <AccordionItem value="personal">
-            <AccordionTrigger>
-                <div className="flex items-center"><User className="mr-3 text-primary" /> Personal Information</div>
-            </AccordionTrigger>
-            <AccordionContent>
-              <div className="space-y-4 pt-4">
-                 {showPhotoUpload && (
-                    <>
-                        <FormField
-                            control={form.control}
-                            name="personalInfo.photo"
-                            render={({ field }) => (
+                        <div className="space-y-4">
+                                <FormField control={form.control} name="aiConfig.provider" render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>AI Provider</FormLabel>
+                                        <Select onValueChange={field.onChange} defaultValue={field.value} disabled={aiPowered}>
+                                            <FormControl>
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder="Select a provider" />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                <SelectItem value="google">Google AI</SelectItem>
+                                                <SelectItem value="openai">OpenAI</SelectItem>
+                                                <SelectItem value="openrouter">OpenRouter</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                        <FormDescription>Select the AI provider you want to use.</FormDescription>
+                                        <FormMessage />
+                                    </FormItem>
+                                )} />
+                            <FormField control={form.control} name="aiConfig.apiKey" render={({ field }) => (
                                 <FormItem>
-                                <FormLabel>Photo</FormLabel>
-                                <FormControl>
-                                    <div className="flex items-center gap-4">
-                                        <Avatar className="h-20 w-20">
-                                            <AvatarImage src={field.value || undefined} alt="User Photo" />
-                                            <AvatarFallback>
-                                                <User className="h-10 w-10 text-muted-foreground" />
-                                            </AvatarFallback>
-                                        </Avatar>
-                                        <div className="flex flex-col gap-2">
-                                            <Button type="button" variant="outline" size="sm" onClick={() => photoInputRef.current?.click()}>
-                                                <Upload className="mr-2 h-4 w-4" /> Upload
-                                            </Button>
-                                            {field.value && (
-                                                <Button
-                                                    type="button"
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    aria-label="Remove photo"
-                                                    className="text-muted-foreground hover:text-destructive"
-                                                    onClick={() => form.setValue('personalInfo.photo', '', { shouldValidate: true })}
-                                                >
-                                                    <Trash2 className="mr-2 h-4 w-4" /> Remove
-                                                </Button>
-                                            )}
-                                        </div>
-                                    </div>
-                                </FormControl>
+                                <div className="flex items-center gap-2">
+                                    <FormLabel>API Key</FormLabel>
+                                    <TooltipProvider>
+                                        <Tooltip>
+                                            <TooltipTrigger asChild>
+                                            <button type="button" aria-label="API key help" className="cursor-help">
+                                                <HelpCircle className="h-4 w-4 text-muted-foreground hover:text-foreground" />
+                                            </button>
+                                            </TooltipTrigger>
+                                            <TooltipContent side="right">
+                                                {getApiKeyHelpText(aiProvider)}
+                                            </TooltipContent>
+                                        </Tooltip>
+                                    </TooltipProvider>
+                                </div>
+                                <FormControl><Input type="password" placeholder="Enter your API key" {...field} disabled={aiPowered} /></FormControl>
                                 <FormMessage />
                                 </FormItem>
-                            )}
-                            />
-                            <input
-                                type="file"
-                                ref={photoInputRef}
-                                onChange={handlePhotoUpload}
-                                accept="image/png, image/jpeg"
-                                className="hidden"
-                            />
-                    </>
-                 )}
+                            )} />
+                            <FormField control={form.control} name="aiConfig.model" render={({ field }) => (
+                                <FormItem>
+                                <FormLabel>Model Name (Optional)</FormLabel>
+                                <FormControl><Input placeholder="e.g., gemini-1.5-flash-latest" {...field} disabled={aiPowered}/></FormControl>
+                                <FormDescription>If left blank, a default model will be used.</FormDescription>
+                                <FormMessage />
+                                </FormItem>
+                            )} />
+                        </div>
+                        <Separator className="my-6" />
+                        <div className="flex items-center justify-between gap-4">
+                            <p className="text-sm text-muted-foreground">Provide your API key, then click the power button to validate it and enable AI features.</p>
+                            <Button
+                                size="icon"
+                                onClick={handlePowerToggle}
+                                disabled={isValidating}
+                                aria-label={aiPowered ? 'Disable AI Features' : 'Enable AI Features'}
+                                className={cn('transition-all shrink-0',
+                                    aiPowered
+                                    ? 'bg-gradient-to-r from-blue-400 via-sky-400 to-cyan-400 bg-[length:200%_200%] text-white animate-flow-glow animate-pulse-glow'
+                                    : 'bg-destructive hover:bg-destructive/90 text-destructive-foreground'
+                                )}
+                                >
+                                {isValidating ? <Loader2 className="animate-spin" /> : aiPowered ? <Power /> : <PowerOff />}
+                            </Button>
+                        </div>
+                        </div>
+                    </AccordionContent>
+                </AccordionItem>
 
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  <FormField control={form.control} name="personalInfo.name" render={({ field }) => (<FormItem><FormLabel>Full Name</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                  <FormField control={form.control} name="personalInfo.email" render={({ field }) => (<FormItem><FormLabel>Email</FormLabel><FormControl><Input type="email" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                  <FormField control={form.control} name="personalInfo.phone" render={({ field }) => (<FormItem><FormLabel>Phone</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                  <FormField control={form.control} name="personalInfo.website" render={({ field }) => (<FormItem><FormLabel>Website/Portfolio</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                  <FormField control={form.control} name="personalInfo.location" render={({ field }) => (<FormItem className="sm:col-span-2"><FormLabel>Location</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                </div>
-                 <div className="flex justify-end pt-2">
-                   <Button type="button" variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive" onClick={handleClearPersonalInfo} aria-label="Clear all personal information">
-                      <Trash2 className="h-4 w-4" />
-                   </Button>
-                </div>
-              </div>
-            </AccordionContent>
-          </AccordionItem>
+                <AccordionItem value="ats-tools">
+                    <AccordionTrigger data-powered={aiPowered}>
+                        <div className="flex items-center"><ScanSearch className="mr-3 text-primary" /> ATS & Job Matching</div>
+                    </AccordionTrigger>
+                    <AccordionContent>
+                        <div className="space-y-4 pt-4">
+                        <FormField control={form.control} name="jobDescription" render={({ field }) => (
+                            <FormItem>
+                            <FormLabel>Job Description</FormLabel>
+                            <FormDescription>Paste the job description here to check your ATS score and generate a tailored cover letter.</FormDescription>
+                            <FormControl><Textarea rows={8} {...field} disabled={!aiPowered} /></FormControl>
+                            <FormMessage />
+                            </FormItem>
+                        )} />
+                        </div>
+                    </AccordionContent>
+                </AccordionItem>
 
-          <AccordionItem value="summary">
-            <AccordionTrigger>
-                <div className="flex items-center"><Info className="mr-3 text-primary" /> Professional Summary</div>
-            </AccordionTrigger>
-            <AccordionContent>
-              <FormField control={form.control} name="summary" render={({ field }) => (
-                <FormItem className="pt-4">
-                  <FormControl><Textarea rows={5} {...field} /></FormControl><FormMessage />
-                   <div className="flex items-center justify-between pt-2">
-                      <Button 
-                          type="button" 
-                          size="sm" 
-                          variant="outline" 
-                          onClick={() => handleImproveContent('summary', field.value || '')} 
-                          disabled={isImproving || !aiPowered}
-                      >
-                          {isImproving && fieldToUpdate === 'summary' ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />} Improve with AI
-                      </Button>
-                      <Button 
-                        type="button" 
-                        variant="ghost" 
-                        size="icon" 
-                        className="text-muted-foreground hover:text-destructive" 
-                        onClick={() => form.setValue('summary', '', { shouldValidate: true })}
-                        aria-label="Clear summary"
-                      >
-                          <Trash2 className="h-4 w-4" />
-                      </Button>
-                   </div>
-                </FormItem>
-              )} />
-            </AccordionContent>
-          </AccordionItem>
-          
-          <AccordionItem value="experience">
-            <AccordionTrigger>
-                <div className="flex items-center"><Briefcase className="mr-3 text-primary" /> Work Experience</div>
-            </AccordionTrigger>
-            <AccordionContent>
-              <div className="space-y-6 pt-4">
-                {experienceFields.map((field, index) => (
-                  <div key={field.id} className="rounded-lg border border-border/50 p-4 space-y-4 bg-background/30">
-                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                      <FormField control={form.control} name={`experience.${index}.jobTitle`} render={({ field }) => (<FormItem><FormLabel>Job Title</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                      <FormField control={form.control} name={`experience.${index}.company`} render={({ field }) => (<FormItem><FormLabel>Company</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                      <FormField control={form.control} name={`experience.${index}.location`} render={({ field }) => (<FormItem><FormLabel>Location</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                      <FormField control={form.control} name={`experience.${index}.startDate`} render={({ field }) => (<FormItem><FormLabel>Start Date</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                      <FormField control={form.control} name={`experience.${index}.endDate`} render={({ field }) => (<FormItem><FormLabel>End Date</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                <AccordionItem value="cover-letter-generator">
+                    <AccordionTrigger data-powered={aiPowered}>
+                        <div className="flex items-center"><Mail className="mr-3 text-primary" /> AI Cover Letter Generator</div>
+                    </AccordionTrigger>
+                    <AccordionContent>
+                        <div className="space-y-4 pt-4">
+                        <p className="text-sm text-muted-foreground">
+                            Make sure you've added a job description in the "ATS & Job Matching" section above before generating a cover letter.
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                            <Button type="button" onClick={handleGenerateCoverLetter} disabled={isGenerating || !aiPowered}>
+                            {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
+                            Generate Cover Letter
+                            </Button>
+                        </div>
+                        </div>
+                    </AccordionContent>
+                </AccordionItem>
+            </Accordion>
+        </div>
+
+        <Separator className="my-6" />
+
+        <div className="space-y-4">
+             <h2 className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-3">
+                <FileText className="h-6 w-6 text-primary"/>
+                Resume Builder
+            </h2>
+            <Accordion type="multiple" defaultValue={['design', 'personal']} className="w-full">
+                <AccordionItem value="design">
+                    <AccordionTrigger>
+                        <div className="flex items-center"><Brush className="mr-3 text-primary" /> Design & Style</div>
+                    </AccordionTrigger>
+                    <AccordionContent className="space-y-6">
+                    <TemplateSwitcher />
+                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                        <FormField control={form.control} name="fontStyle" render={({ field }) => (
+                        <FormItem className="sm:col-span-2">
+                            <FormLabel>Font Family</FormLabel>
+                            <Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Select a font" /></SelectTrigger></FormControl><SelectContent>{fontStyles.map(font => (<SelectItem key={font.value} value={font.value}>{font.label}</SelectItem>))}</SelectContent></Select><FormMessage />
+                        </FormItem>
+                        )} />
+                        <FormField control={form.control} name="headingColor" render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Heading Color</FormLabel>
+                            <FormControl>
+                                <div className="relative h-10 w-full rounded-md border border-input">
+                                    <input
+                                        type="color"
+                                        {...field}
+                                        className="absolute w-full h-full opacity-0 cursor-pointer"
+                                    />
+                                    <div className="h-full w-full rounded-[inherit]" style={{ backgroundColor: field.value }}></div>
+                                </div>
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                        )} />
+                        <FormField control={form.control} name="bodyColor" render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Body Text Color</FormLabel>
+                            <FormControl>
+                                <div className="relative h-10 w-full rounded-md border border-input">
+                                    <input
+                                        type="color"
+                                        {...field}
+                                        className="absolute w-full h-full opacity-0 cursor-pointer"
+                                    />
+                                    <div className="h-full w-full rounded-[inherit]" style={{ backgroundColor: field.value }}></div>
+                                </div>
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                        )} />
+                        <FormField control={form.control} name="accentColor" render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Accent Color</FormLabel>
+                            <FormControl>
+                                <div className="relative h-10 w-full rounded-md border border-input">
+                                    <input
+                                        type="color"
+                                        {...field}
+                                        className="absolute w-full h-full opacity-0 cursor-pointer"
+                                    />
+                                    <div className="h-full w-full rounded-[inherit]" style={{ backgroundColor: field.value }}></div>
+                                </div>
+                            </FormControl>
+                            <FormDescription>For sidebars or headers.</FormDescription>
+                            <FormMessage />
+                        </FormItem>
+                        )} />
                     </div>
-                    <FormField control={form.control} name={`experience.${index}.description`} render={({ field: descField }) => (
-                      <FormItem>
-                        <FormLabel>Description</FormLabel><FormControl><Textarea rows={5} {...descField} /></FormControl><FormMessage />
-                      </FormItem>
+                    </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem value="personal">
+                    <AccordionTrigger>
+                        <div className="flex items-center"><User className="mr-3 text-primary" /> Personal Information</div>
+                    </AccordionTrigger>
+                    <AccordionContent>
+                    <div className="space-y-4 pt-4">
+                        {showPhotoUpload && (
+                            <>
+                                <FormField
+                                    control={form.control}
+                                    name="personalInfo.photo"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                        <FormLabel>Photo</FormLabel>
+                                        <FormControl>
+                                            <div className="flex items-center gap-4">
+                                                <Avatar className="h-20 w-20">
+                                                    <AvatarImage src={field.value || undefined} alt="User Photo" />
+                                                    <AvatarFallback>
+                                                        <User className="h-10 w-10 text-muted-foreground" />
+                                                    </AvatarFallback>
+                                                </Avatar>
+                                                <div className="flex flex-col gap-2">
+                                                    <Button type="button" variant="outline" size="sm" onClick={() => photoInputRef.current?.click()}>
+                                                        <Upload className="mr-2 h-4 w-4" /> Upload
+                                                    </Button>
+                                                    {field.value && (
+                                                        <Button
+                                                            type="button"
+                                                            variant="ghost"
+                                                            size="sm"
+                                                            aria-label="Remove photo"
+                                                            className="text-muted-foreground hover:text-destructive"
+                                                            onClick={() => form.setValue('personalInfo.photo', '', { shouldValidate: true })}
+                                                        >
+                                                            <Trash2 className="mr-2 h-4 w-4" /> Remove
+                                                        </Button>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </FormControl>
+                                        <FormMessage />
+                                        </FormItem>
+                                    )}
+                                    />
+                                    <input
+                                        type="file"
+                                        ref={photoInputRef}
+                                        onChange={handlePhotoUpload}
+                                        accept="image/png, image/jpeg"
+                                        className="hidden"
+                                    />
+                            </>
+                        )}
+
+                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        <FormField control={form.control} name="personalInfo.name" render={({ field }) => (<FormItem><FormLabel>Full Name</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                        <FormField control={form.control} name="personalInfo.email" render={({ field }) => (<FormItem><FormLabel>Email</FormLabel><FormControl><Input type="email" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                        <FormField control={form.control} name="personalInfo.phone" render={({ field }) => (<FormItem><FormLabel>Phone</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                        <FormField control={form.control} name="personalInfo.website" render={({ field }) => (<FormItem><FormLabel>Website/Portfolio</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                        <FormField control={form.control} name="personalInfo.location" render={({ field }) => (<FormItem className="sm:col-span-2"><FormLabel>Location</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                        </div>
+                        <div className="flex justify-end pt-2">
+                        <Button type="button" variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive" onClick={handleClearPersonalInfo} aria-label="Clear all personal information">
+                            <Trash2 className="h-4 w-4" />
+                        </Button>
+                        </div>
+                    </div>
+                    </AccordionContent>
+                </AccordionItem>
+
+                <AccordionItem value="summary">
+                    <AccordionTrigger>
+                        <div className="flex items-center"><Info className="mr-3 text-primary" /> Professional Summary</div>
+                    </AccordionTrigger>
+                    <AccordionContent>
+                    <FormField control={form.control} name="summary" render={({ field }) => (
+                        <FormItem className="pt-4">
+                        <FormControl><Textarea rows={5} {...field} /></FormControl><FormMessage />
+                        <div className="flex items-center justify-between pt-2">
+                            <Button 
+                                type="button" 
+                                size="sm" 
+                                variant="outline" 
+                                onClick={() => handleImproveContent('summary', field.value || '')} 
+                                disabled={isImproving || !aiPowered}
+                            >
+                                {isImproving && fieldToUpdate === 'summary' ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />} Improve with AI
+                            </Button>
+                            <Button 
+                                type="button" 
+                                variant="ghost" 
+                                size="icon" 
+                                className="text-muted-foreground hover:text-destructive" 
+                                onClick={() => form.setValue('summary', '', { shouldValidate: true })}
+                                aria-label="Clear summary"
+                            >
+                                <Trash2 className="h-4 w-4" />
+                            </Button>
+                        </div>
+                        </FormItem>
                     )} />
-                    <div className="flex items-center justify-between pt-2">
-                        <Button 
-                            type="button" 
-                            size="sm" 
-                            variant="outline" 
-                            onClick={() => handleImproveContent(`experience.${index}.description`, form.getValues(`experience.${index}.description`) || '')} 
-                            disabled={isImproving || !aiPowered}
-                        >
-                            {isImproving && fieldToUpdate === `experience.${index}.description` ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />} Improve with AI
-                        </Button>
-                        <Button type="button" variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive" onClick={() => removeExperience(index)} aria-label="Remove experience entry">
-                            <Trash2 className="h-4 w-4" />
-                        </Button>
+                    </AccordionContent>
+                </AccordionItem>
+                
+                <AccordionItem value="experience">
+                    <AccordionTrigger>
+                        <div className="flex items-center"><Briefcase className="mr-3 text-primary" /> Work Experience</div>
+                    </AccordionTrigger>
+                    <AccordionContent>
+                    <div className="space-y-6 pt-4">
+                        {experienceFields.map((field, index) => (
+                        <div key={field.id} className="rounded-lg border border-border/50 p-4 space-y-4 bg-background/30">
+                            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                            <FormField control={form.control} name={`experience.${index}.jobTitle`} render={({ field }) => (<FormItem><FormLabel>Job Title</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                            <FormField control={form.control} name={`experience.${index}.company`} render={({ field }) => (<FormItem><FormLabel>Company</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                            <FormField control={form.control} name={`experience.${index}.location`} render={({ field }) => (<FormItem><FormLabel>Location</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                            <FormField control={form.control} name={`experience.${index}.startDate`} render={({ field }) => (<FormItem><FormLabel>Start Date</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                            <FormField control={form.control} name={`experience.${index}.endDate`} render={({ field }) => (<FormItem><FormLabel>End Date</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                            </div>
+                            <FormField control={form.control} name={`experience.${index}.description`} render={({ field: descField }) => (
+                            <FormItem>
+                                <FormLabel>Description</FormLabel><FormControl><Textarea rows={5} {...descField} /></FormControl><FormMessage />
+                            </FormItem>
+                            )} />
+                            <div className="flex items-center justify-between pt-2">
+                                <Button 
+                                    type="button" 
+                                    size="sm" 
+                                    variant="outline" 
+                                    onClick={() => handleImproveContent(`experience.${index}.description`, form.getValues(`experience.${index}.description`) || '')} 
+                                    disabled={isImproving || !aiPowered}
+                                >
+                                    {isImproving && fieldToUpdate === `experience.${index}.description` ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />} Improve with AI
+                                </Button>
+                                <Button type="button" variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive" onClick={() => removeExperience(index)} aria-label="Remove experience entry">
+                                    <Trash2 className="h-4 w-4" />
+                                </Button>
+                            </div>
+                        </div>
+                        ))}
+                        <Button type="button" variant="secondary" onClick={() => appendExperience({ id: crypto.randomUUID(), jobTitle: '', company: '', startDate: '', endDate: '', description: '', location: '' })}><Plus className="mr-2 h-4 w-4" /> Add Experience</Button>
                     </div>
-                  </div>
-                ))}
-                <Button type="button" variant="secondary" onClick={() => appendExperience({ id: crypto.randomUUID(), jobTitle: '', company: '', startDate: '', endDate: '', description: '', location: '' })}><Plus className="mr-2 h-4 w-4" /> Add Experience</Button>
-              </div>
-            </AccordionContent>
-          </AccordionItem>
-          
-          <AccordionItem value="education">
-            <AccordionTrigger>
-                <div className="flex items-center"><GraduationCap className="mr-3 text-primary" /> Education</div>
-            </AccordionTrigger>
-            <AccordionContent>
-              <div className="space-y-6 pt-4">
-                {educationFields.map((field, index) => (
-                  <div key={field.id} className="rounded-lg border border-border/50 p-4 space-y-4 bg-background/30">
-                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                      <FormField control={form.control} name={`education.${index}.degree`} render={({ field }) => (<FormItem><FormLabel>Degree/Certificate</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                      <FormField control={form.control} name={`education.${index}.institution`} render={({ field }) => (<FormItem><FormLabel>Institution</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                      <FormField control={form.control} name={`education.${index}.location`} render={({ field }) => (<FormItem><FormLabel>Location</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                      <FormField control={form.control} name={`education.${index}.graduationDate`} render={({ field }) => (<FormItem><FormLabel>Graduation Date</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                    </AccordionContent>
+                </AccordionItem>
+                
+                <AccordionItem value="education">
+                    <AccordionTrigger>
+                        <div className="flex items-center"><GraduationCap className="mr-3 text-primary" /> Education</div>
+                    </AccordionTrigger>
+                    <AccordionContent>
+                    <div className="space-y-6 pt-4">
+                        {educationFields.map((field, index) => (
+                        <div key={field.id} className="rounded-lg border border-border/50 p-4 space-y-4 bg-background/30">
+                            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                            <FormField control={form.control} name={`education.${index}.degree`} render={({ field }) => (<FormItem><FormLabel>Degree/Certificate</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                            <FormField control={form.control} name={`education.${index}.institution`} render={({ field }) => (<FormItem><FormLabel>Institution</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                            <FormField control={form.control} name={`education.${index}.location`} render={({ field }) => (<FormItem><FormLabel>Location</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                            <FormField control={form.control} name={`education.${index}.graduationDate`} render={({ field }) => (<FormItem><FormLabel>Graduation Date</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                            </div>
+                            <FormField control={form.control} name={`education.${index}.description`} render={({ field }) => (<FormItem><FormLabel>Description</FormLabel><FormControl><Textarea rows={3} {...field} /></FormControl><FormMessage /></FormItem>)} />
+                            <div className="flex justify-end pt-2">
+                                <Button type="button" variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive" onClick={() => removeEducation(index)} aria-label="Remove education entry">
+                                    <Trash2 className="h-4 w-4" />
+                                </Button>
+                            </div>
+                        </div>
+                        ))}
+                        <Button type="button" variant="secondary" onClick={() => appendEducation({ id: crypto.randomUUID(), degree: '', institution: '', graduationDate: '', description: '', location: '' })}><Plus className="mr-2 h-4 w-4" /> Add Education</Button>
                     </div>
-                    <FormField control={form.control} name={`education.${index}.description`} render={({ field }) => (<FormItem><FormLabel>Description</FormLabel><FormControl><Textarea rows={3} {...field} /></FormControl><FormMessage /></FormItem>)} />
-                    <div className="flex justify-end pt-2">
-                        <Button type="button" variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive" onClick={() => removeEducation(index)} aria-label="Remove education entry">
-                            <Trash2 className="h-4 w-4" />
-                        </Button>
+                    </AccordionContent>
+                </AccordionItem>
+                
+                <AccordionItem value="skills">
+                    <AccordionTrigger>
+                        <div className="flex items-center"><Star className="mr-3 text-primary" /> Skills</div>
+                    </AccordionTrigger>
+                    <AccordionContent>
+                    <div className="space-y-4 pt-4">
+                        <div className="space-y-2">
+                        <Label htmlFor="new-skill-input">Add a skill</Label>
+                        <div className="flex gap-2">
+                            <Input id="new-skill-input" value={newSkill} onChange={e => setNewSkill(e.target.value)} placeholder="e.g. TypeScript" onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddSkill())} />
+                            <Button type="button" onClick={handleAddSkill}><Plus className="mr-2 h-4 w-4" /> Add</Button>
+                        </div>
+                        </div>
+                        <div className="flex min-h-[2.25rem] flex-wrap gap-2 rounded-lg border border-border/50 p-3 bg-background/30">
+                        {skillFields.map((field, index) => (
+                            <div key={field.id} className="flex items-center gap-2 rounded-full bg-secondary px-3 py-1 text-sm font-medium text-secondary-foreground">
+                            <span>{form.watch(`skills.${index}.name`)}</span>
+                            <button type="button" onClick={() => removeSkill(index)} className="text-secondary-foreground/70 hover:text-secondary-foreground" aria-label={`Remove skill: ${form.watch(`skills.${index}.name`)}`}><Trash2 className="h-3 w-3" /></button>
+                            </div>
+                        ))}
+                        </div>
                     </div>
-                  </div>
-                ))}
-                <Button type="button" variant="secondary" onClick={() => appendEducation({ id: crypto.randomUUID(), degree: '', institution: '', graduationDate: '', description: '', location: '' })}><Plus className="mr-2 h-4 w-4" /> Add Education</Button>
-              </div>
-            </AccordionContent>
-          </AccordionItem>
-          
-          <AccordionItem value="skills">
-            <AccordionTrigger>
-                <div className="flex items-center"><Star className="mr-3 text-primary" /> Skills</div>
-            </AccordionTrigger>
-            <AccordionContent>
-              <div className="space-y-4 pt-4">
-                <div className="space-y-2">
-                  <Label htmlFor="new-skill-input">Add a skill</Label>
-                  <div className="flex gap-2">
-                    <Input id="new-skill-input" value={newSkill} onChange={e => setNewSkill(e.target.value)} placeholder="e.g. TypeScript" onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddSkill())} />
-                    <Button type="button" onClick={handleAddSkill}><Plus className="mr-2 h-4 w-4" /> Add</Button>
-                  </div>
-                </div>
-                <div className="flex min-h-[2.25rem] flex-wrap gap-2 rounded-lg border border-border/50 p-3 bg-background/30">
-                  {skillFields.map((field, index) => (
-                    <div key={field.id} className="flex items-center gap-2 rounded-full bg-secondary px-3 py-1 text-sm font-medium text-secondary-foreground">
-                      <span>{form.watch(`skills.${index}.name`)}</span>
-                      <button type="button" onClick={() => removeSkill(index)} className="text-secondary-foreground/70 hover:text-secondary-foreground" aria-label={`Remove skill: ${form.watch(`skills.${index}.name`)}`}><Trash2 className="h-3 w-3" /></button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </AccordionContent>
-          </AccordionItem>
+                    </AccordionContent>
+                </AccordionItem>
 
-          <AccordionItem value="certifications">
-            <AccordionTrigger>
-                <div className="flex items-center"><Award className="mr-3 text-primary" /> Certifications (Optional)</div>
-            </AccordionTrigger>
-            <AccordionContent>
-              <div className="space-y-6 pt-4">
-                {certificationFields.map((field, index) => (
-                  <div key={field.id} className="rounded-lg border border-border/50 p-4 space-y-4 bg-background/30">
-                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                      <FormField control={form.control} name={`certifications.${index}.name`} render={({ field }) => (<FormItem><FormLabel>Certification Name</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                      <FormField control={form.control} name={`certifications.${index}.issuer`} render={({ field }) => (<FormItem><FormLabel>Issuer</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                <AccordionItem value="certifications">
+                    <AccordionTrigger>
+                        <div className="flex items-center"><Award className="mr-3 text-primary" /> Certifications (Optional)</div>
+                    </AccordionTrigger>
+                    <AccordionContent>
+                    <div className="space-y-6 pt-4">
+                        {certificationFields.map((field, index) => (
+                        <div key={field.id} className="rounded-lg border border-border/50 p-4 space-y-4 bg-background/30">
+                            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                            <FormField control={form.control} name={`certifications.${index}.name`} render={({ field }) => (<FormItem><FormLabel>Certification Name</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                            <FormField control={form.control} name={`certifications.${index}.issuer`} render={({ field }) => (<FormItem><FormLabel>Issuer</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                            </div>
+                            <FormField control={form.control} name={`certifications.${index}.date`} render={({ field }) => (<FormItem><FormLabel>Date Issued</FormLabel><FormControl><Input placeholder="e.g., June 2023" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                            <div className="flex justify-end pt-2">
+                                <Button type="button" variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive" onClick={() => removeCertification(index)} aria-label="Remove certification entry">
+                                    <Trash2 className="h-4 w-4" />
+                                </Button>
+                            </div>
+                        </div>
+                        ))}
+                        <Button type="button" variant="secondary" onClick={() => appendCertification({ id: crypto.randomUUID(), name: '', issuer: '', date: '' })}><Plus className="mr-2 h-4 w-4" /> Add Certification</Button>
                     </div>
-                    <FormField control={form.control} name={`certifications.${index}.date`} render={({ field }) => (<FormItem><FormLabel>Date Issued</FormLabel><FormControl><Input placeholder="e.g., June 2023" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                    <div className="flex justify-end pt-2">
-                        <Button type="button" variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive" onClick={() => removeCertification(index)} aria-label="Remove certification entry">
-                            <Trash2 className="h-4 w-4" />
-                        </Button>
-                    </div>
-                  </div>
-                ))}
-                <Button type="button" variant="secondary" onClick={() => appendCertification({ id: crypto.randomUUID(), name: '', issuer: '', date: '' })}><Plus className="mr-2 h-4 w-4" /> Add Certification</Button>
-              </div>
-            </AccordionContent>
-          </AccordionItem>
+                    </AccordionContent>
+                </AccordionItem>
 
-          <AccordionItem value="projects">
-            <AccordionTrigger>
-                <div className="flex items-center"><KanbanSquare className="mr-3 text-primary" /> Projects (Optional)</div>
-            </AccordionTrigger>
-            <AccordionContent>
-              <div className="space-y-6 pt-4">
-                {projectFields.map((field, index) => (
-                  <div key={field.id} className="rounded-lg border border-border/50 p-4 space-y-4 bg-background/30">
-                    <div className="grid grid-cols-1 gap-4">
-                       <FormField control={form.control} name={`projects.${index}.name`} render={({ field }) => (<FormItem><FormLabel>Project Name</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                       <FormField control={form.control} name={`projects.${index}.link`} render={({ field }) => (<FormItem><FormLabel>Project Link</FormLabel><FormControl><Input placeholder="https://github.com/user/repo" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                <AccordionItem value="projects">
+                    <AccordionTrigger>
+                        <div className="flex items-center"><KanbanSquare className="mr-3 text-primary" /> Projects (Optional)</div>
+                    </AccordionTrigger>
+                    <AccordionContent>
+                    <div className="space-y-6 pt-4">
+                        {projectFields.map((field, index) => (
+                        <div key={field.id} className="rounded-lg border border-border/50 p-4 space-y-4 bg-background/30">
+                            <div className="grid grid-cols-1 gap-4">
+                            <FormField control={form.control} name={`projects.${index}.name`} render={({ field }) => (<FormItem><FormLabel>Project Name</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
+                            <FormField control={form.control} name={`projects.${index}.link`} render={({ field }) => (<FormItem><FormLabel>Project Link</FormLabel><FormControl><Input placeholder="https://github.com/user/repo" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                            </div>
+                            <FormField control={form.control} name={`projects.${index}.description`} render={({ field }) => (<FormItem><FormLabel>Description</FormLabel><FormControl><Textarea rows={4} {...field} /></FormControl><FormMessage /></FormItem>)} />
+                            <div className="flex justify-end pt-2">
+                                <Button type="button" variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive" onClick={() => removeProject(index)} aria-label="Remove project entry">
+                                    <Trash2 className="h-4 w-4" />
+                                </Button>
+                            </div>
+                        </div>
+                        ))}
+                        <Button type="button" variant="secondary" onClick={() => appendProject({ id: crypto.randomUUID(), name: '', description: '', link: '' })}><Plus className="mr-2 h-4 w-4" /> Add Project</Button>
                     </div>
-                    <FormField control={form.control} name={`projects.${index}.description`} render={({ field }) => (<FormItem><FormLabel>Description</FormLabel><FormControl><Textarea rows={4} {...field} /></FormControl><FormMessage /></FormItem>)} />
-                    <div className="flex justify-end pt-2">
-                        <Button type="button" variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive" onClick={() => removeProject(index)} aria-label="Remove project entry">
-                            <Trash2 className="h-4 w-4" />
-                        </Button>
-                    </div>
-                  </div>
-                ))}
-                <Button type="button" variant="secondary" onClick={() => appendProject({ id: crypto.randomUUID(), name: '', description: '', link: '' })}><Plus className="mr-2 h-4 w-4" /> Add Project</Button>
-              </div>
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
+                    </AccordionContent>
+                </AccordionItem>
+            </Accordion>
+        </div>
 
         <div className="my-4 flex h-24 items-center justify-center rounded-lg border border-dashed bg-muted/50 text-sm text-muted-foreground">
           Place your ad here!
