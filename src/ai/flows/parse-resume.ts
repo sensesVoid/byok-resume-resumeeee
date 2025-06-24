@@ -70,16 +70,16 @@ const ParseResumeInputSchema = z.object({
 export type ParseResumeInput = z.infer<typeof ParseResumeInputSchema>;
 
 function buildPrompt(resumeText: string): string {
-    return `You are an expert resume parser. Your task is to analyze the provided resume text and extract the information into a structured JSON format.
+    return `You are an expert resume parser. Your primary function is to analyze the provided resume text and extract the information into a structured JSON format. Your output MUST be a single, valid JSON object and nothing else. Adhere strictly to the schema described in the example.
 
 **CRITICAL INSTRUCTIONS:**
-1.  Thoroughly analyze the entire resume text provided.
-2.  For 'description' fields, capture responsibilities and achievements as a single string, using the newline character (\\n) for bullet points or line breaks.
-3.  If a value for an optional field (like phone, website, or summary) is not found, OMIT THE KEY from the JSON output. Do not use placeholders like "N/A".
-4.  For the 'certifications' and 'projects' sections: if they are not present in the resume, you MUST return an empty array, for example: "certifications": [].
-5.  Your response MUST BE ONLY the JSON object, starting with '{' and ending with '}'. Do not include any other text, explanations, or markdown formatting.
+- Parse the entire resume text.
+- For 'description' fields, use the newline character (\\n) for bullet points or line breaks.
+- If a section like 'certifications' or 'projects' is not found, return an empty array for that key (e.g., "projects": []).
+- For optional text fields like 'phone' or 'summary', if no information is found, you may omit the key from the JSON.
+- Do NOT include any explanations, markdown formatting, or any text outside of the main JSON object.
 
-**EXAMPLE JSON OUTPUT:**
+**EXAMPLE JSON OUTPUT STRUCTURE:**
 {
   "personalInfo": {
     "name": "Jane Doe",
@@ -117,7 +117,7 @@ function buildPrompt(resumeText: string): string {
 ${resumeText}
 ---
 
-Now, provide ONLY the JSON object based on the resume text.`;
+Now, provide ONLY the JSON object based on the resume text provided above.`;
 }
 
 
