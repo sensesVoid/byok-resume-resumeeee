@@ -134,7 +134,7 @@ export function AboutModal({ isOpen, onOpenChange }: AboutModalProps) {
                 supporting its development!
               </p>
               <p>
-                If the creator of this app has configured donation methods, you will see a "Donate" button in the header. Clicking it will take you to a page with QR codes for services like Maya or PayPal.
+                If the creator of this app has configured donation methods, you will see a "Donate" button in the header. Clicking it will open a modal with QR codes for services like Maya or PayPal.
               </p>
             </AccordionContent>
           </AccordionItem>
