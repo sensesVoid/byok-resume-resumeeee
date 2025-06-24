@@ -62,6 +62,7 @@ export function ResumeBuilder() {
 
   const aiPowered = form.watch('aiPowered');
   const coverLetter = form.watch('coverLetter');
+  const donationUrl = form.watch('donationUrl');
 
   const handleDownloadPdf = async (target: 'resume' | 'cover-letter') => {
     startDownloadingTransition(async () => {
@@ -414,6 +415,7 @@ export function ResumeBuilder() {
           onDownloadCoverLetter={() => handleDownloadPdf('cover-letter')}
           isCoverLetterEmpty={!coverLetter}
           isDownloading={isDownloading}
+          donationUrl={donationUrl}
         />
         <main className="flex-1 overflow-hidden">
           {isDesktop ? (

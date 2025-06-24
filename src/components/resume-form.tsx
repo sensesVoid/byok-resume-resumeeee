@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
-import { Bot, Brush, GraduationCap, Info, Loader2, Plus, Trash2, User, Wand2, Briefcase, Star, KeyRound, Power, PowerOff, HelpCircle, Upload, ScanSearch, Mail, Megaphone } from 'lucide-react';
+import { Bot, Brush, GraduationCap, Info, Loader2, Plus, Trash2, User, Wand2, Briefcase, Star, KeyRound, Power, PowerOff, HelpCircle, Upload, ScanSearch, Mail, DollarSign } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { generateCoverLetterAction, improveContentAction, validateApiKeyAction } from '@/app/actions';
 import { useState, useTransition, useRef } from 'react';
@@ -398,9 +398,33 @@ export function ResumeForm() {
             </AccordionContent>
           </AccordionItem>
 
-          <AccordionItem value="advertisements">
-            <AccordionTrigger><Megaphone className="mr-3 text-primary" /> Advertisements</AccordionTrigger>
+          <AccordionItem value="monetization">
+            <AccordionTrigger><DollarSign className="mr-3 text-primary" /> Monetization</AccordionTrigger>
             <AccordionContent className="space-y-6">
+               <div className="space-y-4 rounded-lg border p-4">
+                <h4 className="font-semibold">Donation Button</h4>
+                <FormField
+                  control={form.control}
+                  name="donationUrl"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Donation Page URL</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          placeholder="https://www.buymeacoffee.com/your-name"
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        Provide a link to your donation page (e.g., Buy Me a Coffee, Patreon). If provided, a "Donate" button will appear in the header.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <Separator className="my-4" />
+              <h3 className="text-lg font-semibold text-foreground px-1">Advertisements</h3>
               {/* Top Ad Section */}
               <div className="space-y-4 rounded-lg border p-4">
                 <div className="flex items-center justify-between">

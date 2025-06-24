@@ -77,6 +77,7 @@ export const resumeSchema = z.object({
   skills: z.array(z.object({ id: z.string(), name: z.string() })),
   jobDescription: z.string().optional(),
   coverLetter: z.string().optional(),
+  donationUrl: z.string().url('Must be a valid URL').optional().or(z.literal('')),
   advertisements: advertisementSchema,
 });
 
@@ -143,6 +144,7 @@ export const defaultResumeData: ResumeSchema = {
     model: '',
   },
   aiPowered: false,
+  donationUrl: '',
   advertisements: {
     topAd: {
       enabled: false,

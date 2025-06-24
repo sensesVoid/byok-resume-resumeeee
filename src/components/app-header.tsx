@@ -6,6 +6,7 @@ import {
   Upload,
   ScanSearch,
   ChevronDown,
+  Heart,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/icons';
@@ -26,6 +27,7 @@ interface AppHeaderProps {
   onDownloadCoverLetter: () => void;
   isCoverLetterEmpty: boolean;
   isDownloading: boolean;
+  donationUrl?: string;
 }
 
 export function AppHeader({
@@ -38,6 +40,7 @@ export function AppHeader({
   onDownloadCoverLetter,
   isCoverLetterEmpty,
   isDownloading,
+  donationUrl,
 }: AppHeaderProps) {
   return (
     <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center justify-between border-b bg-background/80 px-4 backdrop-blur-sm sm:px-8 print:hidden">
@@ -46,6 +49,14 @@ export function AppHeader({
         <h1 className="text-xl font-bold text-foreground">Resumeeee</h1>
       </div>
       <div className="flex items-center gap-2">
+        {donationUrl && (
+          <Button asChild variant="outline">
+            <a href={donationUrl} target="_blank" rel="noopener noreferrer">
+              <Heart className="mr-2 h-4 w-4 text-pink-500" />
+              <span className="hidden sm:inline">Donate</span>
+            </a>
+          </Button>
+        )}
         {isAiPowered && (
           <Button
             onClick={onUploadClick}
