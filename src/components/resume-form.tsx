@@ -14,7 +14,7 @@ import { generateCoverLetterAction, improveContentAction, validateApiKeyAction }
 import { useState, useTransition, useRef } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { ScrollArea } from './ui/scroll-area';
-import { TemplateSwitcher } from '@/components/template-switcher';
+import { TemplateSwitcher, templatesWithPhoto } from '@/components/template-switcher';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from './ui/separator';
 import { cn } from '@/lib/utils';
@@ -55,18 +55,9 @@ export function ResumeForm() {
   const aiPowered = form.watch('aiPowered');
   const aiProvider = form.watch('aiConfig.provider');
   const selectedTemplate = form.watch('template');
-  const templatesWithPhoto: ResumeSchema['template'][] = [
-    'professional',
-    'creative',
-    'infographic',
-    'marketing',
-    'two-tone',
-    'executive',
-    'corporate',
-    'designer',
-    'modern',
-  ];
-  const showPhotoUpload = templatesWithPhoto.includes(selectedTemplate);
+  const showPhotoUpload = (templatesWithPhoto as readonly string[]).includes(
+    selectedTemplate
+  );
 
 
   const getApiKeyHelpText = (provider: 'google' | 'openai' | 'openrouter') => {
