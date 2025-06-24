@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -16,6 +17,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { ThemeToggle } from '@/components/theme-toggle';
@@ -79,49 +81,39 @@ export function AppHeader({
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button
-              variant="outline"
-              disabled={isDownloading || isUploading || isCalculatingAts}
-            >
-              <Eye />
-              <span className="ml-2 hidden sm:inline">Preview</span>
-              <ChevronDown className="ml-1 h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuItem onClick={() => onPreviewClick('resume')}>
-              Preview Resume
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => onPreviewClick('cover-letter')}
-              disabled={isCoverLetterEmpty}
-            >
-              Preview Cover Letter
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
             <Button disabled={isDownloading || isUploading || isCalculatingAts}>
               {isDownloading ? (
                 <Loader2 className="animate-spin" />
               ) : (
                 <FileDown />
               )}
-              <span className="ml-2 hidden sm:inline">Download PDF</span>
+              <span className="ml-2 hidden sm:inline">Download</span>
               <ChevronDown className="ml-1 h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
+            <DropdownMenuItem onClick={() => onPreviewClick('resume')}>
+              <Eye className="mr-2 h-4 w-4" />
+              <span>Preview Resume</span>
+            </DropdownMenuItem>
             <DropdownMenuItem onClick={onDownloadResume}>
-              Download Resume
+              <FileDown className="mr-2 h-4 w-4" />
+              <span>Download Resume</span>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onClick={() => onPreviewClick('cover-letter')}
+              disabled={isCoverLetterEmpty}
+            >
+              <Eye className="mr-2 h-4 w-4" />
+              <span>Preview Cover Letter</span>
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={onDownloadCoverLetter}
               disabled={isCoverLetterEmpty}
             >
-              Download Cover Letter
+              <FileDown className="mr-2 h-4 w-4" />
+              <span>Download Cover Letter</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
