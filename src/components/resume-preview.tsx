@@ -38,7 +38,7 @@ export function ResumePreview() {
               <FileText className="mr-2 h-4 w-4" /> Cover Letter
             </TabsTrigger>
           </TabsList>
-          <div className="flex-1 overflow-y-auto">
+          <div className="flex-1 overflow-y-auto pt-6">
             <div id="printable-area" className="bg-white text-gray-900">
               <TabsContent value="resume" className="m-0">
                 <SelectedTemplate data={data} />
