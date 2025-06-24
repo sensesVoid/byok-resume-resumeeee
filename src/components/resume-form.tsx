@@ -369,9 +369,9 @@ export function ResumeForm() {
                 </div>
                 <div className="flex min-h-[2.25rem] flex-wrap gap-2 rounded-lg border border-border/50 p-3 bg-background/30">
                   {skillFields.map((field, index) => (
-                    <div key={field.id} className="flex items-center gap-2 rounded-full bg-primary/20 px-3 py-1 text-sm text-primary-foreground font-medium">
+                    <div key={field.id} className="flex items-center gap-2 rounded-full bg-secondary px-3 py-1 text-sm font-medium text-secondary-foreground">
                       <span>{form.watch(`skills.${index}.name`)}</span>
-                      <button type="button" onClick={() => removeSkill(index)} className="text-primary-foreground/70 hover:text-primary-foreground"><Trash2 className="h-3 w-3" /></button>
+                      <button type="button" onClick={() => removeSkill(index)} className="text-secondary-foreground/70 hover:text-secondary-foreground"><Trash2 className="h-3 w-3" /></button>
                     </div>
                   ))}
                 </div>
