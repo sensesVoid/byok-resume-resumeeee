@@ -9,18 +9,15 @@ interface TemplateProps {
   data: ResumeSchema;
 }
 
-const fontMap: { [key: string]: string } = {
-  inter: "'Inter', sans-serif",
-  roboto: "'Roboto', sans-serif",
-  lato: "'Lato', sans-serif",
-  merriweather: "'Merriweather', serif",
-};
-
 const fontClassMap: { [key: string]: string } = {
-  inter: 'font-sans',
-  roboto: 'font-sans',
-  lato: 'font-sans',
-  merriweather: 'font-serif',
+  inter: 'font-inter',
+  roboto: 'font-roboto',
+  lato: 'font-lato',
+  merriweather: 'font-merriweather',
+  montserrat: 'font-montserrat',
+  'roboto-slab': 'font-roboto-slab',
+  'playfair-display': 'font-playfair-display',
+  'source-sans-pro': 'font-source-sans-pro',
 };
 
 export function MarketingTemplate({ data }: TemplateProps) {
@@ -37,7 +34,6 @@ export function MarketingTemplate({ data }: TemplateProps) {
   } = data;
 
   const rootStyle = {
-    fontFamily: fontMap[fontStyle] || fontMap.inter,
   } as React.CSSProperties;
 
   const headerStyle = {
@@ -73,7 +69,7 @@ export function MarketingTemplate({ data }: TemplateProps) {
 
   return (
     <div
-      className={cn('bg-white', fontClassMap[fontStyle] || 'font-sans')}
+      className={cn('bg-white', fontClassMap[fontStyle] || 'font-inter')}
       style={rootStyle}
     >
       <header className="p-8 text-center" style={headerStyle}>

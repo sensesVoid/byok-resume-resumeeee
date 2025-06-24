@@ -9,25 +9,21 @@ interface TemplateProps {
   data: ResumeSchema;
 }
 
-const fontMap: { [key: string]: string } = {
-  inter: "'Inter', sans-serif",
-  roboto: "'Roboto', sans-serif",
-  lato: "'Lato', sans-serif",
-  merriweather: "'Merriweather', serif",
-};
-
 const fontClassMap: { [key: string]: string } = {
-  inter: 'font-sans',
-  roboto: 'font-sans',
-  lato: 'font-sans',
-  merriweather: 'font-serif',
-}
+  inter: 'font-inter',
+  roboto: 'font-roboto',
+  lato: 'font-lato',
+  merriweather: 'font-merriweather',
+  montserrat: 'font-montserrat',
+  'roboto-slab': 'font-roboto-slab',
+  'playfair-display': 'font-playfair-display',
+  'source-sans-pro': 'font-source-sans-pro',
+};
 
 export function ElegantTemplate({ data }: TemplateProps) {
   const { personalInfo, summary, experience, education, skills, fontStyle, headingColor, bodyColor, accentColor } = data;
   
   const rootStyle = {
-    fontFamily: fontMap[fontStyle] || fontMap.inter,
     color: bodyColor || '#374151',
   } as React.CSSProperties;
 
@@ -47,7 +43,7 @@ export function ElegantTemplate({ data }: TemplateProps) {
   };
   
   return (
-    <div className={cn("p-8 bg-white", fontClassMap[fontStyle] || 'font-sans')} style={rootStyle}>
+    <div className={cn("p-8 bg-white", fontClassMap[fontStyle] || 'font-inter')} style={rootStyle}>
       <header className="mb-8 border-b-2 pb-4" style={{ borderColor: accentColor }}>
         <h1 className="text-4xl font-bold tracking-tight text-center" style={headingStyle}>{personalInfo?.name || 'Your Name'}</h1>
         <div className="mt-3 flex justify-center flex-wrap gap-x-6 gap-y-1 text-xs text-gray-500">

@@ -76,7 +76,7 @@ export const resumeSchema = z.object({
     ])
     .default('modern'),
   fontStyle: z
-    .enum(['inter', 'roboto', 'lato', 'merriweather'])
+    .enum(['inter', 'roboto', 'lato', 'merriweather', 'montserrat', 'roboto-slab', 'playfair-display', 'source-sans-pro'])
     .default('inter'),
   headingColor: z.string().default('#111827'),
   bodyColor: z.string().default('#374151'),

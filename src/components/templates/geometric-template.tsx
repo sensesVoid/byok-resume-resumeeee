@@ -9,25 +9,21 @@ interface TemplateProps {
     data: ResumeSchema;
 }
 
-const fontMap: { [key: string]: string } = {
-  inter: "'Inter', sans-serif",
-  roboto: "'Roboto', sans-serif",
-  lato: "'Lato', sans-serif",
-  merriweather: "'Merriweather', serif",
-};
-
 const fontClassMap: { [key: string]: string } = {
-  inter: 'font-sans',
-  roboto: 'font-sans',
-  lato: 'font-sans',
-  merriweather: 'font-serif',
-}
+  inter: 'font-inter',
+  roboto: 'font-roboto',
+  lato: 'font-lato',
+  merriweather: 'font-merriweather',
+  montserrat: 'font-montserrat',
+  'roboto-slab': 'font-roboto-slab',
+  'playfair-display': 'font-playfair-display',
+  'source-sans-pro': 'font-source-sans-pro',
+};
 
 export function GeometricTemplate({ data }: TemplateProps) {
     const { personalInfo, summary, experience, education, skills, fontStyle, headingColor, bodyColor, accentColor } = data;
 
     const rootStyle = {
-      fontFamily: fontMap[fontStyle] || fontMap.inter,
       color: bodyColor || '#374151',
     } as React.CSSProperties;
 
@@ -56,7 +52,7 @@ export function GeometricTemplate({ data }: TemplateProps) {
       };
 
     return (
-        <div className={cn("p-8 bg-white", fontClassMap[fontStyle] || 'font-sans')} style={rootStyle}>
+        <div className={cn("p-8 bg-white", fontClassMap[fontStyle] || 'font-inter')} style={rootStyle}>
             <header className="relative mb-8 text-left p-6" style={headerStyle}>
                 <div className="absolute top-0 right-0 h-16 w-16 opacity-20" style={{ backgroundColor: headingColor || 'hsl(var(--primary))' }}></div>
                 <div className="relative z-10">

@@ -9,25 +9,21 @@ interface TemplateProps {
     data: ResumeSchema;
 }
 
-const fontMap: { [key: string]: string } = {
-  inter: "'Inter', sans-serif",
-  roboto: "'Roboto', sans-serif",
-  lato: "'Lato', sans-serif",
-  merriweather: "'Merriweather', serif",
-};
-
 const fontClassMap: { [key: string]: string } = {
-  inter: 'font-sans',
-  roboto: 'font-sans',
-  lato: 'font-sans',
-  merriweather: 'font-serif',
-}
+  inter: 'font-inter',
+  roboto: 'font-roboto',
+  lato: 'font-lato',
+  merriweather: 'font-merriweather',
+  montserrat: 'font-montserrat',
+  'roboto-slab': 'font-roboto-slab',
+  'playfair-display': 'font-playfair-display',
+  'source-sans-pro': 'font-source-sans-pro',
+};
 
 export function InfographicTemplate({ data }: TemplateProps) {
   const { personalInfo, summary, experience, education, skills, fontStyle, headingColor, bodyColor, accentColor } = data;
   
   const rootStyle = {
-    fontFamily: fontMap[fontStyle] || fontMap.inter,
     color: bodyColor || '#374151',
   } as React.CSSProperties;
 
@@ -51,7 +47,7 @@ export function InfographicTemplate({ data }: TemplateProps) {
   };
 
   return (
-    <div className={cn("p-8 bg-white", fontClassMap[fontStyle] || 'font-sans')} style={rootStyle}>
+    <div className={cn("p-8 bg-white", fontClassMap[fontStyle] || 'font-inter')} style={rootStyle}>
       <header className="flex items-center gap-6 mb-8">
         {personalInfo.photo && <img src={personalInfo.photo} alt={personalInfo.name} className="w-28 h-28 rounded-full object-cover" />}
         <div className="flex-1">

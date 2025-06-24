@@ -10,25 +10,21 @@ interface TemplateProps {
     data: ResumeSchema;
 }
 
-const fontMap: { [key: string]: string } = {
-  inter: "'Inter', sans-serif",
-  roboto: "'Roboto', sans-serif",
-  lato: "'Lato', sans-serif",
-  merriweather: "'Merriweather', serif",
-};
-
 const fontClassMap: { [key: string]: string } = {
-  inter: 'font-sans',
-  roboto: 'font-sans',
-  lato: 'font-sans',
-  merriweather: 'font-serif',
-}
+  inter: 'font-inter',
+  roboto: 'font-roboto',
+  lato: 'font-lato',
+  merriweather: 'font-merriweather',
+  montserrat: 'font-montserrat',
+  'roboto-slab': 'font-roboto-slab',
+  'playfair-display': 'font-playfair-display',
+  'source-sans-pro': 'font-source-sans-pro',
+};
 
 export function ModernTemplate({ data }: TemplateProps) {
   const { personalInfo, summary, experience, education, skills, fontStyle, headingColor, bodyColor, accentColor } = data;
 
   const rootStyle = {
-    fontFamily: fontMap[fontStyle] || fontMap.inter,
     color: bodyColor || '#374151',
   } as React.CSSProperties;
 
@@ -48,7 +44,7 @@ export function ModernTemplate({ data }: TemplateProps) {
   };
 
   return (
-    <div className={cn("p-6 sm:p-8 bg-white", fontClassMap[fontStyle] || 'font-sans')} style={rootStyle}>
+    <div className={cn("p-6 sm:p-8 bg-white", fontClassMap[fontStyle] || 'font-inter')} style={rootStyle}>
       <header className="text-center">
         <h1 className="text-4xl font-bold tracking-tight" style={headingStyle}>{personalInfo?.name || 'Your Name'}</h1>
         <div className="mt-2 flex flex-wrap justify-center gap-x-4 gap-y-1 text-sm text-gray-500">

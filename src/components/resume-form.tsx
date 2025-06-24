@@ -28,7 +28,11 @@ const fontStyles = [
   { value: 'inter', label: 'Inter (Sans-serif)' },
   { value: 'roboto', label: 'Roboto (Sans-serif)' },
   { value: 'lato', label: 'Lato (Sans-serif)' },
+  { value: 'montserrat', label: 'Montserrat (Sans-serif)' },
+  { value: 'source-sans-pro', label: 'Source Sans Pro (Sans-serif)' },
   { value: 'merriweather', label: 'Merriweather (Serif)' },
+  { value: 'roboto-slab', label: 'Roboto Slab (Serif)' },
+  { value: 'playfair-display', label: 'Playfair Display (Serif)' },
 ];
 
 export function ResumeForm() {
@@ -240,8 +244,6 @@ export function ResumeForm() {
       website: '',
       location: '',
       photo: '',
-      photoX: defaultResumeData.personalInfo.photoX,
-      photoY: defaultResumeData.personalInfo.photoY,
     }, { shouldValidate: true });
     toast({ title: 'Personal info cleared.' });
   };

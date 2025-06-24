@@ -9,18 +9,15 @@ interface TemplateProps {
   data: ResumeSchema;
 }
 
-const fontMap: { [key: string]: string } = {
-  inter: "'Inter', sans-serif",
-  roboto: "'Roboto', sans-serif",
-  lato: "'Lato', sans-serif",
-  merriweather: "'Merriweather', serif",
-};
-
 const fontClassMap: { [key: string]: string } = {
-  inter: 'font-sans',
-  roboto: 'font-sans',
-  lato: 'font-sans',
-  merriweather: 'font-serif',
+  inter: 'font-inter',
+  roboto: 'font-roboto',
+  lato: 'font-lato',
+  merriweather: 'font-merriweather',
+  montserrat: 'font-montserrat',
+  'roboto-slab': 'font-roboto-slab',
+  'playfair-display': 'font-playfair-display',
+  'source-sans-pro': 'font-source-sans-pro',
 };
 
 export function DeveloperTemplate({ data }: TemplateProps) {
@@ -37,7 +34,6 @@ export function DeveloperTemplate({ data }: TemplateProps) {
   } = data;
 
   const rootStyle = {
-    fontFamily: fontMap[fontStyle] || fontMap.inter,
     color: bodyColor || '#374151',
   } as React.CSSProperties;
 
@@ -72,7 +68,7 @@ export function DeveloperTemplate({ data }: TemplateProps) {
     <div
       className={cn(
         'bg-white flex',
-        fontClassMap[fontStyle] || 'font-sans'
+        fontClassMap[fontStyle] || 'font-inter'
       )}
       style={rootStyle}
     >

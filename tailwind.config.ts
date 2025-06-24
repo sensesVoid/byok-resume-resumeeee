@@ -10,10 +10,16 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        body: ['var(--font-sans)', 'sans-serif'],
-        headline: ['var(--font-sans)', 'sans-serif'],
-        code: ['monospace'],
-        sans: ['var(--font-sans)', 'sans-serif'],
+        sans: ['var(--font-inter)', 'sans-serif'],
+        serif: ['var(--font-merriweather)', 'serif'],
+        inter: ['var(--font-inter)', 'sans-serif'],
+        roboto: ['var(--font-roboto)', 'sans-serif'],
+        lato: ['var(--font-lato)', 'sans-serif'],
+        merriweather: ['var(--font-merriweather)', 'serif'],
+        montserrat: ['var(--font-montserrat)', 'sans-serif'],
+        'roboto-slab': ['var(--font-roboto-slab)', 'serif'],
+        'playfair-display': ['var(--font-playfair-display)', 'serif'],
+        'source-sans-pro': ['var(--font-source-sans-pro)', 'sans-serif'],
       },
       colors: {
         background: 'hsl(var(--background))',
