@@ -1,7 +1,7 @@
 
 'use client';
 
-import { FormProvider, useForm } from 'react-hook-form';
+import { FormProvider, useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   resumeSchema,
@@ -49,6 +49,7 @@ import { AiTaskModal } from './ai-task-modal';
 import dynamic from 'next/dynamic';
 import { Skeleton } from './ui/skeleton';
 import { FileText } from 'lucide-react';
+import { useDebounce } from '@/hooks/use-debounce';
 
 const dynamicTemplates = {
   modern: dynamic(() => import('@/components/templates/modern-template').then(mod => mod.ModernTemplate), { loading: () => <Skeleton className="w-full h-[1123px]" /> }),
@@ -89,7 +90,6 @@ export function ResumeBuilder() {
   const [isDownloading, startDownloadingTransition] = useTransition();
   const [isSaving, startSavingTransition] = useTransition();
 
-  // State to track if data has been loaded from localStorage
   const [isDataLoaded, setIsDataLoaded] = useState(false);
 
   const [atsResult, setAtsResult] =
@@ -109,8 +109,16 @@ export function ResumeBuilder() {
     'resume'
   );
 
-  const formData = form.watch();
-  const { aiPowered, coverLetter, template } = formData;
+  // --- PERFORMANCE OPTIMIZATIONS ---
+  // 1. Watch all data for debounced saving and for the live preview modal.
+  const watchedData = form.watch();
+  const debouncedData = useDebounce(watchedData, 500);
+
+  // 2. Watch specific fields for props to prevent unnecessary re-renders of child components like AppHeader.
+  const aiPowered = useWatch({ control: form.control, name: 'aiPowered' });
+  const coverLetter = useWatch({ control: form.control, name: 'coverLetter' });
+  const template = useWatch({ control: form.control, name: 'template' });
+  // --- END OPTIMIZATIONS ---
   
   // Monetization config is static and comes from the default data
   const { donationConfig } = defaultResumeData;
@@ -142,25 +150,21 @@ export function ResumeBuilder() {
     }
   }, [form, toast]);
 
-  // Save state to localStorage on changes
+  // Debounced save to localStorage
   useEffect(() => {
-    // Don't save until initial data is loaded
     if (!isDataLoaded) return;
 
-    const subscription = form.watch((value) => {
-      try {
-        localStorage.setItem('resumeeee-data', JSON.stringify(value));
-      } catch (error) {
-        console.error('Failed to save data to localStorage', error);
-        toast({
+    try {
+      localStorage.setItem('resumeeee-data', JSON.stringify(debouncedData));
+    } catch (error) {
+      console.error('Failed to save data to localStorage', error);
+      toast({
             variant: 'destructive',
             title: 'Could not save progress',
             description: 'There was an issue saving your data to the browser. Your latest changes might not be persisted.'
         });
-      }
-    });
-    return () => subscription.unsubscribe();
-  }, [form, isDataLoaded, toast]);
+    }
+  }, [debouncedData, isDataLoaded, toast]);
   
   const runAiTask = async <T,>(
     taskFn: () => Promise<T>,
@@ -711,7 +715,7 @@ export function ResumeBuilder() {
           </DialogHeader>
           <div className="flex-1 overflow-auto bg-muted/30">
             <div className="p-8 my-8 mx-auto bg-white shadow-lg" style={{width: '210mm'}}>
-              {previewTarget === 'resume' && formData && <SelectedTemplate data={formData} />}
+              {previewTarget === 'resume' && watchedData && <SelectedTemplate data={watchedData} />}
               {previewTarget === 'cover-letter' && (
                 <div className="p-6 sm:p-8">
                   {coverLetter ? (
