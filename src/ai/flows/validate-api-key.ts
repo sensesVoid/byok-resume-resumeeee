@@ -1,4 +1,3 @@
-
 'use server';
 
 import { type AiConfig } from '@/lib/schemas';
@@ -47,8 +46,8 @@ export async function validateApiKey(
         const host = (ollamaHost || 'http://localhost:11434').replace(/\/$/, '');
         url = `${host}/api/tags`; // Simple endpoint to list local models
         if (host.includes('ngrok')) {
-            headers['User-Agent'] = 'Resumeeee-App/1.0';
-            headers['Ngrok-Skip-Browser-Warning'] = 'true';
+            headers['user-agent'] = 'Resumeeee-App/1.0';
+            headers['ngrok-skip-browser-warning'] = 'any';
         }
         break;
 
