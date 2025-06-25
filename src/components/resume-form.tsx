@@ -21,6 +21,7 @@ import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Label } from '@/components/ui/label';
+import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 
 
 const fontStyles = [
@@ -452,16 +453,16 @@ export function ResumeForm({ runAiTask }: ResumeFormProps) {
                                     <div className="flex items-center gap-2">
                                         <FormLabel>API Key</FormLabel>
                                         <TooltipProvider>
-                                            <Tooltip>
-                                                <TooltipTrigger asChild>
-                                                <button type="button" aria-label="API key help" className="cursor-help">
-                                                    <HelpCircle className="h-4 w-4 text-muted-foreground hover:text-foreground" />
-                                                </button>
-                                                </TooltipTrigger>
-                                                <TooltipContent side="right">
+                                            <Popover>
+                                                <PopoverTrigger asChild>
+                                                    <button type="button" aria-label="API key help" className="cursor-help">
+                                                        <HelpCircle className="h-4 w-4 text-muted-foreground hover:text-foreground" />
+                                                    </button>
+                                                </PopoverTrigger>
+                                                <PopoverContent side="right" className="w-80">
                                                     {getApiKeyHelpText(aiProvider)}
-                                                </TooltipContent>
-                                            </Tooltip>
+                                                </PopoverContent>
+                                            </Popover>
                                         </TooltipProvider>
                                     </div>
                                     <FormControl><Input type="password" placeholder="Enter your API key" {...field} disabled={aiPowered} /></FormControl>
@@ -476,13 +477,13 @@ export function ResumeForm({ runAiTask }: ResumeFormProps) {
                                         <div className="flex items-center gap-2">
                                             <FormLabel>Ollama Host URL</FormLabel>
                                             <TooltipProvider>
-                                                <Tooltip>
-                                                    <TooltipTrigger asChild>
+                                                <Popover>
+                                                    <PopoverTrigger asChild>
                                                         <button type="button" aria-label="Ollama setup help" className="cursor-help">
                                                             <HelpCircle className="h-4 w-4 text-muted-foreground hover:text-foreground" />
                                                         </button>
-                                                    </TooltipTrigger>
-                                                    <TooltipContent side="right" className="max-w-md">
+                                                    </PopoverTrigger>
+                                                    <PopoverContent side="right" className="max-w-md w-screen">
                                                         <div className="space-y-3 p-2 text-left">
                                                             <h4 className="font-bold">How to Use Ollama (Local AI)</h4>
                                                             <p className="text-xs">
@@ -513,8 +514,8 @@ export function ResumeForm({ runAiTask }: ResumeFormProps) {
                                                                 </li>
                                                             </ol>
                                                         </div>
-                                                    </TooltipContent>
-                                                </Tooltip>
+                                                    </PopoverContent>
+                                                </Popover>
                                             </TooltipProvider>
                                         </div>
                                         <FormControl><Input placeholder="http://localhost:11434" {...field} value={field.value ?? ''} disabled={aiPowered} /></FormControl>
@@ -529,16 +530,16 @@ export function ResumeForm({ runAiTask }: ResumeFormProps) {
                                 <div className="flex items-center gap-2">
                                     <FormLabel>Model Name (Optional)</FormLabel>
                                     <TooltipProvider>
-                                        <Tooltip>
-                                            <TooltipTrigger asChild>
-                                            <button type="button" aria-label="Model help" className="cursor-help">
-                                                <HelpCircle className="h-4 w-4 text-muted-foreground hover:text-foreground" />
-                                            </button>
-                                            </TooltipTrigger>
-                                            <TooltipContent side="right" className="max-w-md">
+                                        <Popover>
+                                            <PopoverTrigger asChild>
+                                                <button type="button" aria-label="Model help" className="cursor-help">
+                                                    <HelpCircle className="h-4 w-4 text-muted-foreground hover:text-foreground" />
+                                                </button>
+                                            </PopoverTrigger>
+                                            <PopoverContent side="right" className="max-w-md w-screen">
                                                 {getModelHelpText(aiProvider)}
-                                            </TooltipContent>
-                                        </Tooltip>
+                                            </PopoverContent>
+                                        </Popover>
                                     </TooltipProvider>
                                 </div>
                                 <FormControl><Input placeholder="e.g., gemini-1.5-flash-latest" {...field} disabled={aiPowered}/></FormControl>
@@ -768,7 +769,7 @@ export function ResumeForm({ runAiTask }: ResumeFormProps) {
                                 type="button" 
                                 size="sm" 
                                 variant="outline" 
-                                onClick={() => handleImproveContent('summary', form.getValues('summary') || '')} 
+                                onClick={() => handleImproveContent('summary', field.value || '')} 
                                 disabled={isImproving || !aiPowered}
                             >
                                 {isImproving && fieldToUpdate === 'summary' ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />} Improve with AI
@@ -807,22 +808,22 @@ export function ResumeForm({ runAiTask }: ResumeFormProps) {
                             <FormField control={form.control} name={`experience.${index}.description`} render={({ field: descField }) => (
                             <FormItem>
                                 <FormLabel>Description</FormLabel><FormControl><Textarea rows={5} {...descField} /></FormControl><FormMessage />
+                                <div className="flex items-center justify-between pt-2">
+                                    <Button 
+                                        type="button" 
+                                        size="sm" 
+                                        variant="outline" 
+                                        onClick={() => handleImproveContent(`experience.${index}.description`, descField.value || '')} 
+                                        disabled={isImproving || !aiPowered}
+                                    >
+                                        {isImproving && fieldToUpdate === `experience.${index}.description` ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />} Improve with AI
+                                    </Button>
+                                    <Button type="button" variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive" onClick={() => removeExperience(index)} aria-label="Remove experience entry">
+                                        <Trash2 className="h-4 w-4" />
+                                    </Button>
+                                </div>
                             </FormItem>
                             )} />
-                            <div className="flex items-center justify-between pt-2">
-                                <Button 
-                                    type="button" 
-                                    size="sm" 
-                                    variant="outline" 
-                                    onClick={() => handleImproveContent(`experience.${index}.description`, form.getValues(`experience.${index}.description`) || '')} 
-                                    disabled={isImproving || !aiPowered}
-                                >
-                                    {isImproving && fieldToUpdate === `experience.${index}.description` ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />} Improve with AI
-                                </Button>
-                                <Button type="button" variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive" onClick={() => removeExperience(index)} aria-label="Remove experience entry">
-                                    <Trash2 className="h-4 w-4" />
-                                </Button>
-                            </div>
                         </div>
                         ))}
                         <Button type="button" variant="secondary" onClick={() => appendExperience({ id: crypto.randomUUID(), jobTitle: '', company: '', startDate: '', endDate: '', description: '', location: '' })}><Plus className="mr-2 h-4 w-4" /> Add Experience</Button>
@@ -967,3 +968,5 @@ export function ResumeForm({ runAiTask }: ResumeFormProps) {
     </Form>
   );
 }
+
+    
