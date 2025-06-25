@@ -14,16 +14,19 @@ export type ValidateApiKeyOutput = z.infer<typeof ValidateApiKeyOutputSchema>;
 export async function validateApiKey(
   aiConfig: AiConfig
 ): Promise<ValidateApiKeyOutput> {
-  const { provider, apiKey, ollamaHost } = aiConfig;
+  const { provider, apiKey, ollamaHost, model } = aiConfig;
 
   if (provider !== 'ollama' && !apiKey) {
     return { isValid: false, error: 'API Key is missing.' };
   }
 
   let url = '';
+  let method: 'GET' | 'POST' = 'GET';
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
   };
+  let body: string | undefined = undefined;
+
 
   try {
     switch (provider) {
@@ -45,7 +48,13 @@ export async function validateApiKey(
       case 'ollama':
         // Trim trailing slash from the host URL to prevent path issues
         const host = (ollamaHost || 'http://localhost:11434').replace(/\/$/, '');
-        url = `${host}/api/tags`; // Simple endpoint to list local models
+        url = `${host}/api/generate`; // Use the generate endpoint for validation
+        method = 'POST';
+        body = JSON.stringify({
+          model: model || 'llama3', // Use the configured model or a default
+          prompt: 'Hi', // A simple, low-cost prompt for validation
+          stream: false,
+        });
         break;
 
       default:
@@ -53,7 +62,7 @@ export async function validateApiKey(
         return { isValid: false, error: `Unsupported provider: ${exhaustiveCheck}` };
     }
     
-    const response = await fetch(url, { method: 'GET', headers });
+    const response = await fetch(url, { method, headers, body });
 
     if (response.ok) {
       // The key is likely valid if we get a successful response.
