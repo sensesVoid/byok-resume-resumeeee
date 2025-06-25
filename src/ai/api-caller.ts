@@ -130,7 +130,8 @@ export async function callApi({
       break;
     
     case 'ollama':
-      const host = ollamaHost || 'http://localhost:11434';
+      // Trim trailing slash from the host URL to prevent path issues
+      const host = (ollamaHost || 'http://localhost:11434').replace(/\/$/, '');
       url = `${host}/api/chat`;
       if (host.includes('ngrok')) {
         headers['ngrok-skip-browser-warning'] = 'true';

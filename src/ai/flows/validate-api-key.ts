@@ -43,7 +43,8 @@ export async function validateApiKey(
         break;
       
       case 'ollama':
-        const host = ollamaHost || 'http://localhost:11434';
+        // Trim trailing slash from the host URL to prevent path issues
+        const host = (ollamaHost || 'http://localhost:11434').replace(/\/$/, '');
         url = `${host}/api/tags`; // Simple endpoint to list local models
         if (host.includes('ngrok')) {
             headers['ngrok-skip-browser-warning'] = 'true';
@@ -62,7 +63,7 @@ export async function validateApiKey(
       return { isValid: true };
     } else {
       // The API returned an error (e.g., 401 Unauthorized, 403 Forbidden).
-      let errorMessage = `Invalid API key or network issue (Status: ${response.status} ${response.statusText}).`;
+      let errorMessage = `Invalid API key or network issue (${response.status} ${response.statusText}).`;
       try {
         const errorData = await response.json();
         errorMessage = errorData.error?.message || errorData.error || errorMessage;
