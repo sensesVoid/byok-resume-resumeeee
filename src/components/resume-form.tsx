@@ -502,29 +502,31 @@ export function ResumeForm({ runAiTask }: ResumeFormProps) {
                                                             </p>
                                                             <ol className="list-decimal list-inside space-y-3 text-xs">
                                                                 <li>
-                                                                    <strong>Install Ollama:</strong> Download and install the application for your operating system from{" "}
+                                                                    <strong>Install Ollama:</strong> Download and install the application from{" "}
                                                                     <a href="https://ollama.com/download" target="_blank" rel="noopener noreferrer" className="text-primary underline">ollama.com/download</a>. Make sure it is running.
                                                                 </li>
                                                                 <li>
-                                                                    <strong>For Local Use:</strong> If you are running this resume app on the same computer as Ollama, use the default URL below.
+                                                                    <strong>For Local Use:</strong> If you are running this app on the same computer as Ollama, use the default URL:
                                                                     <br/>
                                                                     <code className="my-1 block bg-muted p-1.5 rounded-md text-foreground">http://localhost:11434</code>
                                                                 </li>
                                                                 <li className="font-bold">
-                                                                    For Remote/Deployed App Use (e.g., with ngrok)
-                                                                    <p className="font-normal mt-1">If you are using a deployed version of this app and want it to connect to your local Ollama, you must explicitly expose Ollama to your network.</p>
+                                                                    For Deployed App Use (e.g., resumeeee.pro)
+                                                                    <p className="font-normal mt-1">To connect this deployed site to your local Ollama, you must securely expose Ollama to the internet.</p>
                                                                     
-                                                                    <p className="font-normal mt-2"><strong>Step 1: Start Ollama with Correct Network Settings</strong></p>
-                                                                    <p className="font-normal mt-1 text-muted-foreground">In your terminal, run this exact command. This tells Ollama to listen for network requests from services like ngrok and to accept connections from any website:</p>
-                                                                    <code className="my-1 block bg-muted p-1.5 rounded-md text-foreground">OLLAMA_HOST=0.0.0.0 OLLAMA_ORIGINS='*' ollama serve</code>
-                                                                    <p className="font-normal mt-1 text-muted-foreground">Keep this terminal window open. This is the most common point of failure.</p>
+                                                                    <p className="font-normal mt-2"><strong>Step 1: Start Ollama with Specific Permissions</strong></p>
+                                                                    <p className="font-normal mt-1 text-muted-foreground">
+                                                                        This is the most important step. Open your terminal and run the command below. It tells Ollama to accept connections from your deployed website (`resumeeee.pro`) and from ngrok, which is more secure than allowing all connections.
+                                                                    </p>
+                                                                    <code className="my-1 block bg-muted p-1.5 rounded-md text-foreground">OLLAMA_HOST=0.0.0.0 OLLAMA_ORIGINS='https://resumeeee.pro,https://*.ngrok-free.app' ollama serve</code>
+                                                                    <p className="font-normal mt-1 text-muted-foreground">Keep this terminal window open. If you close it, the connection will stop.</p>
                                                                     
                                                                     <p className="font-normal mt-2"><strong>Step 2: Expose Ollama with ngrok</strong></p>
-                                                                    <p className="font-normal mt-1 text-muted-foreground">In a <strong>new</strong> terminal window, run this command to create a public URL:</p>
+                                                                    <p className="font-normal mt-1 text-muted-foreground">In a <strong>new, separate</strong> terminal window, run this command to create a public URL for Ollama:</p>
                                                                     <code className="my-1 block bg-muted p-1.5 rounded-md text-foreground">ngrok http 11434</code>
                                                                     
-                                                                    <p className="font-normal mt-2"><strong>Step 3: Use the ngrok URL</strong></p>
-                                                                    <p className="font-normal mt-1 text-muted-foreground">Copy the public `https://...ngrok-free.app` URL from ngrok and paste it into the "Ollama Host URL" field here.</p>
+                                                                    <p className="font-normal mt-2"><strong>Step 3: Use the ngrok URL Here</strong></p>
+                                                                    <p className="font-normal mt-1 text-muted-foreground">Copy the `https://...ngrok-free.app` URL from your ngrok terminal and paste it into the "Ollama Host URL" field in this app.</p>
                                                                 </li>
                                                             </ol>
                                                         </div>
