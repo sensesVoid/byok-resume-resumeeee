@@ -11,15 +11,9 @@ function extractTextFromResponse(
   if (provider === 'google') {
     return responseData.candidates?.[0]?.content?.parts?.[0]?.text ?? null;
   }
-  if (provider === 'openai' || provider === 'openrouter') {
+  // All others use the same OpenAI-compatible format
+  if (provider === 'openai' || provider === 'openrouter' || provider === 'ollama') {
     return responseData.choices?.[0]?.message?.content ?? null;
-  }
-  if (provider === 'ollama') {
-    // Ollama's response for a non-streaming JSON generation is the full object
-    if (responseData.response && typeof responseData.response === 'string') {
-        return responseData.response;
-    }
-    return null;
   }
   return null;
 }
@@ -129,17 +123,19 @@ export async function callApi({
       };
       break;
     
-    case 'ollama':
-      // Trim trailing slash from the host URL to prevent path issues
+    case 'ollama': {
       const host = (ollamaHost || 'http://localhost:11434').replace(/\/$/, '');
-      url = `${host}/api/generate`; // Use the /api/generate endpoint
+      // Use the standard OpenAI-compatible endpoint
+      url = `${host}/v1/chat/completions`;
       payload = {
-        model: model || 'llama3', // A sensible default
-        prompt: prompt, // Use 'prompt' instead of 'messages' for /api/generate
-        format: 'json',
+        model: model || 'llama3',
+        messages: [{ role: 'user', content: prompt }],
         stream: false,
+        // The prompt itself requests JSON, which is more reliable across models
+        // than depending on a specific format parameter that might not be supported.
       };
       break;
+    }
 
     default:
       const exhaustiveCheck: never = provider;
@@ -161,7 +157,7 @@ export async function callApi({
         let errorMessage = `API Error (${response.status} ${response.statusText})`;
         try {
             const errorData = await response.json();
-            errorMessage = `API Error (${response.status}): ${errorData.error?.message || errorData.error || JSON.stringify(errorData)}`;
+            errorMessage = `API Error (${response.status}): ${errorData.error?.message || errorData.detail || errorData.error || JSON.stringify(errorData)}`;
         } catch (e) {
             // The error response was not JSON. The status text is the best we can do.
         }

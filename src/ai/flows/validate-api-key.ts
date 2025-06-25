@@ -14,7 +14,7 @@ export type ValidateApiKeyOutput = z.infer<typeof ValidateApiKeyOutputSchema>;
 export async function validateApiKey(
   aiConfig: AiConfig
 ): Promise<ValidateApiKeyOutput> {
-  const { provider, apiKey, ollamaHost, model } = aiConfig;
+  const { provider, apiKey, ollamaHost } = aiConfig;
 
   if (provider !== 'ollama' && !apiKey) {
     return { isValid: false, error: 'API Key is missing.' };
@@ -45,17 +45,15 @@ export async function validateApiKey(
         headers['Authorization'] = `Bearer ${apiKey}`;
         break;
       
-      case 'ollama':
-        // Trim trailing slash from the host URL to prevent path issues
+      case 'ollama': {
         const host = (ollamaHost || 'http://localhost:11434').replace(/\/$/, '');
-        url = `${host}/api/generate`; // Use the generate endpoint for validation
-        method = 'POST';
-        body = JSON.stringify({
-          model: model || 'llama3', // Use the configured model or a default
-          prompt: 'Hi', // A simple, low-cost prompt for validation
-          stream: false,
-        });
+        // For Ollama, a simple GET request to the root is the most reliable way 
+        // to check if the server is running, avoiding method-related errors.
+        url = host;
+        method = 'GET';
+        body = undefined;
         break;
+      }
 
       default:
         const exhaustiveCheck: never = provider;
@@ -65,7 +63,15 @@ export async function validateApiKey(
     const response = await fetch(url, { method, headers, body });
 
     if (response.ok) {
-      // The key is likely valid if we get a successful response.
+       // For Ollama, we also check if the response body confirms it's Ollama
+       if (provider === 'ollama') {
+        const text = await response.text();
+        if (text.includes("Ollama is running")) {
+            return { isValid: true };
+        }
+        return { isValid: false, error: 'Connected to host, but it does not appear to be an Ollama server.' };
+      }
+      // The key is likely valid if we get a successful response for other providers.
       return { isValid: true };
     } else {
       if (response.status === 401) {
