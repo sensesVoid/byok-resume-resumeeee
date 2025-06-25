@@ -37,7 +37,17 @@ export function ResumePreview() {
   const data = useWatch({ control });
   const { coverLetter, template } = data;
 
-  const SelectedTemplate = dynamicTemplates[template || 'modern'] || dynamicTemplates.modern;
+  // The form data, including the template, might be undefined on initial render.
+  // We'll show a skeleton loader to prevent type errors.
+  if (!template) {
+    return (
+        <div className="h-full w-full overflow-hidden p-8">
+            <Skeleton className="w-full h-full" />
+        </div>
+    )
+  }
+
+  const SelectedTemplate = dynamicTemplates[template] || dynamicTemplates.modern;
 
   return (
     <Card className="h-full w-full overflow-hidden shadow-lg print:shadow-none print:border-none">
