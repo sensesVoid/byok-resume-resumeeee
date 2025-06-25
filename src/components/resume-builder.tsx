@@ -256,26 +256,25 @@ export function ResumeBuilder() {
               orientation: 'p',
               unit: 'mm',
               format: 'a4',
-              compress: true,
           });
   
           const pdfWidth = pdf.internal.pageSize.getWidth();
-          const pdfHeight = pdf.internal.pageSize.getHeight();
-          const canvasWidth = canvas.width;
-          const canvasHeight = canvas.height;
+          const pdfPageHeight = pdf.internal.pageSize.getHeight();
           
-          const imgHeight = canvasHeight * pdfWidth / canvasWidth;
-          let heightLeft = imgHeight;
+          const imgProps = pdf.getImageProperties(imgData);
+          const totalPdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+          let heightLeft = totalPdfHeight;
           let position = 0;
   
-          pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeight);
-          heightLeft -= pdfHeight;
+          pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, totalPdfHeight);
+          heightLeft -= pdfPageHeight;
   
           while (heightLeft > 0) {
-            position -= pdfHeight;
+            position -= pdfPageHeight;
             pdf.addPage();
-            pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeight);
-            heightLeft -= pdfHeight;
+            pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, totalPdfHeight);
+            heightLeft -= pdfPageHeight;
           }
           
           pdf.save(`${target}.pdf`);
