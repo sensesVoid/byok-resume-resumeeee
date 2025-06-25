@@ -15,9 +15,9 @@ function extractTextFromResponse(
     return responseData.choices?.[0]?.message?.content ?? null;
   }
   if (provider === 'ollama') {
-    // Ollama's response for a non-streaming JSON chat is nested
-    if (responseData.message && typeof responseData.message.content === 'string') {
-        return responseData.message.content;
+    // Ollama's response for a non-streaming JSON generation is the full object
+    if (responseData.response && typeof responseData.response === 'string') {
+        return responseData.response;
     }
     return null;
   }
@@ -132,10 +132,10 @@ export async function callApi({
     case 'ollama':
       // Trim trailing slash from the host URL to prevent path issues
       const host = (ollamaHost || 'http://localhost:11434').replace(/\/$/, '');
-      url = `${host}/api/chat`;
+      url = `${host}/api/generate`; // Use the /api/generate endpoint
       payload = {
         model: model || 'llama3', // A sensible default
-        messages: [{ role: 'user', content: prompt }],
+        prompt: prompt, // Use 'prompt' instead of 'messages' for /api/generate
         format: 'json',
         stream: false,
       };
