@@ -18,7 +18,6 @@ import { TemplateSwitcher, templatesWithPhoto } from '@/components/template-swit
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from './ui/separator';
 import { cn } from '@/lib/utils';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Label } from './ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
@@ -434,18 +433,16 @@ export function ResumeForm({ runAiTask }: ResumeFormProps) {
                                     <FormItem>
                                     <div className="flex items-center gap-2">
                                         <FormLabel>API Key</FormLabel>
-                                        <TooltipProvider>
-                                            <Popover>
-                                                <PopoverTrigger asChild>
-                                                    <button type="button" aria-label="API key help" className="cursor-help">
-                                                        <HelpCircle className="h-4 w-4 text-muted-foreground hover:text-foreground" />
-                                                    </button>
-                                                </PopoverTrigger>
-                                                <PopoverContent side="right" className="w-80">
-                                                    {getApiKeyHelpText(aiProvider)}
-                                                </PopoverContent>
-                                            </Popover>
-                                        </TooltipProvider>
+                                        <Popover>
+                                            <PopoverTrigger asChild>
+                                                <button type="button" aria-label="API key help" className="cursor-help">
+                                                    <HelpCircle className="h-4 w-4 text-muted-foreground hover:text-foreground" />
+                                                </button>
+                                            </PopoverTrigger>
+                                            <PopoverContent side="right" className="w-80">
+                                                {getApiKeyHelpText(aiProvider)}
+                                            </PopoverContent>
+                                        </Popover>
                                     </div>
                                     <FormControl><Input type="password" placeholder="Enter your API key" {...field} disabled={aiPowered} /></FormControl>
                                     <FormMessage />
@@ -458,52 +455,50 @@ export function ResumeForm({ runAiTask }: ResumeFormProps) {
                                     <FormItem>
                                         <div className="flex items-center gap-2">
                                             <FormLabel>Ollama Host URL</FormLabel>
-                                            <TooltipProvider>
-                                                <Popover>
-                                                    <PopoverTrigger asChild>
-                                                        <button type="button" aria-label="Ollama setup help" className="cursor-help">
-                                                            <HelpCircle className="h-4 w-4 text-muted-foreground hover:text-foreground" />
-                                                        </button>
-                                                    </PopoverTrigger>
-                                                    <PopoverContent side="right" className="max-w-md w-screen">
-                                                        <div className="space-y-3 p-2 text-left">
-                                                            <h4 className="font-bold">How to Use Ollama (Local AI)</h4>
-                                                            <p className="text-xs">
-                                                                Ollama lets you run powerful AI models on your own computer, for free and with complete privacy.
-                                                            </p>
-                                                            <ol className="list-decimal list-inside space-y-3 text-xs">
-                                                                <li>
-                                                                    <strong>Install Ollama:</strong> Download and install the application from{" "}
-                                                                    <a href="https://ollama.com/download" target="_blank" rel="noopener noreferrer" className="text-primary underline">ollama.com/download</a>. Make sure it is running.
-                                                                </li>
-                                                                <li>
-                                                                    <strong>For Local Use:</strong> If you are running this app on the same computer as Ollama, use the default URL:
-                                                                    <br/>
-                                                                    <code className="my-1 block bg-muted p-1.5 rounded-md text-foreground">http://localhost:11434</code>
-                                                                </li>
-                                                                <li className="font-bold">
-                                                                    For Deployed App Use (e.g., resumeeee.pro)
-                                                                    <p className="font-normal mt-1">To connect this deployed site to your local Ollama, you must securely expose Ollama to the internet.</p>
-                                                                    
-                                                                    <p className="font-normal mt-2"><strong>Step 1: Start Ollama with Specific Permissions</strong></p>
-                                                                    <p className="font-normal mt-1 text-muted-foreground">
-                                                                        This is the most important step. Open your terminal and run the command below. It tells Ollama to accept connections from your deployed website (`resumeeee.pro`) and from ngrok, which is more secure than allowing all connections.
-                                                                    </p>
-                                                                    <code className="my-1 block bg-muted p-1.5 rounded-md text-foreground">OLLAMA_HOST=0.0.0.0 OLLAMA_ORIGINS='https://resumeeee.pro,https://*.ngrok-free.app' ollama serve</code>
-                                                                    <p className="font-normal mt-1 text-muted-foreground">Keep this terminal window open. If you close it, the connection will stop.</p>
-                                                                    
-                                                                    <p className="font-normal mt-2"><strong>Step 2: Expose Ollama with ngrok</strong></p>
-                                                                    <p className="font-normal mt-1 text-muted-foreground">In a <strong>new, separate</strong> terminal window, run this command to create a public URL for Ollama:</p>
-                                                                    <code className="my-1 block bg-muted p-1.5 rounded-md text-foreground">ngrok http 11434</code>
-                                                                    
-                                                                    <p className="font-normal mt-2"><strong>Step 3: Use the ngrok URL Here</strong></p>
-                                                                    <p className="font-normal mt-1 text-muted-foreground">Copy the `https://...ngrok-free.app` URL from your ngrok terminal and paste it into the "Ollama Host URL" field in this app.</p>
-                                                                </li>
-                                                            </ol>
-                                                        </div>
-                                                    </PopoverContent>
-                                                </Popover>
-                                            </TooltipProvider>
+                                            <Popover>
+                                                <PopoverTrigger asChild>
+                                                    <button type="button" aria-label="Ollama setup help" className="cursor-help">
+                                                        <HelpCircle className="h-4 w-4 text-muted-foreground hover:text-foreground" />
+                                                    </button>
+                                                </PopoverTrigger>
+                                                <PopoverContent side="right" className="max-w-md w-screen">
+                                                    <div className="space-y-3 p-2 text-left">
+                                                        <h4 className="font-bold">How to Use Ollama (Local AI)</h4>
+                                                        <p className="text-xs">
+                                                            Ollama lets you run powerful AI models on your own computer, for free and with complete privacy.
+                                                        </p>
+                                                        <ol className="list-decimal list-inside space-y-3 text-xs">
+                                                            <li>
+                                                                <strong>Install Ollama:</strong> Download and install the application from{" "}
+                                                                <a href="https://ollama.com/download" target="_blank" rel="noopener noreferrer" className="text-primary underline">ollama.com/download</a>. Make sure it is running.
+                                                            </li>
+                                                            <li>
+                                                                <strong>For Local Use:</strong> If you are running this app on the same computer as Ollama, use the default URL:
+                                                                <br/>
+                                                                <code className="my-1 block bg-muted p-1.5 rounded-md text-foreground">http://localhost:11434</code>
+                                                            </li>
+                                                            <li className="font-bold">
+                                                                For Deployed App Use (e.g., resumeeee.pro)
+                                                                <p className="font-normal mt-1">To connect this deployed site to your local Ollama, you must securely expose Ollama to the internet.</p>
+                                                                
+                                                                <p className="font-normal mt-2"><strong>Step 1: Start Ollama with Specific Permissions</strong></p>
+                                                                <p className="font-normal mt-1 text-muted-foreground">
+                                                                    This is the most important step. Open your terminal and run the command below. It tells Ollama to accept connections from your deployed website (`resumeeee.pro`) and from ngrok, which is more secure than allowing all connections.
+                                                                </p>
+                                                                <code className="my-1 block bg-muted p-1.5 rounded-md text-foreground">OLLAMA_HOST=0.0.0.0 OLLAMA_ORIGINS='https://resumeeee.pro,https://*.ngrok-free.app' ollama serve</code>
+                                                                <p className="font-normal mt-1 text-muted-foreground">Keep this terminal window open. If you close it, the connection will stop.</p>
+                                                                
+                                                                <p className="font-normal mt-2"><strong>Step 2: Expose Ollama with ngrok</strong></p>
+                                                                <p className="font-normal mt-1 text-muted-foreground">In a <strong>new, separate</strong> terminal window, run this command to create a public URL for Ollama:</p>
+                                                                <code className="my-1 block bg-muted p-1.5 rounded-md text-foreground">ngrok http 11434</code>
+                                                                
+                                                                <p className="font-normal mt-2"><strong>Step 3: Use the ngrok URL Here</strong></p>
+                                                                <p className="font-normal mt-1 text-muted-foreground">Copy the `https://...ngrok-free.app` URL from your ngrok terminal and paste it into the "Ollama Host URL" field in this app.</p>
+                                                            </li>
+                                                        </ol>
+                                                    </div>
+                                                </PopoverContent>
+                                            </Popover>
                                         </div>
                                         <FormControl><Input placeholder="http://localhost:11434" {...field} value={field.value ?? ''} disabled={aiPowered} /></FormControl>
                                         <FormDescription>The URL of your running Ollama server. Visiting this URL in a browser may show a blank page; this is normal.</FormDescription>
@@ -516,18 +511,16 @@ export function ResumeForm({ runAiTask }: ResumeFormProps) {
                                 <FormItem>
                                 <div className="flex items-center gap-2">
                                     <FormLabel>Model Name (Optional)</FormLabel>
-                                    <TooltipProvider>
-                                        <Popover>
-                                            <PopoverTrigger asChild>
-                                                <button type="button" aria-label="Model help" className="cursor-help">
-                                                    <HelpCircle className="h-4 w-4 text-muted-foreground hover:text-foreground" />
-                                                </button>
-                                            </PopoverTrigger>
-                                            <PopoverContent side="right" className="max-w-md w-screen">
-                                                {getModelHelpText(aiProvider)}
-                                            </PopoverContent>
-                                        </Popover>
-                                    </TooltipProvider>
+                                    <Popover>
+                                        <PopoverTrigger asChild>
+                                            <button type="button" aria-label="Model help" className="cursor-help">
+                                                <HelpCircle className="h-4 w-4 text-muted-foreground hover:text-foreground" />
+                                            </button>
+                                        </PopoverTrigger>
+                                        <PopoverContent side="right" className="max-w-md w-screen">
+                                            {getModelHelpText(aiProvider)}
+                                        </PopoverContent>
+                                    </Popover>
                                 </div>
                                 <FormControl><Input placeholder="e.g., gemini-1.5-flash-latest" {...field} disabled={aiPowered}/></FormControl>
                                 <FormDescription>If left blank, a default model will be used.</FormDescription>
