@@ -224,7 +224,7 @@ export function ResumeForm({ runAiTask }: ResumeFormProps) {
                     <li>
                         <strong>Use the Model in This App</strong>
                          <p className="pl-4 text-muted-foreground">
-                            After the download is complete and you see a prompt like `>>> Send a message`, the model is ready. Come back here and type its name (e.g., `llama3`) into the "Model Name" field.
+                           {'After the download is complete and you see a prompt like `>>> Send a message`, the model is ready. Come back here and type its name (e.g., `llama3`) into the "Model Name" field.'}
                         </p>
                     </li>
                 </ol>
