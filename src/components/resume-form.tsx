@@ -406,9 +406,6 @@ export function ResumeForm({ runAiTask }: ResumeFormProps) {
   return (
     <Form {...form}>
       <div className="space-y-6">
-        <div className="my-4 flex h-24 items-center justify-center rounded-lg border border-dashed bg-muted/50 text-sm text-muted-foreground">
-          Place your ad here!
-        </div>
 
         <div className="space-y-4">
             <h2 className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-3">
@@ -937,10 +934,6 @@ export function ResumeForm({ runAiTask }: ResumeFormProps) {
             </Accordion>
         </div>
 
-        <div className="my-4 flex h-24 items-center justify-center rounded-lg border border-dashed bg-muted/50 text-sm text-muted-foreground">
-          Place your ad here!
-        </div>
-
         <Dialog open={isSuggestionModalOpen} onOpenChange={setIsSuggestionModalOpen}>
             <DialogContent className="sm:max-w-[625px] bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl">
                 <DialogHeader>
@@ -970,7 +963,3 @@ export function ResumeForm({ runAiTask }: ResumeFormProps) {
     </Form>
   );
 }
-
-    
-
-    
