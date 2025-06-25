@@ -693,7 +693,6 @@ export function ResumeBuilder() {
           </DialogHeader>
           <ScrollArea className="pr-6">
             <AtsChecker
-              isPending={isCalculatingAts}
               atsResult={atsResult}
               documentType={atsCheckType}
               onAddMissingSkills={atsCheckType === 'resume' ? handleAddMissingSkills : undefined}
