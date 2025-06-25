@@ -19,18 +19,26 @@ interface AiTaskModalProps {
 export function AiTaskModal({ isOpen, title, messages }: AiTaskModalProps) {
   const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
   const [completedMessages, setCompletedMessages] = useState<string[]>([]);
+  const [allMessagesTyped, setAllMessagesTyped] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
       setCurrentMessageIndex(0);
       setCompletedMessages([]);
+      setAllMessagesTyped(false);
     }
   }, [isOpen]);
 
   const handleMessageComplete = () => {
+    // Add the just-completed message to the list of completed messages
     setCompletedMessages((prev) => [...prev, messages[currentMessageIndex]]);
+
+    // Check if there are more messages to type
     if (currentMessageIndex < messages.length - 1) {
       setCurrentMessageIndex((prev) => prev + 1);
+    } else {
+      // All messages have been typed out
+      setAllMessagesTyped(true);
     }
   };
 
@@ -44,6 +52,7 @@ export function AiTaskModal({ isOpen, title, messages }: AiTaskModalProps) {
           </DialogTitle>
         </DialogHeader>
         <div className="mt-4 space-y-4 text-sm">
+          {/* Display all the messages that have finished typing */}
           {completedMessages.map((msg, index) => (
             <div
               key={index}
@@ -53,7 +62,9 @@ export function AiTaskModal({ isOpen, title, messages }: AiTaskModalProps) {
               <p>{msg}</p>
             </div>
           ))}
-          {isOpen && currentMessageIndex < messages.length && (
+
+          {/* If the modal is open and not all messages have been typed, show the typewriter */}
+          {isOpen && !allMessagesTyped && (
             <div className="flex items-start gap-3">
               <Bot className="h-4 w-4 shrink-0 mt-0.5 text-primary" />
               <p className="font-medium text-foreground">
@@ -64,6 +75,14 @@ export function AiTaskModal({ isOpen, title, messages }: AiTaskModalProps) {
                   onComplete={handleMessageComplete}
                 />
               </p>
+            </div>
+          )}
+
+          {/* Once all messages are typed, show a final loading indicator */}
+          {allMessagesTyped && (
+            <div className="flex items-start gap-3 text-primary">
+              <Loader2 className="h-4 w-4 shrink-0 mt-0.5 animate-spin" />
+              <p className="font-medium">Waiting for AI response...</p>
             </div>
           )}
         </div>
