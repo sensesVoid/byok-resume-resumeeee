@@ -45,6 +45,9 @@ export async function validateApiKey(
       case 'ollama':
         const host = ollamaHost || 'http://localhost:11434';
         url = `${host}/api/tags`; // Simple endpoint to list local models
+        if (host.includes('ngrok')) {
+            headers['ngrok-skip-browser-warning'] = 'true';
+        }
         break;
 
       default:
