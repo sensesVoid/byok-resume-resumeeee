@@ -33,9 +33,9 @@ export default function RootLayout({
         <link rel="icon" href="/images/favicon.ico" sizes="any" />
         <Script
             async
-            src="https://pagead2.googlesyndication.com/page/adsbygoogle.js?client=ca-pub-6611183288979464"
+            src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6611183288979464"
             crossOrigin="anonymous"
-            strategy="afterInteractive"
+            strategy="beforeInteractive"
         />
       </head>
       {/* Added gradient background for glassmorphism */}
