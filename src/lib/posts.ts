@@ -11,7 +11,7 @@ export const posts: Post[] = [
   {
     slug: 'how-to-beat-the-ats',
     title: 'How to Beat the Applicant Tracking System (ATS)',
-    date: 'June 25, 2024',
+    date: 'June 25, 2025',
     excerpt: 'Learn the secrets to crafting a resume that sails through automated screening systems and lands on a recruiter\'s desk.',
     content: `
 <p>The Applicant Tracking System (ATS) is the first gatekeeper most job seekers face. It's software that scans, sorts, and ranks resumes based on keywords and formatting before a human ever sees them. Here’s how to optimize your resume to beat the bots.</p>
@@ -35,7 +35,7 @@ export const posts: Post[] = [
   {
     slug: '5-action-verbs',
     title: '5 Action Verbs to Supercharge Your Resume',
-    date: 'June 24, 2024',
+    date: 'June 24, 2025',
     excerpt: 'Tired of "responsible for"? Replace weak phrases with powerful action verbs that showcase your accomplishments and impact.',
     content: `
 <p>The words you choose on your resume matter. Strong action verbs paint a picture of you as a proactive and accomplished professional. Banish passive phrases like "was responsible for" and replace them with dynamic verbs that command attention.</p>
@@ -60,7 +60,7 @@ export const posts: Post[] = [
   {
     slug: 'tailoring-your-resume',
     title: 'Tailoring Your Resume: The Secret to Getting More Interviews',
-    date: 'June 23, 2024',
+    date: 'June 23, 2025',
     excerpt: 'Sending the same generic resume to every job is a common mistake. Learn why customizing your resume for each application is critical for success.',
     content: `
 <p>In today's competitive job market, a one-size-fits-all resume is no longer effective. Recruiters and hiring managers are looking for candidates who are a perfect fit for a specific role. Tailoring your resume is the single best way to show them you're that person.</p>

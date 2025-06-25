@@ -11,7 +11,7 @@ export default function PrivacyPage() {
     <div className="container mx-auto max-w-3xl py-12 px-4 sm:px-6 lg:px-8">
       <div className="space-y-8 text-lg leading-relaxed text-foreground">
         <h1 className="text-4xl font-bold tracking-tight text-center">Privacy Policy</h1>
-        <p className="text-center text-muted-foreground">Last updated: June 25, 2024</p>
+        <p className="text-center text-muted-foreground">Last updated: June 25, 2025</p>
         
         <div className="prose prose-lg mx-auto max-w-none">
             <p>
