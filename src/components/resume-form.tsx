@@ -489,28 +489,30 @@ export function ResumeForm({ runAiTask }: ResumeFormProps) {
                                                             <p className="text-xs">
                                                                 Ollama lets you run powerful AI models on your own computer, for free and with complete privacy.
                                                             </p>
-                                                            <ol className="list-decimal list-inside space-y-2 text-xs">
+                                                            <ol className="list-decimal list-inside space-y-3 text-xs">
                                                                 <li>
                                                                     <strong>Install Ollama:</strong> Download and install the application for your operating system from{" "}
-                                                                    <a href="https://ollama.com/download" target="_blank" rel="noopener noreferrer" className="text-primary underline">ollama.com/download</a>.
+                                                                    <a href="https://ollama.com/download" target="_blank" rel="noopener noreferrer" className="text-primary underline">ollama.com/download</a>. Make sure it is running.
                                                                 </li>
                                                                 <li>
-                                                                    <strong>Start the AI Server:</strong> Open your computer's terminal (Terminal on Mac, or PowerShell on Windows) and type:
-                                                                    <br />
-                                                                    <code className="my-1 block bg-muted p-1.5 rounded-md text-foreground">ollama serve</code>
-                                                                    <br />
-                                                                    Keep this terminal window open while you use the app.
-                                                                </li>
-                                                                <li>
-                                                                    <strong>Enter the URL:</strong> Use the default URL below unless you've configured a different one.
+                                                                    <strong>For Local Use:</strong> If you are running this resume app on the same computer as Ollama, use the default URL below.
                                                                     <br/>
                                                                     <code className="my-1 block bg-muted p-1.5 rounded-md text-foreground">http://localhost:11434</code>
                                                                 </li>
                                                                 <li className="font-bold">
-                                                                    Optional: For Remote Access (e.g., from your phone)
-                                                                    <p className="font-normal mt-1">If you need to connect from another device on a different network, you must use a tunneling tool like ngrok. Install it, then run this specific command in a new terminal:</p>
-                                                                    <code className="my-1 block bg-muted p-1.5 rounded-md text-foreground">ngrok http --host-header=rewrite localhost:11434</code>
-                                                                    <p className="font-normal mt-1">Then, use the `https://...ngrok-free.app` URL provided by ngrok in the input field. Using this exact command is required.</p>
+                                                                    For Remote/Deployed App Use (e.g., with ngrok)
+                                                                    <p className="font-normal mt-1">If you are using a deployed version of this app (like on Vercel) and want it to connect to your local Ollama, you must configure Ollama to accept external requests.</p>
+                                                                    <p className="font-normal mt-1"><strong>Step 1: Start Ollama with Correct Permissions</strong></p>
+                                                                    <p className="font-normal mt-1 text-muted-foreground">In your terminal, run this command to start Ollama and allow connections from any website. This is the recommended approach:</p>
+                                                                    <code className="my-1 block bg-muted p-1.5 rounded-md text-foreground">OLLAMA_ORIGINS='*' ollama serve</code>
+                                                                    <p className="font-normal mt-1 text-muted-foreground">Keep this terminal window open.</p>
+                                                                    
+                                                                    <p className="font-normal mt-2"><strong>Step 2: Start ngrok</strong></p>
+                                                                    <p className="font-normal mt-1 text-muted-foreground">In a <strong>new</strong> terminal window, run the standard ngrok command to get a public URL:</p>
+                                                                    <code className="my-1 block bg-muted p-1.5 rounded-md text-foreground">ngrok http localhost:11434</code>
+                                                                    
+                                                                    <p className="font-normal mt-2"><strong>Step 3: Use the ngrok URL</strong></p>
+                                                                    <p className="font-normal mt-1 text-muted-foreground">Copy the public `https://...ngrok-free.app` URL from ngrok and paste it into the "Ollama Host URL" field here.</p>
                                                                 </li>
                                                             </ol>
                                                         </div>
@@ -519,7 +521,7 @@ export function ResumeForm({ runAiTask }: ResumeFormProps) {
                                             </TooltipProvider>
                                         </div>
                                         <FormControl><Input placeholder="http://localhost:11434" {...field} value={field.value ?? ''} disabled={aiPowered} /></FormControl>
-                                        <FormDescription>The URL of your running Ollama server.</FormDescription>
+                                        <FormDescription>The URL of your running Ollama server. Visiting this URL in a browser may show a blank page; this is normal.</FormDescription>
                                         <FormMessage />
                                     </FormItem>
                                 )} />
@@ -968,5 +970,7 @@ export function ResumeForm({ runAiTask }: ResumeFormProps) {
     </Form>
   );
 }
+
+    
 
     
