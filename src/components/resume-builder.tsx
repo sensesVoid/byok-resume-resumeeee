@@ -49,8 +49,16 @@ import { AppFooter } from './app-footer';
 import { AiTaskModal } from './ai-task-modal';
 import dynamic from 'next/dynamic';
 import { Skeleton } from './ui/skeleton';
-import { FileText, Loader2, FileDown } from 'lucide-react';
+import { FileText, Loader2, FileDown, Palette, ChevronDown } from 'lucide-react';
 import { useDebounce } from '@/hooks/use-debounce';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+
 
 const dynamicTemplates = {
   modern: dynamic(() => import('@/components/templates/modern-template').then(mod => mod.ModernTemplate), { loading: () => <Skeleton className="w-full h-[1123px]" /> }),
@@ -89,6 +97,7 @@ export function ResumeBuilder() {
   const [isUploading, startUploadingTransition] = useTransition();
   const [isCalculatingAts, startAtsTransition] = useTransition();
   const [isDownloading, startDownloadingTransition] = useTransition();
+  const [isDownloadingDocx, startDownloadingDocxTransition] = useTransition();
   const [isSaving, startSavingTransition] = useTransition();
 
   const [isDataLoaded, setIsDataLoaded] = useState(false);
@@ -275,6 +284,66 @@ export function ResumeBuilder() {
       }
     });
   };
+
+  const handleDownloadDocx = async () => {
+    startDownloadingDocxTransition(async () => {
+        const contentToExport = document.getElementById('printable-preview-area');
+        if (!contentToExport) {
+            toast({
+                variant: 'destructive',
+                title: 'Error',
+                description: 'Could not find content to export.',
+            });
+            return;
+        }
+
+        toast({ title: 'Preparing .docx file...', description: 'Please wait...' });
+
+        try {
+            // @ts-ignore
+            const { asBlob } = await import('html-to-docx');
+            
+            // Create a temporary container to inject styles for DOCX export
+            const tempContainer = document.createElement('div');
+            tempContainer.innerHTML = contentToExport.innerHTML;
+            
+            const data = await asBlob(tempContainer.innerHTML, {
+                orientation: 'portrait',
+                margins: { top: 720, right: 720, bottom: 720, left: 720 }, // 1 inch margins
+            });
+
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(data);
+            link.download = 'resume.docx';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(link.href);
+
+            toast({ title: 'Download Started!', description: 'Your .docx file is downloading.' });
+        } catch (error) {
+            console.error("Error generating .docx:", error);
+            toast({
+                variant: 'destructive',
+                title: 'DOCX Generation Failed',
+                description: 'An unexpected error occurred.',
+            });
+        }
+    });
+  };
+
+  const handleEditWithCanva = () => {
+      handleDownloadPdf();
+      setTimeout(() => {
+          window.open('https://www.canva.com/pdf-editor/', '_blank');
+          toast({
+              title: 'Opening Canva...',
+              description: 'Your PDF is downloading. Please drag it into the Canva editor tab that just opened.',
+              duration: 8000,
+          });
+      }, 1500); // Wait for download to likely start
+  };
+
 
   const handleUploadClick = () => {
     fileInputRef.current?.click();
@@ -710,14 +779,38 @@ export function ResumeBuilder() {
             </div>
           </div>
           <DialogFooter className="p-4 border-t bg-background">
-              <Button onClick={handleDownloadPdf} disabled={isDownloading}>
-                  {isDownloading ? (
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  ) : (
-                      <FileDown className="mr-2 h-4 w-4" />
-                  )}
-                  Download PDF
-              </Button>
+              <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                      <Button disabled={isDownloading || isDownloadingDocx}>
+                          <FileDown className="mr-2 h-4 w-4" />
+                          Download / Edit
+                          <ChevronDown className="ml-2 h-4 w-4" />
+                      </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                      <DropdownMenuItem onClick={handleDownloadPdf} disabled={isDownloading}>
+                          {isDownloading ? (
+                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          ) : (
+                              <FileDown className="mr-2 h-4 w-4" />
+                          )}
+                          <span>Download PDF</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={handleDownloadDocx} disabled={isDownloadingDocx}>
+                          {isDownloadingDocx ? (
+                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          ) : (
+                              <FileText className="mr-2 h-4 w-4" />
+                          )}
+                          <span>Download as Word (.docx)</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={handleEditWithCanva} disabled={isDownloading}>
+                          <Palette className="mr-2 h-4 w-4" />
+                          <span>Edit with Canva</span>
+                      </DropdownMenuItem>
+                  </DropdownMenuContent>
+              </DropdownMenu>
           </DialogFooter>
         </DialogContent>
       </Dialog>
