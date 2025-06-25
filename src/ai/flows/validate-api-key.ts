@@ -1,3 +1,4 @@
+
 'use server';
 
 import { type AiConfig } from '@/lib/schemas';
@@ -58,6 +59,9 @@ export async function validateApiKey(
       // The key is likely valid if we get a successful response.
       return { isValid: true };
     } else {
+      if (response.status === 401) {
+        return { isValid: false, error: 'Authentication failed. The provided API key is invalid or has expired. Please check your key.' };
+      }
       // The API returned an error (e.g., 401 Unauthorized, 403 Forbidden).
       let errorMessage = `Invalid API key or network issue (${response.status} ${response.statusText}).`;
       try {
