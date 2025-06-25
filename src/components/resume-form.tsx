@@ -338,6 +338,10 @@ export function ResumeForm() {
                                         <FormLabel>Ollama Host URL</FormLabel>
                                         <FormControl><Input placeholder="http://localhost:11434" {...field} value={field.value ?? ''} disabled={aiPowered} /></FormControl>
                                         <FormDescription>The full URL of your running Ollama server.</FormDescription>
+                                        <FormDescription className="!mt-2 text-xs italic text-amber-600 dark:text-amber-500">
+                                            <b>Ngrok users:</b> To prevent connection errors, start ngrok with this command: <br />
+                                            <code className="bg-muted p-1 rounded-md text-foreground">ngrok http --host-header=rewrite localhost:11434</code>
+                                        </FormDescription>
                                         <FormMessage />
                                     </FormItem>
                                 )} />
