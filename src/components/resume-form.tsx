@@ -123,6 +123,85 @@ export function ResumeForm() {
         return <p>Select a provider to see help.</p>;
     }
   };
+  
+  const getModelHelpText = (provider: 'google' | 'openai' | 'openrouter' | 'ollama') => {
+    switch (provider) {
+      case 'google':
+        return (
+            <div className="p-2 text-left">
+                <h4 className="font-bold mb-2">Google Model Recommendations</h4>
+                <p className="text-xs">
+                    For a great balance of speed, cost, and intelligence, we recommend using:
+                    <br />
+                    <code className="my-1 block bg-muted p-1.5 rounded-md text-foreground">gemini-1.5-flash-latest</code>
+                </p>
+                <p className="text-xs mt-2">
+                    For maximum power, you can use:
+                    <br />
+                    <code className="my-1 block bg-muted p-1.5 rounded-md text-foreground">gemini-1.5-pro-latest</code>
+                </p>
+            </div>
+        );
+      case 'openai':
+        return (
+            <div className="p-2 text-left">
+                <h4 className="font-bold mb-2">OpenAI Model Recommendations</h4>
+                <p className="text-xs">
+                    The latest and most capable model is:
+                    <br />
+                    <code className="my-1 block bg-muted p-1.5 rounded-md text-foreground">gpt-4o</code>
+                </p>
+                <p className="text-xs mt-2">
+                    A faster and more affordable option is:
+                    <br />
+                    <code className="my-1 block bg-muted p-1.5 rounded-md text-foreground">gpt-3.5-turbo</code>
+                </p>
+            </div>
+        );
+      case 'openrouter':
+        return (
+            <div className="p-2 text-left">
+                <h4 className="font-bold mb-2">OpenRouter Model Usage</h4>
+                 <p className="text-xs">
+                    To let OpenRouter automatically select the best model for the job, leave this field blank or enter:
+                    <br />
+                    <code className="my-1 block bg-muted p-1.5 rounded-md text-foreground">openrouter/auto</code>
+                </p>
+                <p className="text-xs mt-2">
+                    To use a specific model, you must provide its full identifier (e.g., `google/gemini-pro`, `anthropic/claude-3-haiku`).
+                </p>
+            </div>
+        );
+      case 'ollama':
+        return (
+            <div className="p-2 text-left max-w-md">
+                <h4 className="font-bold mb-2">How to Use Ollama Models</h4>
+                <p className="text-xs">
+                    With Ollama, models run on your computer. You must first download a model before you can use it.
+                </p>
+                <ol className="list-decimal list-inside space-y-2 text-xs mt-2">
+                    <li>
+                        <strong>Open your computer's terminal</strong>
+                        <br/>(Terminal on Mac, or PowerShell on Windows).
+                    </li>
+                    <li>
+                        <strong>Download a model.</strong> Type the command below and press Enter. This might take a few minutes. For the recommended <code className="text-foreground">llama3</code> model, the command is:
+                        <br />
+                        <code className="my-1 block bg-muted p-1.5 rounded-md text-foreground">ollama run llama3</code>
+                    </li>
+                    <li>
+                        <strong>Enter the model name below.</strong> Once the download is finished, type the name of the model (e.g., <code className="text-foreground">llama3</code>) into the input field.
+                    </li>
+                </ol>
+                <p className="text-xs mt-2">
+                    Other great models to try are <code className="text-foreground">mistral</code> or <code className="text-foreground">gemma</code>.
+                </p>
+            </div>
+        );
+      default:
+        return <p>Select a provider to see model recommendations.</p>;
+    }
+  };
 
   const handlePhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -356,22 +435,22 @@ export function ResumeForm() {
                                                                     <a href="https://ollama.com/download" target="_blank" rel="noopener noreferrer" className="text-primary underline">ollama.com/download</a>.
                                                                 </li>
                                                                 <li>
-                                                                    <strong>Run an AI Model:</strong> Open your computer's terminal (Terminal on Mac, Command Prompt or PowerShell on Windows) and type:
+                                                                    <strong>Start the AI Server:</strong> Open your computer's terminal (Terminal on Mac, or PowerShell on Windows) and type:
                                                                     <br />
-                                                                    <code className="my-1 block bg-muted p-1.5 rounded-md text-foreground">ollama run llama3</code>
+                                                                    <code className="my-1 block bg-muted p-1.5 rounded-md text-foreground">ollama serve</code>
                                                                     <br />
-                                                                    This will download the model and start your local AI server. Keep this terminal window open while you use the app.
+                                                                    Keep this terminal window open while you use the app.
                                                                 </li>
                                                                 <li>
-                                                                    <strong>Enter the URL:</strong> Copy and paste the default URL below into the input field.
+                                                                    <strong>Enter the URL:</strong> Use the default URL below unless you've configured a different one.
                                                                     <br/>
                                                                     <code className="my-1 block bg-muted p-1.5 rounded-md text-foreground">http://localhost:11434</code>
                                                                 </li>
                                                                 <li className="font-bold">
-                                                                    Optional: Using Ngrok
-                                                                    <p className="font-normal mt-1">To use your local AI from another device (e.g., your phone), install <a href="https://ngrok.com/download" target="_blank" rel="noopener noreferrer" className="text-primary underline">ngrok</a> and run this command in a new terminal:</p>
+                                                                    Optional: For Remote Access (e.g., from your phone)
+                                                                    <p className="font-normal mt-1">If you need to connect from another device, you can use a tool like ngrok. Install it, then run this specific command in a new terminal:</p>
                                                                     <code className="my-1 block bg-muted p-1.5 rounded-md text-foreground">ngrok http --host-header=rewrite localhost:11434</code>
-                                                                    <p className="font-normal mt-1">Then, use the `https://...ngrok-free.app` URL provided by ngrok.</p>
+                                                                    <p className="font-normal mt-1">Then, use the `https://...ngrok-free.app` URL provided by ngrok in the input field.</p>
                                                                 </li>
                                                             </ol>
                                                         </div>
@@ -388,7 +467,21 @@ export function ResumeForm() {
 
                             <FormField control={form.control} name="aiConfig.model" render={({ field }) => (
                                 <FormItem>
-                                <FormLabel>Model Name (Optional)</FormLabel>
+                                <div className="flex items-center gap-2">
+                                    <FormLabel>Model Name (Optional)</FormLabel>
+                                    <TooltipProvider>
+                                        <Tooltip>
+                                            <TooltipTrigger asChild>
+                                            <button type="button" aria-label="Model help" className="cursor-help">
+                                                <HelpCircle className="h-4 w-4 text-muted-foreground hover:text-foreground" />
+                                            </button>
+                                            </TooltipTrigger>
+                                            <TooltipContent side="right" className="max-w-md">
+                                                {getModelHelpText(aiProvider)}
+                                            </TooltipContent>
+                                        </Tooltip>
+                                    </TooltipProvider>
+                                </div>
                                 <FormControl><Input placeholder="e.g., gemini-1.5-flash-latest" {...field} disabled={aiPowered}/></FormControl>
                                 <FormDescription>If left blank, a default model will be used.</FormDescription>
                                 <FormMessage />
