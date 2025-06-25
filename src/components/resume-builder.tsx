@@ -28,6 +28,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
+  DialogFooter,
 } from '@/components/ui/dialog';
 import {
   AlertDialog,
@@ -39,7 +40,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { buttonVariants } from '@/components/ui/button';
+import { buttonVariants, Button } from '@/components/ui/button';
 import { AtsChecker } from '@/components/ats-checker';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { AboutModal } from '@/components/about-modal';
@@ -48,7 +49,7 @@ import { AppFooter } from './app-footer';
 import { AiTaskModal } from './ai-task-modal';
 import dynamic from 'next/dynamic';
 import { Skeleton } from './ui/skeleton';
-import { FileText } from 'lucide-react';
+import { FileText, Loader2, FileDown } from 'lucide-react';
 import { useDebounce } from '@/hooks/use-debounce';
 
 const dynamicTemplates = {
@@ -204,16 +205,11 @@ export function ResumeBuilder() {
     }
   };
 
-  const handleDownloadPdf = async (target: 'resume' | 'cover-letter') => {
+  const handleDownloadPdf = async () => {
     startDownloadingTransition(async () => {
-      const selector =
-        target === 'resume'
-          ? '.resume-content-wrapper'
-          : '.cover-letter-content-wrapper';
-      
-      const originalContent = document.querySelector(selector)?.firstElementChild as HTMLElement | null;
+      const contentToPrint = document.getElementById('printable-preview-area');
   
-      if (!originalContent) {
+      if (!contentToPrint) {
         toast({
           variant: 'destructive',
           title: 'Error',
@@ -224,30 +220,17 @@ export function ResumeBuilder() {
       
       toast({ title: 'Preparing PDF...', description: 'Please wait while we generate your document.' });
   
-      const clone = originalContent.cloneNode(true) as HTMLElement;
-
-      const printContainer = document.createElement('div');
-      printContainer.style.position = 'absolute';
-      printContainer.style.left = '-9999px';
-      printContainer.style.top = '0';
-      printContainer.style.width = '210mm';
-      printContainer.style.height = 'auto';
-      printContainer.style.backgroundColor = 'white';
-
-      printContainer.appendChild(clone);
-      document.body.appendChild(printContainer);
-      document.body.classList.add(`printing-${target}`);
-
       try {
           const [{ default: jsPDF }, { default: html2canvas }] = await Promise.all([
             import('jspdf'),
             import('html2canvas'),
           ]);
 
-          const canvas = await html2canvas(clone, {
+          const canvas = await html2canvas(contentToPrint, {
               scale: 2,
               useCORS: true,
               logging: false,
+              backgroundColor: null,
           });
           
           const imgData = canvas.toDataURL('image/png');
@@ -277,9 +260,10 @@ export function ResumeBuilder() {
             heightLeft -= pdfPageHeight;
           }
           
-          pdf.save(`${target}.pdf`);
+          const filename = `${previewTarget}.pdf`;
+          pdf.save(filename);
   
-          toast({ title: 'Download Started!', description: `Your ${target}.pdf is being downloaded.` });
+          toast({ title: 'Download Started!', description: `Your ${filename} is being downloaded.` });
   
       } catch (error) {
           console.error("Error generating PDF:", error);
@@ -288,9 +272,6 @@ export function ResumeBuilder() {
               title: 'PDF Generation Failed',
               description: 'An unexpected error occurred. Please try again.',
           });
-      } finally {
-        document.body.removeChild(printContainer);
-        document.body.classList.remove(`printing-${target}`);
       }
     });
   };
@@ -629,11 +610,8 @@ export function ResumeBuilder() {
           onCalculateAtsScore={handleCalculateAtsScore}
           isCalculatingAts={isCalculatingAts}
           isAiPowered={aiPowered}
-          onDownloadResume={() => handleDownloadPdf('resume')}
-          onDownloadCoverLetter={() => handleDownloadPdf('cover-letter')}
           onPreviewClick={handlePreviewClick}
           isCoverLetterEmpty={!coverLetter}
-          isDownloading={isDownloading}
           isDonationEnabled={isDonationEnabled}
           onAboutClick={() => setIsAboutModalOpen(true)}
           onDonateClick={() => setIsDonationModalOpen(true)}
@@ -705,13 +683,13 @@ export function ResumeBuilder() {
       <Dialog open={isPreviewModalOpen} onOpenChange={setIsPreviewModalOpen}>
         <DialogContent className="sm:max-w-4xl h-[90vh] flex flex-col p-0">
           <DialogHeader className="p-6 pb-2 border-b">
-            <DialogTitle>Download Preview: {previewTarget === 'resume' ? 'Resume' : 'Cover Letter'}</DialogTitle>
+            <DialogTitle>Preview: {previewTarget === 'resume' ? 'Resume' : 'Cover Letter'}</DialogTitle>
             <DialogDescription>
               This is a preview of what your document will look like.
             </DialogDescription>
           </DialogHeader>
           <div className="flex-1 overflow-auto bg-muted/30">
-            <div className="p-8 my-8 mx-auto bg-white shadow-lg" style={{width: '210mm'}}>
+            <div id="printable-preview-area" className="my-8 mx-auto bg-white shadow-lg" style={{width: '210mm'}}>
               {previewTarget === 'resume' && watchedData && <SelectedTemplate data={watchedData} />}
               {previewTarget === 'cover-letter' && (
                 <div className="p-6 sm:p-8">
@@ -731,6 +709,16 @@ export function ResumeBuilder() {
               )}
             </div>
           </div>
+          <DialogFooter className="p-4 border-t bg-background">
+              <Button onClick={handleDownloadPdf} disabled={isDownloading}>
+                  {isDownloading ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : (
+                      <FileDown className="mr-2 h-4 w-4" />
+                  )}
+                  Download PDF
+              </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
 

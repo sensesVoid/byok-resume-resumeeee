@@ -2,7 +2,6 @@
 'use client';
 
 import {
-  FileDown,
   Loader2,
   Upload,
   ScanSearch,
@@ -14,6 +13,7 @@ import {
   MoreVertical,
   Trash2,
   Brush,
+  FileText,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/icons';
@@ -35,11 +35,8 @@ interface AppHeaderProps {
   onCalculateAtsScore: (type: 'resume' | 'cover-letter') => void;
   isCalculatingAts: boolean;
   isAiPowered: boolean;
-  onDownloadResume: () => void;
-  onDownloadCoverLetter: () => void;
   onPreviewClick: (type: 'resume' | 'cover-letter') => void;
   isCoverLetterEmpty: boolean;
-  isDownloading: boolean;
   isDonationEnabled: boolean;
   onAboutClick: () => void;
   onDonateClick: () => void;
@@ -54,11 +51,8 @@ export function AppHeader({
   onCalculateAtsScore,
   isCalculatingAts,
   isAiPowered,
-  onDownloadResume,
-  onDownloadCoverLetter,
   onPreviewClick,
   isCoverLetterEmpty,
-  isDownloading,
   isDonationEnabled,
   onAboutClick,
   onDonateClick,
@@ -86,7 +80,7 @@ export function AppHeader({
         {isAiPowered && (
           <Button
             onClick={onUploadClick}
-            disabled={isUploading || isDownloading || isCalculatingAts || isSaving}
+            disabled={isUploading || isCalculatingAts || isSaving}
             variant="outline"
           >
             {isUploading ? <Loader2 className="animate-spin" /> : <Upload />}
@@ -96,39 +90,23 @@ export function AppHeader({
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button disabled={isDownloading || isUploading || isCalculatingAts || isSaving}>
-              {isDownloading ? (
-                <Loader2 className="animate-spin" />
-              ) : (
-                <FileDown />
-              )}
-              <span className="ml-2 hidden sm:inline">Download</span>
+            <Button disabled={isUploading || isCalculatingAts || isSaving}>
+              <Eye />
+              <span className="ml-2 hidden sm:inline">Preview</span>
               <ChevronDown className="ml-1 h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
             <DropdownMenuItem onClick={() => onPreviewClick('resume')}>
-              <Eye className="mr-2 h-4 w-4" />
+              <FileText className="mr-2 h-4 w-4" />
               <span>Preview Resume</span>
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={onDownloadResume}>
-              <FileDown className="mr-2 h-4 w-4" />
-              <span>Download Resume</span>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={() => onPreviewClick('cover-letter')}
               disabled={isCoverLetterEmpty}
             >
-              <Eye className="mr-2 h-4 w-4" />
+              <FileText className="mr-2 h-4 w-4" />
               <span>Preview Cover Letter</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={onDownloadCoverLetter}
-              disabled={isCoverLetterEmpty}
-            >
-              <FileDown className="mr-2 h-4 w-4" />
-              <span>Download Cover Letter</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -137,7 +115,7 @@ export function AppHeader({
           <DropdownMenuTrigger asChild>
             <Button
               disabled={
-                !isAiPowered || isCalculatingAts || isDownloading || isUploading || isSaving
+                !isAiPowered || isCalculatingAts || isUploading || isSaving
               }
             >
               {isCalculatingAts ? (
@@ -166,7 +144,7 @@ export function AppHeader({
           <Button
             onClick={onDonateClick}
             variant="outline"
-            disabled={isDownloading || isUploading || isCalculatingAts || isSaving}
+            disabled={isUploading || isCalculatingAts || isSaving}
           >
             <Gift className="mr-2 h-4 w-4" />
             <span className="ml-2 hidden sm:inline">Donate</span>
@@ -178,7 +156,7 @@ export function AppHeader({
               variant="ghost"
               size="icon"
               aria-label="More options"
-              disabled={isDownloading || isUploading || isCalculatingAts}
+              disabled={isUploading || isCalculatingAts}
             >
               <MoreVertical className="h-5 w-5" />
             </Button>
