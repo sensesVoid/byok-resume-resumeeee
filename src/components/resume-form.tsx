@@ -147,6 +147,9 @@ export function ResumeForm({ runAiTask }: ResumeFormProps) {
                     <br />
                     <code className="my-1 block bg-muted p-1.5 rounded-md text-foreground">gemini-1.5-pro-latest</code>
                 </p>
+                <p className="text-xs pt-3 border-t mt-3 border-border/50 text-muted-foreground">
+                    <strong>Pro Tip:</strong> For best results with resume parsing, models with a larger "context window" (like <code className="text-xs">gemini-1.5-pro-latest</code>) are recommended as they can process more of your document at once.
+                </p>
             </div>
         );
       case 'openai':
@@ -168,6 +171,9 @@ export function ResumeForm({ runAiTask }: ResumeFormProps) {
                     <br />
                     <code className="my-1 block bg-muted p-1.5 rounded-md text-foreground">gpt-3.5-turbo</code>
                 </p>
+                <p className="text-xs pt-3 border-t mt-3 border-border/50 text-muted-foreground">
+                    <strong>Pro Tip:</strong> For best results with resume parsing, models with a larger "context window" (like <code className="text-xs">gpt-4o</code>) are recommended as they can process more of your document at once.
+                </p>
             </div>
         );
       case 'openrouter':
@@ -184,6 +190,9 @@ export function ResumeForm({ runAiTask }: ResumeFormProps) {
                      <code className="my-1 block bg-muted p-1.5 rounded-md text-foreground">anthropic/claude-3-haiku</code>
                      <code className="my-1 block bg-muted p-1.5 rounded-md text-foreground">google/gemini-flash-1.5</code>
                      <code className="my-1 block bg-muted p-1.5 rounded-md text-foreground">mistralai/mistral-large</code>
+                </p>
+                <p className="text-xs pt-3 border-t mt-3 border-border/50 text-muted-foreground">
+                    <strong>Pro Tip:</strong> For best results with resume parsing, models with a larger "context window" (like <code className="text-xs">anthropic/claude-3.5-sonnet</code> or <code className="text-xs">google/gemini-1.5-pro</code>) are recommended as they can process more of your document at once.
                 </p>
             </div>
         );
@@ -226,6 +235,9 @@ export function ResumeForm({ runAiTask }: ResumeFormProps) {
                         </p>
                     </li>
                 </ol>
+                <p className="text-xs pt-3 border-t mt-3 border-border/50 text-muted-foreground">
+                    <strong>Pro Tip:</strong> For best results with resume parsing, larger models (like <code className="text-xs">llama3:70b</code> or <code className="text-xs">mixtral</code>) are recommended as they can process more of your document at once, but they require more computer resources.
+                </p>
             </div>
         );
       default:
@@ -376,8 +388,10 @@ export function ResumeForm({ runAiTask }: ResumeFormProps) {
 
   return (
     <Form {...form}>
-      <div className="space-y-6">
-
+      <form
+        onSubmit={(e) => e.preventDefault()}
+        className="space-y-6"
+      >
         <div className="space-y-4">
             <h2 className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-3">
                 <Bot className="h-6 w-6 text-primary"/>
@@ -459,28 +473,31 @@ export function ResumeForm({ runAiTask }: ResumeFormProps) {
                                                             </p>
                                                             <ol className="list-decimal list-inside space-y-3 text-xs">
                                                                 <li>
-                                                                    <strong>Install Ollama:</strong> Download and install the application for your operating system from{" "}
+                                                                    <strong>Install Ollama:</strong> Download and install the application from{" "}
                                                                     <a href="https://ollama.com/download" target="_blank" rel="noopener noreferrer" className="text-primary underline">ollama.com/download</a>. Make sure it is running.
                                                                 </li>
                                                                 <li>
-                                                                    <strong>For Local Use:</strong> If you are running this resume app on the same computer as Ollama, use the default URL below.
+                                                                    <strong>For Local Use:</strong> If you are running this app on the same computer as Ollama, use the default URL:
                                                                     <br/>
                                                                     <code className="my-1 block bg-muted p-1.5 rounded-md text-foreground">http://localhost:11434</code>
                                                                 </li>
                                                                 <li className="font-bold">
-                                                                    For Remote/Deployed App Use (e.g., with ngrok)
-                                                                    <p className="font-normal mt-1">If you are using a deployed version of this app (like on Vercel) and want it to connect to your local Ollama, you must configure Ollama to accept external requests.</p>
-                                                                    <p className="font-normal mt-1"><strong>Step 1: Start Ollama with Correct Permissions</strong></p>
-                                                                    <p className="font-normal mt-1 text-muted-foreground">In your terminal, run this command to start Ollama and allow connections from any website. This is the recommended approach:</p>
-                                                                    <code className="my-1 block bg-muted p-1.5 rounded-md text-foreground">OLLAMA_ORIGINS='*' ollama serve</code>
-                                                                    <p className="font-normal mt-1 text-muted-foreground">Keep this terminal window open.</p>
+                                                                    For Deployed App Use (e.g., resumeeee.pro)
+                                                                    <p className="font-normal mt-1">To connect this deployed site to your local Ollama, you must securely expose Ollama to the internet.</p>
                                                                     
-                                                                    <p className="font-normal mt-2"><strong>Step 2: Start ngrok</strong></p>
-                                                                    <p className="font-normal mt-1 text-muted-foreground">In a <strong>new</strong> terminal window, run the standard ngrok command to get a public URL:</p>
-                                                                    <code className="my-1 block bg-muted p-1.5 rounded-md text-foreground">ngrok http localhost:11434</code>
+                                                                    <p className="font-normal mt-2"><strong>Step 1: Start Ollama with Specific Permissions</strong></p>
+                                                                    <p className="font-normal mt-1 text-muted-foreground">
+                                                                        This is the most important step. Open your terminal and run the command below. It tells Ollama to accept connections from your deployed website (`resumeeee.pro`) and from ngrok, which is more secure than allowing all connections.
+                                                                    </p>
+                                                                    <code className="my-1 block bg-muted p-1.5 rounded-md text-foreground">OLLAMA_HOST=0.0.0.0 OLLAMA_ORIGINS='https://resumeeee.pro,https://*.ngrok-free.app' ollama serve</code>
+                                                                    <p className="font-normal mt-1 text-muted-foreground">Keep this terminal window open. If you close it, the connection will stop.</p>
                                                                     
-                                                                    <p className="font-normal mt-2"><strong>Step 3: Use the ngrok URL</strong></p>
-                                                                    <p className="font-normal mt-1 text-muted-foreground">Copy the public `https://...ngrok-free.app` URL from ngrok and paste it into the "Ollama Host URL" field here.</p>
+                                                                    <p className="font-normal mt-2"><strong>Step 2: Expose Ollama with ngrok</strong></p>
+                                                                    <p className="font-normal mt-1 text-muted-foreground">In a <strong>new, separate</strong> terminal window, run this command to create a public URL for Ollama:</p>
+                                                                    <code className="my-1 block bg-muted p-1.5 rounded-md text-foreground">ngrok http 11434</code>
+                                                                    
+                                                                    <p className="font-normal mt-2"><strong>Step 3: Use the ngrok URL Here</strong></p>
+                                                                    <p className="font-normal mt-1 text-muted-foreground">Copy the `https://...ngrok-free.app` URL from your ngrok terminal and paste it into the "Ollama Host URL" field in this app.</p>
                                                                 </li>
                                                             </ol>
                                                         </div>
@@ -930,7 +947,7 @@ export function ResumeForm({ runAiTask }: ResumeFormProps) {
                 </DialogFooter>
             </DialogContent>
         </Dialog>
-      </div>
+      </form>
     </Form>
   );
 }

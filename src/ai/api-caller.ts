@@ -1,3 +1,4 @@
+
 'use server';
 
 import type { AiConfig } from '@/lib/schemas';
@@ -14,9 +15,9 @@ function extractTextFromResponse(
     return responseData.choices?.[0]?.message?.content ?? null;
   }
   if (provider === 'ollama') {
-    // Ollama's response for a non-streaming JSON chat is nested
-    if (responseData.message && typeof responseData.message.content === 'string') {
-        return responseData.message.content;
+    // Ollama's response for a non-streaming JSON generation is the full object
+    if (responseData.response && typeof responseData.response === 'string') {
+        return responseData.response;
     }
     return null;
   }
@@ -131,10 +132,10 @@ export async function callApi({
     case 'ollama':
       // Trim trailing slash from the host URL to prevent path issues
       const host = (ollamaHost || 'http://localhost:11434').replace(/\/$/, '');
-      url = `${host}/api/chat`;
+      url = `${host}/api/generate`; // Use the /api/generate endpoint
       payload = {
         model: model || 'llama3', // A sensible default
-        messages: [{ role: 'user', content: prompt }],
+        prompt: prompt, // Use 'prompt' instead of 'messages' for /api/generate
         format: 'json',
         stream: false,
       };
@@ -153,10 +154,14 @@ export async function callApi({
     });
 
     if (!response.ok) {
+        if (response.status === 401) {
+            throw new Error('Authentication failed. The provided API key is invalid, has expired, or does not have sufficient permissions. Please check your key and try again.');
+        }
+
         let errorMessage = `API Error (${response.status} ${response.statusText})`;
         try {
             const errorData = await response.json();
-            errorMessage = `API Error (${response.status}): ${errorData.error?.message || errorData.error}`;
+            errorMessage = `API Error (${response.status}): ${errorData.error?.message || errorData.error || JSON.stringify(errorData)}`;
         } catch (e) {
             // The error response was not JSON. The status text is the best we can do.
         }
@@ -164,6 +169,13 @@ export async function callApi({
     }
 
     const responseData = await response.json();
+
+    // Specific check for Google's safety blocks, which returns a 200 OK but no content.
+    if (provider === 'google' && responseData.promptFeedback?.blockReason) {
+        const reason = responseData.promptFeedback.blockReason;
+        throw new Error(`Request blocked by Google for safety reasons: ${reason}. Please try modifying your content.`);
+    }
+
     const text = extractTextFromResponse(responseData, provider);
 
     if (text === null) {
@@ -181,12 +193,11 @@ export async function callApi({
 
   } catch (error: any) {
     console.error(`API call failed for ${provider}:`, error);
-    if (error.message.includes('API key')) {
-        throw new Error('Invalid or expired API key. Please check your API key and try again.');
-    }
     if (error.message.includes('Failed to fetch')) {
-        return 'The AI provider could not be reached. Please check your network connection and that the host is running.';
+        const hostInfo = provider === 'ollama' ? ` at ${aiConfig.ollamaHost || 'http://localhost:11434'}` : '';
+        throw new Error(`The AI provider could not be reached. Please check your network connection. If using Ollama, ensure it is running and accessible${hostInfo}.`);
     }
+    // Re-throw the specific error we created or a generic one
     throw new Error(error.message || 'An unexpected error occurred during the API call.');
   }
 }

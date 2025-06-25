@@ -26,7 +26,6 @@ import {
   type ValidateApiKeyOutput,
 } from '@/ai/flows/validate-api-key';
 import type { AiConfig } from '@/lib/schemas';
-import htmlToDocx from 'html-to-docx';
 
 
 export async function calculateAtsScoreAction(
@@ -88,13 +87,15 @@ export async function validateApiKeyAction(
 
 export async function generateDocxAction(htmlString: string): Promise<string> {
   try {
+    const htmlToDocx = require('html-to-docx');
     // The library returns a Buffer on the server
     const fileBuffer = await htmlToDocx(htmlString, undefined, {
       orientation: 'portrait',
       margins: { top: 720, right: 720, bottom: 720, left: 720 },
     });
 
- return fileBuffer.toString();
+    // Return as base64 encoded string
+    return fileBuffer.toString('base64');
   } catch (error) {
     console.error('Error generating DOCX on server:', error);
     throw new Error('Failed to generate Word document.');
