@@ -21,11 +21,9 @@ export async function validateApiKey(
   }
 
   let url = '';
-  let method: 'GET' | 'POST' = 'GET';
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
   };
-  let body: string | undefined = undefined;
 
 
   try {
@@ -47,11 +45,9 @@ export async function validateApiKey(
       
       case 'ollama': {
         const host = (ollamaHost || 'http://localhost:11434').replace(/\/$/, '');
-        // For Ollama, a simple GET request to the root is the most reliable way 
-        // to check if the server is running, avoiding method-related errors.
-        url = host;
-        method = 'GET';
-        body = undefined;
+        // Hitting the /api/tags endpoint is a more reliable way to check
+        // if the Ollama server is running and responsive than hitting the root.
+        url = `${host}/api/tags`;
         break;
       }
 
@@ -60,38 +56,31 @@ export async function validateApiKey(
         return { isValid: false, error: `Unsupported provider: ${exhaustiveCheck}` };
     }
     
-    const response = await fetch(url, { method, headers, body });
+    const response = await fetch(url, { method: 'GET', headers });
 
     if (response.ok) {
-       // For Ollama, we also check if the response body confirms it's Ollama
-       if (provider === 'ollama') {
-        const text = await response.text();
-        if (text.includes("Ollama is running")) {
-            return { isValid: true };
-        }
-        return { isValid: false, error: 'Connected to host, but it does not appear to be an Ollama server.' };
-      }
-      // The key is likely valid if we get a successful response for other providers.
+       // A 200 OK from any of these endpoints means the connection is valid.
       return { isValid: true };
     } else {
-      if (response.status === 401) {
-        return { isValid: false, error: 'Authentication failed. The provided API key is invalid or has expired. Please check your key.' };
-      }
-      // The API returned an error (e.g., 401 Unauthorized, 403 Forbidden).
-      let errorMessage = `Invalid API key or network issue (${response.status} ${response.statusText}).`;
+      let errorMessage = `Validation failed (${response.status} ${response.statusText}).`;
       try {
-        const errorData = await response.json();
-        errorMessage = errorData.error?.message || errorData.error || errorMessage;
+          const errorData = await response.json();
+          // Try to extract a more specific message from the API's error response
+          errorMessage = `Validation failed (${response.status}): ${errorData.error?.message || errorData.detail || errorData.error || JSON.stringify(errorData)}`;
       } catch (e) {
-        // Error response was not JSON. The default message is sufficient.
+          // Error response was not JSON. The default message is sufficient.
+      }
+      if (response.status === 401) {
+        errorMessage = 'Authentication failed. The provided API key is invalid or has expired. Please check your key.';
       }
       return { isValid: false, error: errorMessage };
     }
   } catch (error: any) {
     console.error(`API validation failed for ${provider}:`, error);
+    let friendlyError = 'Failed to connect to the API provider. Please check your network connection.';
     if (provider === 'ollama') {
-      return { isValid: false, error: 'Failed to connect to Ollama host. Is Ollama running and the host URL correct?' };
+      friendlyError = `Failed to connect to the Ollama host at ${aiConfig.ollamaHost || 'http://localhost:11434'}. Please ensure Ollama is running and you have configured CORS correctly if connecting from a deployed app.`;
     }
-    return { isValid: false, error: 'Failed to connect to the API provider. Check your network connection.' };
+    return { isValid: false, error: friendlyError };
   }
 }

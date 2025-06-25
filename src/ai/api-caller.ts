@@ -125,14 +125,13 @@ export async function callApi({
     
     case 'ollama': {
       const host = (ollamaHost || 'http://localhost:11434').replace(/\/$/, '');
-      // Use the standard OpenAI-compatible endpoint
       url = `${host}/v1/chat/completions`;
       payload = {
-        model: model || 'llama3',
+        model: model || 'llama3', // This model must be pulled locally
         messages: [{ role: 'user', content: prompt }],
         stream: false,
-        // The prompt itself requests JSON, which is more reliable across models
-        // than depending on a specific format parameter that might not be supported.
+        // Use the OpenAI-compatible format key to ensure JSON output
+        response_format: { type: 'json_object' }, 
       };
       break;
     }
@@ -150,16 +149,16 @@ export async function callApi({
     });
 
     if (!response.ok) {
-        if (response.status === 401) {
-            throw new Error('Authentication failed. The provided API key is invalid, has expired, or does not have sufficient permissions. Please check your key and try again.');
-        }
-
         let errorMessage = `API Error (${response.status} ${response.statusText})`;
         try {
             const errorData = await response.json();
+            // Try to extract a more specific message from the API's error response
             errorMessage = `API Error (${response.status}): ${errorData.error?.message || errorData.detail || errorData.error || JSON.stringify(errorData)}`;
         } catch (e) {
             // The error response was not JSON. The status text is the best we can do.
+        }
+        if (response.status === 401) {
+            errorMessage = 'Authentication failed. The provided API key is invalid, has expired, or does not have sufficient permissions. Please check your key and try again.';
         }
         throw new Error(errorMessage);
     }
@@ -191,7 +190,7 @@ export async function callApi({
     console.error(`API call failed for ${provider}:`, error);
     if (error.message.includes('Failed to fetch')) {
         const hostInfo = provider === 'ollama' ? ` at ${aiConfig.ollamaHost || 'http://localhost:11434'}` : '';
-        throw new Error(`The AI provider could not be reached. Please check your network connection. If using Ollama, ensure it is running and accessible${hostInfo}.`);
+        throw new Error(`The AI provider could not be reached. Please check your network connection and CORS settings. If using Ollama, ensure it is running and accessible${hostInfo}.`);
     }
     // Re-throw the specific error we created or a generic one
     throw new Error(error.message || 'An unexpected error occurred during the API call.');
