@@ -134,7 +134,8 @@ export async function callApi({
       const host = (ollamaHost || 'http://localhost:11434').replace(/\/$/, '');
       url = `${host}/api/chat`;
       if (host.includes('ngrok')) {
-        headers['ngrok-skip-browser-warning'] = 'true';
+        headers['User-Agent'] = 'Resumeeee-App/1.0';
+        headers['Ngrok-Skip-Browser-Warning'] = 'true';
       }
       payload = {
         model: model || 'llama3', // A sensible default
