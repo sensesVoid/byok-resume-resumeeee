@@ -155,14 +155,18 @@ export async function callApi({
       body: JSON.stringify(payload),
     });
 
-    const responseData = await response.json();
-
     if (!response.ok) {
-      const errorMessage =
-        responseData.error?.message || responseData.error || 'An unknown API error occurred.';
-      throw new Error(`API Error (${response.status}): ${errorMessage}`);
+        let errorMessage = `API Error (${response.status} ${response.statusText})`;
+        try {
+            const errorData = await response.json();
+            errorMessage = `API Error (${response.status}): ${errorData.error?.message || errorData.error}`;
+        } catch (e) {
+            // The error response was not JSON. The status text is the best we can do.
+        }
+        throw new Error(errorMessage);
     }
 
+    const responseData = await response.json();
     const text = extractTextFromResponse(responseData, provider);
 
     if (text === null) {

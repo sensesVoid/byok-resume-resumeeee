@@ -61,9 +61,14 @@ export async function validateApiKey(
       // The key is likely valid if we get a successful response.
       return { isValid: true };
     } else {
-      // The API returned an error (e.g., 401 Unauthorized).
-      const errorData = await response.json();
-      const errorMessage = errorData.error?.message || `Invalid API key or network issue (Status: ${response.status}).`;
+      // The API returned an error (e.g., 401 Unauthorized, 403 Forbidden).
+      let errorMessage = `Invalid API key or network issue (Status: ${response.status} ${response.statusText}).`;
+      try {
+        const errorData = await response.json();
+        errorMessage = errorData.error?.message || errorData.error || errorMessage;
+      } catch (e) {
+        // Error response was not JSON. The default message is sufficient.
+      }
       return { isValid: false, error: errorMessage };
     }
   } catch (error: any) {
