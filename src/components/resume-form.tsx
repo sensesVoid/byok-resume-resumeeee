@@ -335,13 +335,52 @@ export function ResumeForm() {
                             {aiProvider === 'ollama' && (
                                 <FormField control={form.control} name="aiConfig.ollamaHost" render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Ollama Host URL</FormLabel>
+                                        <div className="flex items-center gap-2">
+                                            <FormLabel>Ollama Host URL</FormLabel>
+                                            <TooltipProvider>
+                                                <Tooltip>
+                                                    <TooltipTrigger asChild>
+                                                        <button type="button" aria-label="Ollama setup help" className="cursor-help">
+                                                            <HelpCircle className="h-4 w-4 text-muted-foreground hover:text-foreground" />
+                                                        </button>
+                                                    </TooltipTrigger>
+                                                    <TooltipContent side="right" className="max-w-md">
+                                                        <div className="space-y-3 p-2 text-left">
+                                                            <h4 className="font-bold">How to Use Ollama (Local AI)</h4>
+                                                            <p className="text-xs">
+                                                                Ollama lets you run powerful AI models on your own computer, for free and with complete privacy.
+                                                            </p>
+                                                            <ol className="list-decimal list-inside space-y-2 text-xs">
+                                                                <li>
+                                                                    <strong>Install Ollama:</strong> Download and install the application for your operating system from{" "}
+                                                                    <a href="https://ollama.com/download" target="_blank" rel="noopener noreferrer" className="text-primary underline">ollama.com/download</a>.
+                                                                </li>
+                                                                <li>
+                                                                    <strong>Run an AI Model:</strong> Open your computer's terminal (Terminal on Mac, Command Prompt or PowerShell on Windows) and type:
+                                                                    <br />
+                                                                    <code className="my-1 block bg-muted p-1.5 rounded-md text-foreground">ollama run llama3</code>
+                                                                    <br />
+                                                                    This will download the model and start your local AI server. Keep this terminal window open while you use the app.
+                                                                </li>
+                                                                <li>
+                                                                    <strong>Enter the URL:</strong> Copy and paste the default URL below into the input field.
+                                                                    <br/>
+                                                                    <code className="my-1 block bg-muted p-1.5 rounded-md text-foreground">http://localhost:11434</code>
+                                                                </li>
+                                                                <li className="font-bold">
+                                                                    Optional: Using Ngrok
+                                                                    <p className="font-normal mt-1">To use your local AI from another device (e.g., your phone), install <a href="https://ngrok.com/download" target="_blank" rel="noopener noreferrer" className="text-primary underline">ngrok</a> and run this command in a new terminal:</p>
+                                                                    <code className="my-1 block bg-muted p-1.5 rounded-md text-foreground">ngrok http --host-header=rewrite localhost:11434</code>
+                                                                    <p className="font-normal mt-1">Then, use the `https://...ngrok-free.app` URL provided by ngrok.</p>
+                                                                </li>
+                                                            </ol>
+                                                        </div>
+                                                    </TooltipContent>
+                                                </Tooltip>
+                                            </TooltipProvider>
+                                        </div>
                                         <FormControl><Input placeholder="http://localhost:11434" {...field} value={field.value ?? ''} disabled={aiPowered} /></FormControl>
-                                        <FormDescription>The full URL of your running Ollama server.</FormDescription>
-                                        <FormDescription className="!mt-2 text-xs italic text-amber-600 dark:text-amber-500">
-                                            <b>Ngrok users:</b> To prevent connection errors, start ngrok with this command: <br />
-                                            <code className="bg-muted p-1 rounded-md text-foreground">ngrok http --host-header=rewrite localhost:11434</code>
-                                        </FormDescription>
+                                        <FormDescription>The URL of your running Ollama server.</FormDescription>
                                         <FormMessage />
                                     </FormItem>
                                 )} />
