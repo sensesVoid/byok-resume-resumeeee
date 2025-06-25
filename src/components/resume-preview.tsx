@@ -37,7 +37,7 @@ export function ResumePreview() {
   const data = useWatch({ control });
   const { coverLetter, template } = data;
 
-  const SelectedTemplate = dynamicTemplates[template] || dynamicTemplates.modern;
+  const SelectedTemplate = dynamicTemplates[template || 'modern'] || dynamicTemplates.modern;
 
   return (
     <Card className="h-full w-full overflow-hidden shadow-lg print:shadow-none print:border-none">

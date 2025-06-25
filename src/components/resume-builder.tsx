@@ -325,6 +325,7 @@ export function ResumeBuilder() {
       let text = '';
       try {
         if (file.type === 'application/pdf' || file.name.endsWith('.pdf')) {
+          // @ts-ignore
           const pdfjs = await import('pdfjs-dist/build/pdf');
           // Set worker source dynamically
           pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.mjs`;
@@ -336,7 +337,7 @@ export function ResumeBuilder() {
             const page = await pdf.getPage(i);
             const textContent = await page.getTextContent();
             text += textContent.items
-              .map((item) => ('str' in item ? item.str : ''))
+              .map((item: any) => ('str' in item ? item.str : ''))
               .join(' ');
             if (i < numPages) {
               text += '\n\n'; // Add more space between pages
@@ -361,14 +362,11 @@ export function ResumeBuilder() {
         });
 
         const thinkingMessages = [
-          "Received resume file. Analyzing content...",
-          "Identifying key sections: Personal Info, Experience, Education...",
-          "Extracting contact details and personal information.",
-          "Parsing each work experience entry, linking descriptions to job titles.",
-          "Processing educational background and degrees.",
-          "Identifying technical and soft skills.",
-          "Compiling all extracted data into a structured format.",
-          "Finalizing the parsed resume. Almost done!",
+          'Analyzing document structure (standard vs. separated format)...',
+          'Extracting all headers and description blocks.',
+          'Chronologically matching descriptions to job roles.',
+          'Performing self-correction and data validation.',
+          'Finalizing the structured JSON output.',
         ];
 
         const parsedData = await runAiTask(task, "Parsing Your Resume", thinkingMessages);

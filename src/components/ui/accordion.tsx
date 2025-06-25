@@ -1,3 +1,4 @@
+
 "use client"
 
 import * as React from "react"
@@ -23,7 +24,7 @@ AccordionItem.displayName = "AccordionItem"
 
 const AccordionTrigger = React.forwardRef<
   React.ElementRef<typeof AccordionPrimitive.Trigger>,
-  React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Trigger>
+  React.ComponentPropsWithoutRef<typeof AccordionPrimitive.Trigger> & { 'data-powered'?: boolean }
 >(({ className, children, ...props }, ref) => (
   <AccordionPrimitive.Header className="flex" asChild>
     <h2 className="w-full text-lg font-semibold">
