@@ -26,7 +26,7 @@ import {
   type ValidateApiKeyOutput,
 } from '@/ai/flows/validate-api-key';
 import type { AiConfig } from '@/lib/schemas';
-import htmlToDocx from 'html-to-docx';
+import htmlToDocx = require('html-to-docx');
 
 
 export async function calculateAtsScoreAction(
