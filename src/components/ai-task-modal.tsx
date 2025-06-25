@@ -21,10 +21,8 @@ export function AiTaskModal({ isOpen, title, messages }: AiTaskModalProps) {
   const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
   const [completedMessages, setCompletedMessages] = useState<string[]>([]);
 
-  // This derived state is simpler and more reliable than the previous implementation.
   const allMessagesTyped = currentMessageIndex >= messages.length;
 
-  // Reset the component's state whenever the modal is opened or the messages change.
   useEffect(() => {
     if (isOpen) {
       setCurrentMessageIndex(0);
@@ -33,11 +31,12 @@ export function AiTaskModal({ isOpen, title, messages }: AiTaskModalProps) {
   }, [isOpen, messages]);
 
   const handleMessageComplete = useCallback(() => {
-    // Add the just-completed message to the list of completed messages
-    setCompletedMessages((prev) => [...prev, messages[currentMessageIndex]]);
-    // Move to the next message
-    setCurrentMessageIndex((prev) => prev + 1);
-  }, [currentMessageIndex, messages]);
+    // This callback is now stable. It uses the length of the completed messages
+    // array to determine the next message, avoiding a dependency on the rapidly
+    // changing currentMessageIndex state, which was causing the render loop.
+    setCompletedMessages(prev => [...prev, messages[prev.length]]);
+    setCurrentMessageIndex(prev => prev + 1);
+  }, [messages]);
 
   return (
     <Dialog open={isOpen}>
