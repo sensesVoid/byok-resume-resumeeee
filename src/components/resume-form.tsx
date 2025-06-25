@@ -37,9 +37,7 @@ const fontStyles = [
 
 interface ResumeFormProps {
   runAiTask: <T>(
-    taskFn: () => Promise<T>,
-    title: string,
-    messages: string[]
+    taskFn: () => Promise<T>
   ) => Promise<T | null>;
 }
 
@@ -321,24 +319,10 @@ export function ResumeForm({ runAiTask }: ResumeFormProps) {
       
       const task = () => generateCoverLetterAction({ resume, jobDescription, userName: personalInfo.name, aiConfig });
         
-      const thinkingMessages = [
-          "Analyzing your resume and the job description...",
-          "Identifying key skills and experiences that align with the role.",
-          "Crafting an engaging opening paragraph to grab the reader's attention.",
-          "Highlighting your most relevant achievements and qualifications.",
-          "Structuring the letter with a professional tone.",
-          "Writing a strong closing statement and call to action.",
-          "Proofreading and polishing the final draft.",
-      ];
-
-      try {
-        const result = await runAiTask(task, "Generating Cover Letter", thinkingMessages);
-        if (result) {
-          form.setValue('coverLetter', result.coverLetter, { shouldValidate: true });
-          toast({ title: 'Success!', description: 'Your AI-powered cover letter has been generated.' });
-        }
-      } catch (error) {
-        // Error is handled by runAiTask
+      const result = await runAiTask(task);
+      if (result) {
+        form.setValue('coverLetter', result.coverLetter, { shouldValidate: true });
+        toast({ title: 'Success!', description: 'Your AI-powered cover letter has been generated.' });
       }
     });
   };
@@ -351,23 +335,10 @@ export function ResumeForm({ runAiTask }: ResumeFormProps) {
       
       const task = () => improveContentAction({ content, fieldType, jobDescription, aiConfig });
 
-      const thinkingMessages = [
-        "Analyzing your original content...",
-        `Rewriting for impact and clarity as a ${fieldType}.`,
-        "Incorporating strong action verbs.",
-        jobDescription ? "Tailoring the content to the job description." : "Optimizing for general professional appeal.",
-        "Ensuring the tone is professional and concise.",
-        "Finalizing suggestions...",
-      ];
-
-      try {
-        const result = await runAiTask(task, "Improving Content", thinkingMessages);
-        if (result) {
-          setSuggestion(result.suggestions);
-          setIsSuggestionModalOpen(true);
-        }
-      } catch (error) {
-        // Error is handled by runAiTask
+      const result = await runAiTask(task);
+      if (result) {
+        setSuggestion(result.suggestions);
+        setIsSuggestionModalOpen(true);
       }
     });
   };

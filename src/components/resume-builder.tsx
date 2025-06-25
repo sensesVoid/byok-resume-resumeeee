@@ -46,7 +46,6 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { AboutModal } from '@/components/about-modal';
 import { DonationModal } from './donation-modal';
 import { AppFooter } from './app-footer';
-import { AiTaskModal } from './ai-task-modal';
 import dynamic from 'next/dynamic';
 import { Skeleton } from './ui/skeleton';
 import { FileText, Loader2, FileDown, Palette, ChevronDown } from 'lucide-react';
@@ -113,10 +112,6 @@ export function ResumeBuilder() {
   const [previewTarget, setPreviewTarget] = useState<'resume' | 'cover-letter' | null>(null);
   const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
   
-  const [isAiTaskModalOpen, setIsAiTaskModalOpen] = useState(false);
-  const [aiTaskTitle, setAiTaskTitle] = useState('');
-  const [aiTaskMessages, setAiTaskMessages] = useState<string[]>([]);
-
   const [atsCheckType, setAtsCheckType] = useState<'resume' | 'cover-letter'>(
     'resume'
   );
@@ -179,11 +174,10 @@ export function ResumeBuilder() {
   }, [debouncedData, isDataLoaded, toast]);
   
   const runAiTask = async <T,>(
-    taskFn: () => Promise<T>,
-    title: string,
-    messages: string[]
+    taskFn: () => Promise<T>
   ): Promise<T | null> => {
-    if (!form.getValues().aiPowered) {
+    const { aiPowered, aiConfig } = form.getValues();
+    if (!aiPowered) {
       toast({
         variant: 'destructive',
         title: 'AI Not Enabled',
@@ -192,27 +186,30 @@ export function ResumeBuilder() {
       return null;
     }
 
-    setAiTaskTitle(title);
-    setAiTaskMessages(messages);
-    setIsAiTaskModalOpen(true);
+    if (aiConfig.provider !== 'ollama' && !aiConfig.apiKey) {
+      toast({
+        variant: 'destructive',
+        title: 'API Key Missing',
+        description: `Please provide an API key for ${aiConfig.provider} to use AI features.`,
+      });
+      return null;
+    }
 
+    // The loading state is now handled by individual buttons' useTransition hooks.
+    // This function now just centralizes guard clauses and error handling.
     try {
       const result = await taskFn();
-      setIsAiTaskModalOpen(false);
       return result;
     } catch (error) {
-      setIsAiTaskModalOpen(false);
-      // The individual action should show a more specific toast,
-      // but we'll keep a generic one here as a fallback.
-      if (!(error as Error).message.includes('The AI returned an invalid response')) {
-         toast({
-            variant: 'destructive',
-            title: 'AI Task Failed',
-            description: (error as Error).message || 'An unknown error occurred.',
-         });
-      }
-      // Re-throw the error so the original caller can handle it if needed
-      throw error;
+      toast({
+        variant: 'destructive',
+        title: 'AI Task Failed',
+        description:
+          (error as Error).message ||
+          'An unknown error occurred. Please check the console for details.',
+      });
+      console.error('AI Task Execution Error:', error);
+      return null; // Return null instead of throwing to prevent unhandled promise rejections.
     }
   };
 
@@ -408,16 +405,8 @@ export function ResumeBuilder() {
           resumeText: text,
           aiConfig: form.getValues().aiConfig,
         });
-
-        const thinkingMessages = [
-          'Analyzing document structure (standard vs. separated format)...',
-          'Extracting all headers and description blocks.',
-          'Chronologically matching descriptions to job roles.',
-          'Performing self-correction and data validation.',
-          'Finalizing the structured JSON output.',
-        ];
-
-        const parsedData = await runAiTask(task, "Parsing Your Resume", thinkingMessages);
+        
+        const parsedData = await runAiTask(task);
 
         if (!parsedData) return;
 
@@ -461,8 +450,11 @@ export function ResumeBuilder() {
           description: 'Your resume has been parsed and loaded into the form.',
         });
       } catch (error) {
-        // Error toast is already handled by runAiTask, but we can log for debugging
-        console.error("Resume parsing failed in handleFileChange:", error);
+        toast({
+            variant: 'destructive',
+            title: 'File Processing Error',
+            description: (error as Error).message || 'Could not process the uploaded file.'
+        })
       }
     });
 
@@ -590,29 +582,14 @@ export function ResumeBuilder() {
         aiConfig,
       });
 
-      const thinkingMessages = [
-        `Starting ATS analysis for your ${type}...`,
-        "Comparing your document against the job description.",
-        "Analyzing keyword density and relevance.",
-        "Checking for essential skills and qualifications.",
-        "Evaluating formatting and structure for machine readability.",
-        "Calculating the final match score.",
-        "Generating actionable feedback and suggestions.",
-      ];
-
-      try {
-        const result = await runAiTask(task, "Calculating ATS Score", thinkingMessages);
-        if (result) {
-          setAtsResult(result);
-          setIsAtsModalOpen(true);
-          toast({
-            title: 'Success!',
-            description: `Your ${type} ATS score has been calculated.`,
-          });
-        }
-      } catch (error) {
-        // Error toast is handled by runAiTask
-        setAtsResult(null);
+      const result = await runAiTask(task);
+      if (result) {
+        setAtsResult(result);
+        setIsAtsModalOpen(true);
+        toast({
+          title: 'Success!',
+          description: `Your ${type} ATS score has been calculated.`,
+        });
       }
     });
   };
@@ -837,7 +814,6 @@ export function ResumeBuilder() {
 
       <AboutModal isOpen={isAboutModalOpen} onOpenChange={setIsAboutModalOpen} />
       <DonationModal isOpen={isDonationModalOpen} onOpenChange={setIsDonationModalOpen} />
-      <AiTaskModal isOpen={isAiTaskModalOpen} title={aiTaskTitle} messages={aiTaskMessages} />
     </FormProvider>
   );
 }
