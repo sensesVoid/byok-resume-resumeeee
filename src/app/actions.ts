@@ -94,7 +94,7 @@ export async function generateDocxAction(htmlString: string): Promise<string> {
       margins: { top: 720, right: 720, bottom: 720, left: 720 },
     });
 
-    return fileBuffer.toString('base64');
+ return fileBuffer.toString();
   } catch (error) {
     console.error('Error generating DOCX on server:', error);
     throw new Error('Failed to generate Word document.');
