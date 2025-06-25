@@ -5,7 +5,7 @@ export const personalInfoSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   email: z.string().email('Invalid email address'),
   phone: z.string().optional(),
-  website: z.string().url('Invalid URL').optional(),
+  website: z.string().url('Invalid URL').optional().or(z.literal('')),
   location: z.string().optional(),
   photo: z.string().optional(),
 });
@@ -45,8 +45,9 @@ export const projectSchema = z.object({
 
 
 const baseAiConfigSchema = z.object({
-  provider: z.enum(['google', 'openai', 'openrouter']).default('google'),
+  provider: z.enum(['google', 'openai', 'openrouter', 'ollama']).default('google'),
   model: z.string().optional(),
+  ollamaHost: z.string().url().optional().or(z.literal('')),
 });
 
 export const donationConfigSchema = z.object({
@@ -64,7 +65,7 @@ export const donationConfigSchema = z.object({
 export const resumeSchema = z.object({
   aiPowered: z.boolean().default(false),
   aiConfig: baseAiConfigSchema.extend({
-    apiKey: z.string().optional(), // Initially optional
+    apiKey: z.string().optional().or(z.literal('')),
   }),
   // Use refine to make apiKey required only when aiPowered is true
 
@@ -114,9 +115,13 @@ export const aiConfigSchema = resumeSchema.shape.aiConfig;
 export type AiConfig = z.infer<typeof aiConfigSchema>;
 
 resumeSchema.refine(
-  (data) => !data.aiPowered || (data.aiPowered && data.aiConfig.apiKey),
+  (data) => {
+    if (!data.aiPowered) return true; // Not powered, no key needed
+    if (data.aiConfig.provider === 'ollama') return true; // Ollama needs no key
+    return !!data.aiConfig.apiKey; // Others need a key
+  },
   {
-    message: 'API Key is required when AI is powered on',
+    message: 'API Key is required for the selected provider.',
     path: ['aiConfig', 'apiKey'],
   }
 );
@@ -176,6 +181,7 @@ export const defaultResumeData: ResumeSchema = {
     provider: 'google',
     apiKey: '',
     model: 'gemini-1.5-flash-latest',
+    ollamaHost: 'http://localhost:11434',
   },
   aiPowered: false,
   donationConfig: {

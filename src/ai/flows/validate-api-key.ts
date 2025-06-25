@@ -1,3 +1,4 @@
+
 'use server';
 
 import { type AiConfig } from '@/lib/schemas';
@@ -13,9 +14,9 @@ export type ValidateApiKeyOutput = z.infer<typeof ValidateApiKeyOutputSchema>;
 export async function validateApiKey(
   aiConfig: AiConfig
 ): Promise<ValidateApiKeyOutput> {
-  const { provider, apiKey } = aiConfig;
+  const { provider, apiKey, ollamaHost } = aiConfig;
 
-  if (!apiKey) {
+  if (provider !== 'ollama' && !apiKey) {
     return { isValid: false, error: 'API Key is missing.' };
   }
 
@@ -40,6 +41,11 @@ export async function validateApiKey(
         url = 'https://openrouter.ai/api/v1/models';
         headers['Authorization'] = `Bearer ${apiKey}`;
         break;
+      
+      case 'ollama':
+        const host = ollamaHost || 'http://localhost:11434';
+        url = `${host}/api/tags`; // Simple endpoint to list local models
+        break;
 
       default:
         const exhaustiveCheck: never = provider;
@@ -59,6 +65,9 @@ export async function validateApiKey(
     }
   } catch (error: any) {
     console.error(`API validation failed for ${provider}:`, error);
+    if (provider === 'ollama') {
+      return { isValid: false, error: 'Failed to connect to Ollama host. Is Ollama running and the host URL correct?' };
+    }
     return { isValid: false, error: 'Failed to connect to the API provider. Check your network connection.' };
   }
 }

@@ -14,6 +14,13 @@ function extractTextFromResponse(
   if (provider === 'openai' || provider === 'openrouter') {
     return responseData.choices?.[0]?.message?.content ?? null;
   }
+  if (provider === 'ollama') {
+    // Ollama's response for a non-streaming JSON chat is nested
+    if (responseData.message && typeof responseData.message.content === 'string') {
+        return responseData.message.content;
+    }
+    return null;
+  }
   return null;
 }
 
@@ -74,9 +81,9 @@ export async function callApi({
   prompt: string;
   aiConfig: AiConfig;
 }): Promise<string> {
-  const { provider, apiKey, model } = aiConfig;
+  const { provider, apiKey, model, ollamaHost } = aiConfig;
 
-  if (!apiKey) {
+  if (provider !== 'ollama' && !apiKey) {
     throw new Error('API Key is missing. Please provide it in the form.');
   }
 
@@ -121,6 +128,17 @@ export async function callApi({
         response_format: { type: 'json_object' },
       };
       break;
+    
+    case 'ollama':
+      const host = ollamaHost || 'http://localhost:11434';
+      url = `${host}/api/chat`;
+      payload = {
+        model: model || 'llama3', // A sensible default
+        messages: [{ role: 'user', content: prompt }],
+        format: 'json',
+        stream: false,
+      };
+      break;
 
     default:
       const exhaustiveCheck: never = provider;
@@ -138,7 +156,7 @@ export async function callApi({
 
     if (!response.ok) {
       const errorMessage =
-        responseData.error?.message || 'An unknown API error occurred.';
+        responseData.error?.message || responseData.error || 'An unknown API error occurred.';
       throw new Error(`API Error (${response.status}): ${errorMessage}`);
     }
 
@@ -161,6 +179,9 @@ export async function callApi({
     console.error(`API call failed for ${provider}:`, error);
     if (error.message.includes('API key')) {
         throw new Error('Invalid or expired API key. Please check your API key and try again.');
+    }
+    if (error.message.includes('Failed to fetch')) {
+        return 'The AI provider could not be reached. Please check your network connection and that the host is running.';
     }
     throw new Error(error.message || 'An unexpected error occurred during the API call.');
   }

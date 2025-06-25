@@ -61,7 +61,7 @@ export function ResumeForm() {
   );
 
 
-  const getApiKeyHelpText = (provider: 'google' | 'openai' | 'openrouter') => {
+  const getApiKeyHelpText = (provider: 'google' | 'openai' | 'openrouter' | 'ollama') => {
     switch (provider) {
       case 'google':
         return (
@@ -102,6 +102,20 @@ export function ResumeForm() {
               className="text-primary underline"
             >
               Go to OpenRouter Keys
+            </a>
+          </div>
+        );
+      case 'ollama':
+        return (
+          <div>
+            <p>Ollama runs locally and does not require an API key.</p>
+            <a
+              href="https://ollama.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary underline"
+            >
+              Learn more about Ollama
             </a>
           </div>
         );
@@ -286,33 +300,49 @@ export function ResumeForm() {
                                                 <SelectItem value="google">Google AI</SelectItem>
                                                 <SelectItem value="openai">OpenAI</SelectItem>
                                                 <SelectItem value="openrouter">OpenRouter</SelectItem>
+                                                <SelectItem value="ollama">Ollama (Local)</SelectItem>
                                             </SelectContent>
                                         </Select>
                                         <FormDescription>Select the AI provider you want to use.</FormDescription>
                                         <FormMessage />
                                     </FormItem>
                                 )} />
-                            <FormField control={form.control} name="aiConfig.apiKey" render={({ field }) => (
-                                <FormItem>
-                                <div className="flex items-center gap-2">
-                                    <FormLabel>API Key</FormLabel>
-                                    <TooltipProvider>
-                                        <Tooltip>
-                                            <TooltipTrigger asChild>
-                                            <button type="button" aria-label="API key help" className="cursor-help">
-                                                <HelpCircle className="h-4 w-4 text-muted-foreground hover:text-foreground" />
-                                            </button>
-                                            </TooltipTrigger>
-                                            <TooltipContent side="right">
-                                                {getApiKeyHelpText(aiProvider)}
-                                            </TooltipContent>
-                                        </Tooltip>
-                                    </TooltipProvider>
-                                </div>
-                                <FormControl><Input type="password" placeholder="Enter your API key" {...field} disabled={aiPowered} /></FormControl>
-                                <FormMessage />
-                                </FormItem>
-                            )} />
+                            
+                            {aiProvider !== 'ollama' && (
+                                <FormField control={form.control} name="aiConfig.apiKey" render={({ field }) => (
+                                    <FormItem>
+                                    <div className="flex items-center gap-2">
+                                        <FormLabel>API Key</FormLabel>
+                                        <TooltipProvider>
+                                            <Tooltip>
+                                                <TooltipTrigger asChild>
+                                                <button type="button" aria-label="API key help" className="cursor-help">
+                                                    <HelpCircle className="h-4 w-4 text-muted-foreground hover:text-foreground" />
+                                                </button>
+                                                </TooltipTrigger>
+                                                <TooltipContent side="right">
+                                                    {getApiKeyHelpText(aiProvider)}
+                                                </TooltipContent>
+                                            </Tooltip>
+                                        </TooltipProvider>
+                                    </div>
+                                    <FormControl><Input type="password" placeholder="Enter your API key" {...field} disabled={aiPowered} /></FormControl>
+                                    <FormMessage />
+                                    </FormItem>
+                                )} />
+                            )}
+                            
+                            {aiProvider === 'ollama' && (
+                                <FormField control={form.control} name="aiConfig.ollamaHost" render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Ollama Host URL</FormLabel>
+                                        <FormControl><Input placeholder="http://localhost:11434" {...field} value={field.value ?? ''} disabled={aiPowered} /></FormControl>
+                                        <FormDescription>The full URL of your running Ollama server.</FormDescription>
+                                        <FormMessage />
+                                    </FormItem>
+                                )} />
+                            )}
+
                             <FormField control={form.control} name="aiConfig.model" render={({ field }) => (
                                 <FormItem>
                                 <FormLabel>Model Name (Optional)</FormLabel>
@@ -376,6 +406,9 @@ export function ResumeForm() {
                             Generate Cover Letter
                             </Button>
                         </div>
+                        <p className="text-xs text-muted-foreground pt-2">
+                            Disclaimer: The output of this tool is based on an AI model and may not be perfect. Always review and edit the generated content to best fit your personal style and the job you are applying for.
+                        </p>
                         </div>
                     </AccordionContent>
                 </AccordionItem>
@@ -739,5 +772,3 @@ export function ResumeForm() {
     </Form>
   );
 }
-
-    
