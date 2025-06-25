@@ -20,7 +20,7 @@ import { useMediaQuery } from '@/hooks/use-media-query';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useRef, useTransition, useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import { parseResumeAction, calculateAtsScoreAction } from '@/app/actions';
+import { parseResumeAction, calculateAtsScoreAction, generateDocxAction } from '@/app/actions';
 import type { CalculateAtsScoreOutput } from '@/ai/flows/calculate-ats-score';
 import {
   Dialog,
@@ -58,6 +58,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 
 const dynamicTemplates = {
@@ -230,11 +232,6 @@ export function ResumeBuilder() {
       toast({ title: 'Preparing PDF...', description: 'Please wait while we generate your document.' });
   
       try {
-          const [{ default: jsPDF }, { default: html2canvas }] = await Promise.all([
-            import('jspdf'),
-            import('html2canvas'),
-          ]);
-
           const canvas = await html2canvas(contentToPrint, {
               scale: 2,
               useCORS: true,
@@ -287,48 +284,50 @@ export function ResumeBuilder() {
 
   const handleDownloadDocx = async () => {
     startDownloadingDocxTransition(async () => {
-        const contentToExport = document.getElementById('printable-preview-area');
-        if (!contentToExport) {
-            toast({
-                variant: 'destructive',
-                title: 'Error',
-                description: 'Could not find content to export.',
-            });
-            return;
+      const contentToExport = document.getElementById('printable-preview-area');
+      if (!contentToExport) {
+        toast({
+          variant: 'destructive',
+          title: 'Error',
+          description: 'Could not find content to export.',
+        });
+        return;
+      }
+
+      toast({ title: 'Preparing .docx file...', description: 'Please wait...' });
+
+      try {
+        const htmlString = contentToExport.outerHTML;
+        const base64 = await generateDocxAction(htmlString);
+
+        // Convert base64 to blob and trigger download
+        const byteCharacters = atob(base64);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
         }
+        const byteArray = new Uint8Array(byteNumbers);
+        const blob = new Blob([byteArray], {
+          type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        });
 
-        toast({ title: 'Preparing .docx file...', description: 'Please wait...' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'resume.docx';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(link.href);
 
-        try {
-            // @ts-ignore
-            const { asBlob } = await import('html-to-docx');
-            
-            // Create a temporary container to inject styles for DOCX export
-            const tempContainer = document.createElement('div');
-            tempContainer.innerHTML = contentToExport.innerHTML;
-            
-            const data = await asBlob(tempContainer.innerHTML, {
-                orientation: 'portrait',
-                margins: { top: 720, right: 720, bottom: 720, left: 720 }, // 1 inch margins
-            });
-
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(data);
-            link.download = 'resume.docx';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(link.href);
-
-            toast({ title: 'Download Started!', description: 'Your .docx file is downloading.' });
-        } catch (error) {
-            console.error("Error generating .docx:", error);
-            toast({
-                variant: 'destructive',
-                title: 'DOCX Generation Failed',
-                description: 'An unexpected error occurred.',
-            });
-        }
+        toast({ title: 'Download Started!', description: 'Your .docx file is downloading.' });
+      } catch (error) {
+        console.error("Error generating .docx:", error);
+        toast({
+          variant: 'destructive',
+          title: 'DOCX Generation Failed',
+          description: (error as Error).message || 'An unexpected error occurred.',
+        });
+      }
     });
   };
 
@@ -700,7 +699,7 @@ export function ResumeBuilder() {
               </Panel>
               <PanelResizeHandle className="w-1 bg-primary/20 transition-colors hover:bg-primary/40 data-[resize-handle-state=drag]:bg-primary print:hidden" />
               <Panel defaultSize={50} minSize={30}>
-                <div className="h-full bg-muted/30 p-4 sm:p-8">
+                <div className="h-full paged-preview-container p-4 sm:p-8">
                   <ResumePreview />
                 </div>
               </Panel>
@@ -715,7 +714,7 @@ export function ResumeBuilder() {
                 <TabsContent value="form" className="mt-4">
                   <ResumeForm runAiTask={runAiTask} />
                 </TabsContent>
-                <TabsContent value="preview" className="mt-4 pt-6">
+                <TabsContent value="preview" className="mt-4 pt-6 paged-preview-container">
                   <ResumePreview />
                 </TabsContent>
               </Tabs>
@@ -757,11 +756,11 @@ export function ResumeBuilder() {
               This is a preview of what your document will look like.
             </DialogDescription>
           </DialogHeader>
-          <div className="flex-1 overflow-auto bg-muted/30">
+          <div className="flex-1 overflow-auto paged-preview-container">
             <div id="printable-preview-area" className="my-8 mx-auto bg-white shadow-lg" style={{width: '210mm'}}>
               {previewTarget === 'resume' && watchedData && <SelectedTemplate data={watchedData} />}
               {previewTarget === 'cover-letter' && (
-                <div className="p-6 sm:p-8">
+                <div className="p-6 sm:p-8" style={{minHeight: '297mm'}}>
                   {coverLetter ? (
                     <div className="whitespace-pre-wrap font-body text-sm text-gray-900">
                       {coverLetter}

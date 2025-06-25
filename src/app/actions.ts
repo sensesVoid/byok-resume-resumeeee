@@ -26,6 +26,7 @@ import {
   type ValidateApiKeyOutput,
 } from '@/ai/flows/validate-api-key';
 import type { AiConfig } from '@/lib/schemas';
+import htmlToDocx from 'html-to-docx';
 
 
 export async function calculateAtsScoreAction(
@@ -82,5 +83,20 @@ export async function validateApiKeyAction(
   } catch (error) {
     console.error('Error validating API key:', error);
     throw new Error((error as Error).message || 'An unexpected error occurred during API key validation.');
+  }
+}
+
+export async function generateDocxAction(htmlString: string): Promise<string> {
+  try {
+    // The library returns a Buffer on the server
+    const fileBuffer = await htmlToDocx(htmlString, undefined, {
+      orientation: 'portrait',
+      margins: { top: 720, right: 720, bottom: 720, left: 720 },
+    });
+
+    return fileBuffer.toString('base64');
+  } catch (error) {
+    console.error('Error generating DOCX on server:', error);
+    throw new Error('Failed to generate Word document.');
   }
 }
