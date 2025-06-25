@@ -6,6 +6,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from '@/components/ui/dialog';
 import { Bot, Loader2 } from 'lucide-react';
 import { Typewriter } from './typewriter';
@@ -24,19 +25,20 @@ export function AiTaskModal({ isOpen, title, messages }: AiTaskModalProps) {
   const allMessagesTyped = currentMessageIndex >= messages.length;
 
   useEffect(() => {
+    // Reset state when the modal opens
     if (isOpen) {
       setCurrentMessageIndex(0);
       setCompletedMessages([]);
     }
-  }, [isOpen, messages]);
+  }, [isOpen]); // Depend only on isOpen to reset
 
+  // Memoize the callback to prevent it from being recreated on every render.
+  // This is the key fix for the infinite loop.
   const handleMessageComplete = useCallback(() => {
-    // This callback is now stable. It uses the length of the completed messages
-    // array to determine the next message, avoiding a dependency on the rapidly
-    // changing currentMessageIndex state, which was causing the render loop.
-    setCompletedMessages(prev => [...prev, messages[prev.length]]);
-    setCurrentMessageIndex(prev => prev + 1);
-  }, [messages]);
+    // Use functional updates to get the latest state without needing it in dependencies
+    setCompletedMessages((prev) => [...prev, messages[prev.length]]);
+    setCurrentMessageIndex((prev) => prev + 1);
+  }, [messages]); // The callback only needs to change if the messages array itself changes.
 
   return (
     <Dialog open={isOpen}>
@@ -46,12 +48,16 @@ export function AiTaskModal({ isOpen, title, messages }: AiTaskModalProps) {
             <Loader2 className="h-5 w-5 animate-spin" />
             {title}
           </DialogTitle>
+          {/* Add DialogDescription to fix accessibility warning */}
+          <DialogDescription>
+            The AI is processing your request. Please wait a moment.
+          </DialogDescription>
         </DialogHeader>
         <div className="mt-4 space-y-4 text-sm">
           {/* Display all the messages that have finished typing */}
           {completedMessages.map((msg, index) => (
             <div
-              key={index}
+              key={`completed-${index}`}
               className="flex items-start gap-3 text-muted-foreground"
             >
               <Bot className="h-4 w-4 shrink-0 mt-0.5" />
@@ -60,12 +66,12 @@ export function AiTaskModal({ isOpen, title, messages }: AiTaskModalProps) {
           ))}
 
           {/* If the modal is open and not all messages have been typed, show the typewriter */}
-          {isOpen && !allMessagesTyped ? (
+          {isOpen && !allMessagesTyped && messages.length > 0 ? (
             <div className="flex items-start gap-3">
               <Bot className="h-4 w-4 shrink-0 mt-0.5 text-primary" />
               <p className="font-medium text-foreground">
                 <Typewriter
-                  key={currentMessageIndex}
+                  key={`typing-${currentMessageIndex}`}
                   text={messages[currentMessageIndex]}
                   speed={30}
                   onComplete={handleMessageComplete}

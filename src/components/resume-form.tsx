@@ -417,8 +417,10 @@ export function ResumeForm({ runAiTask }: ResumeFormProps) {
 
   return (
     <Form {...form}>
-      <div className="space-y-6">
-
+      <form
+        onSubmit={(e) => e.preventDefault()}
+        className="space-y-6"
+      >
         <div className="space-y-4">
             <h2 className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-3">
                 <Bot className="h-6 w-6 text-primary"/>
@@ -971,7 +973,7 @@ export function ResumeForm({ runAiTask }: ResumeFormProps) {
                 </DialogFooter>
             </DialogContent>
         </Dialog>
-      </div>
+      </form>
     </Form>
   );
 }
