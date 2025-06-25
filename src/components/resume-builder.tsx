@@ -195,8 +195,6 @@ export function ResumeBuilder() {
       return null;
     }
 
-    // The loading state is now handled by individual buttons' useTransition hooks.
-    // This function now just centralizes guard clauses and error handling.
     try {
       const result = await taskFn();
       return result;
@@ -209,7 +207,7 @@ export function ResumeBuilder() {
           'An unknown error occurred. Please check the console for details.',
       });
       console.error('AI Task Execution Error:', error);
-      return null; // Return null instead of throwing to prevent unhandled promise rejections.
+      return null;
     }
   };
 
