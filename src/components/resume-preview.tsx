@@ -2,7 +2,7 @@
 'use client';
 
 import { useFormContext, useWatch } from 'react-hook-form';
-import { type ResumeSchema } from '@/lib/schemas';
+import { resumeSchema, type ResumeSchema } from '@/lib/schemas';
 import { Card, CardContent } from '@/components/ui/card';
 import { FileText } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -34,18 +34,22 @@ const dynamicTemplates = {
 
 export function ResumePreview() {
   const { control } = useFormContext<ResumeSchema>();
-  const data = useWatch({ control });
-  const { coverLetter, template } = data;
+  const watchedData = useWatch({ control });
 
-  // The form data, including the template, might be undefined on initial render.
-  // We'll show a skeleton loader to prevent type errors.
-  if (!template) {
+  // Validate the data on every render to ensure it's a complete object.
+  // This prevents errors when the form state is initializing.
+  const validationResult = resumeSchema.safeParse(watchedData);
+
+  if (!validationResult.success) {
     return (
-        <div className="h-full w-full overflow-hidden p-8">
-            <Skeleton className="w-full h-full" />
-        </div>
-    )
+      <div className="h-full w-full overflow-hidden p-8">
+        <Skeleton className="w-full h-full" />
+      </div>
+    );
   }
+
+  const data = validationResult.data;
+  const { coverLetter, template } = data;
 
   const SelectedTemplate = dynamicTemplates[template] || dynamicTemplates.modern;
 
