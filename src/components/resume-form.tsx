@@ -34,7 +34,15 @@ const fontStyles = [
   { value: 'playfair-display', label: 'Playfair Display (Serif)' },
 ];
 
-export function ResumeForm() {
+interface ResumeFormProps {
+  runAiTask: <T>(
+    taskFn: () => Promise<T>,
+    title: string,
+    messages: string[]
+  ) => Promise<T | null>;
+}
+
+export function ResumeForm({ runAiTask }: ResumeFormProps) {
   const form = useFormContext<ResumeSchema>();
   const { toast } = useToast();
   const [isGenerating, startGeneratingTransition] = useTransition();
@@ -309,13 +317,27 @@ export function ResumeForm() {
         Education: ${education.map(e => `${e.degree} from ${e.institution}`).join('\n')}
         Skills: ${skills.map(s => s.name).join(', ')}
       `;
+      
+      const task = () => generateCoverLetterAction({ resume, jobDescription, userName: personalInfo.name, aiConfig });
+        
+      const thinkingMessages = [
+          "Analyzing your resume and the job description...",
+          "Identifying key skills and experiences that align with the role.",
+          "Crafting an engaging opening paragraph to grab the reader's attention.",
+          "Highlighting your most relevant achievements and qualifications.",
+          "Structuring the letter with a professional tone.",
+          "Writing a strong closing statement and call to action.",
+          "Proofreading and polishing the final draft.",
+      ];
 
       try {
-        const result = await generateCoverLetterAction({ resume, jobDescription, userName: personalInfo.name, aiConfig });
-        form.setValue('coverLetter', result.coverLetter, { shouldValidate: true });
-        toast({ title: 'Success!', description: 'Your AI-powered cover letter has been generated.' });
+        const result = await runAiTask(task, "Generating Cover Letter", thinkingMessages);
+        if (result) {
+          form.setValue('coverLetter', result.coverLetter, { shouldValidate: true });
+          toast({ title: 'Success!', description: 'Your AI-powered cover letter has been generated.' });
+        }
       } catch (error) {
-        toast({ variant: 'destructive', title: 'Error', description: (error as Error).message });
+        // Error is handled by runAiTask
       }
     });
   };
@@ -325,12 +347,26 @@ export function ResumeForm() {
       setFieldToUpdate(fieldName);
       const { jobDescription, aiConfig } = form.getValues();
       const fieldType = typeof fieldName === 'string' && fieldName.startsWith('experience.') ? 'description' : 'summary';
+      
+      const task = () => improveContentAction({ content, fieldType, jobDescription, aiConfig });
+
+      const thinkingMessages = [
+        "Analyzing your original content...",
+        `Rewriting for impact and clarity as a ${fieldType}.`,
+        "Incorporating strong action verbs.",
+        jobDescription ? "Tailoring the content to the job description." : "Optimizing for general professional appeal.",
+        "Ensuring the tone is professional and concise.",
+        "Finalizing suggestions...",
+      ];
+
       try {
-        const result = await improveContentAction({ content, fieldType, jobDescription, aiConfig });
-        setSuggestion(result.suggestions);
-        setIsSuggestionModalOpen(true);
+        const result = await runAiTask(task, "Improving Content", thinkingMessages);
+        if (result) {
+          setSuggestion(result.suggestions);
+          setIsSuggestionModalOpen(true);
+        }
       } catch (error) {
-        toast({ variant: 'destructive', title: 'Error', description: (error as Error).message });
+        // Error is handled by runAiTask
       }
     });
   };
@@ -732,7 +768,7 @@ export function ResumeForm() {
                                 type="button" 
                                 size="sm" 
                                 variant="outline" 
-                                onClick={() => handleImproveContent('summary', field.value || '')} 
+                                onClick={() => handleImproveContent('summary', form.getValues('summary') || '')} 
                                 disabled={isImproving || !aiPowered}
                             >
                                 {isImproving && fieldToUpdate === 'summary' ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />} Improve with AI
