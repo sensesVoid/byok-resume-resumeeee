@@ -70,15 +70,24 @@ const ParseResumeInputSchema = z.object({
 export type ParseResumeInput = z.infer<typeof ParseResumeInputSchema>;
 
 function buildPrompt(resumeText: string): string {
-    return `Your task is to convert the following resume text into a single, valid JSON object.
-The JSON object must strictly match the structure shown in the example below.
+    return `You are an expert resume parser. Your task is to meticulously convert the following resume text into a single, valid JSON object.
 
-**CRITICAL RULES:**
+**CRITICAL PARSING LOGIC FOR WORK EXPERIENCE:**
+For each job listed under "WORK EXPERIENCE", you must associate the responsibilities (bullet points) ONLY with the job title they fall directly under. For example, if you see:
+Job Title A
+Company A
+- Responsibility 1
+- Responsibility 2
+Job Title B
+Company B
+- Responsibility 3
+The description for "Job Title A" is "- Responsibility 1\\n- Responsibility 2". The description for "Job Title B" is "- Responsibility 3". Do NOT group all descriptions together under the last job.
+
+**CRITICAL JSON FORMATTING RULES:**
 1.  Your entire response MUST be ONLY the JSON object. Do not include any text before or after it, and do not use markdown formatting like \`\`\`json.
-2.  If an optional field is not present in the resume text (like 'phone', 'website', 'summary'), completely OMIT the key from the JSON. Do not include it with a null or empty value.
-3.  For each job in the 'experience' array, if there is no description for that specific job, the 'description' key MUST be omitted for that job object. Do not carry over descriptions from other jobs.
-4.  For array fields ('education', 'skills', 'certifications', 'projects'), if the section is not found in the resume, you MUST use an empty array: [].
-5.  Inside 'description' fields, you MUST use the newline character (\\n) to represent line breaks or bullet points.
+2.  If an optional field is not present in the resume text (like 'phone', 'website', 'summary', or a job 'description'), completely OMIT the key from the JSON. Do not include it with a null or empty value.
+3.  For array fields ('education', 'skills', 'certifications', 'projects'), if that entire section is not found in the resume, you MUST use an empty array: [].
+4.  Inside 'description' fields, you MUST use the newline character (\\n) to represent line breaks or bullet points.
 
 **EXAMPLE JSON OUTPUT STRUCTURE:**
 {
@@ -123,7 +132,7 @@ The JSON object must strictly match the structure shown in the example below.
 ${resumeText}
 ---
 
-Now, provide ONLY the JSON object.`;
+Now, provide ONLY the JSON object based on the rules and logic above.`;
 }
 
 
