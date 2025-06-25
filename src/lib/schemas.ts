@@ -178,9 +178,9 @@ export const defaultResumeData: ResumeSchema = {
   jobDescription: '',
   coverLetter: '',
   aiConfig: {
-    provider: 'google',
+    provider: 'openrouter',
     apiKey: '',
-    model: 'gemini-1.5-flash-latest',
+    model: 'deepseek/deepseek-r1-0528-qwen3-8b:free',
     ollamaHost: 'http://localhost:11434',
   },
   aiPowered: false,
