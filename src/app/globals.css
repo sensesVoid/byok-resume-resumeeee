@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -51,9 +52,7 @@ body {
     --input: 210 20% 22%;
     --ring: 204 70% 63%;
   }
-}
 
-@layer base {
   * {
     @apply border-border;
   }
