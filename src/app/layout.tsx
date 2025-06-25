@@ -1,6 +1,7 @@
 
 import type { Metadata } from 'next';
 import { Inter, Roboto, Lato, Merriweather, Montserrat, Roboto_Slab, Playfair_Display, Source_Sans_3 } from 'next/font/google';
+import Script from 'next/script';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { ThemeProvider } from '@/components/theme-provider';
@@ -30,6 +31,12 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         <link rel="icon" href="/images/favicon.ico" sizes="any" />
+        <Script
+            async
+            src="https://pagead2.googlesyndication.com/page/adsbygoogle.js?client=ca-pub-0000000000000000"
+            crossOrigin="anonymous"
+            strategy="afterInteractive"
+        />
       </head>
       {/* Added gradient background for glassmorphism */}
       <body
