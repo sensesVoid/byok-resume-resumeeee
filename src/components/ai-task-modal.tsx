@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/dialog';
 import { Bot, Loader2 } from 'lucide-react';
 import { Typewriter } from './typewriter';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 interface AiTaskModalProps {
   isOpen: boolean;
@@ -32,12 +32,12 @@ export function AiTaskModal({ isOpen, title, messages }: AiTaskModalProps) {
     }
   }, [isOpen, messages]);
 
-  const handleMessageComplete = () => {
+  const handleMessageComplete = useCallback(() => {
     // Add the just-completed message to the list of completed messages
     setCompletedMessages((prev) => [...prev, messages[currentMessageIndex]]);
     // Move to the next message
     setCurrentMessageIndex((prev) => prev + 1);
-  };
+  }, [currentMessageIndex, messages]);
 
   return (
     <Dialog open={isOpen}>
