@@ -1,3 +1,4 @@
+
 'use server';
 
 import type { AiConfig } from '@/lib/schemas';
@@ -156,7 +157,7 @@ export async function callApi({
         let errorMessage = `API Error (${response.status} ${response.statusText})`;
         try {
             const errorData = await response.json();
-            errorMessage = `API Error (${response.status}): ${errorData.error?.message || errorData.error}`;
+            errorMessage = `API Error (${response.status}): ${errorData.error?.message || errorData.error || JSON.stringify(errorData)}`;
         } catch (e) {
             // The error response was not JSON. The status text is the best we can do.
         }
@@ -164,6 +165,13 @@ export async function callApi({
     }
 
     const responseData = await response.json();
+
+    // Specific check for Google's safety blocks, which returns a 200 OK but no content.
+    if (provider === 'google' && responseData.promptFeedback?.blockReason) {
+        const reason = responseData.promptFeedback.blockReason;
+        throw new Error(`Request blocked by Google for safety reasons: ${reason}. Please try modifying your content.`);
+    }
+
     const text = extractTextFromResponse(responseData, provider);
 
     if (text === null) {
@@ -185,7 +193,8 @@ export async function callApi({
         throw new Error('Invalid or expired API key. Please check your API key and try again.');
     }
     if (error.message.includes('Failed to fetch')) {
-        return 'The AI provider could not be reached. Please check your network connection and that the host is running.';
+        const hostInfo = provider === 'ollama' ? ` at ${aiConfig.ollamaHost || 'http://localhost:11434'}` : '';
+        throw new Error(`The AI provider could not be reached. Please check your network connection. If using Ollama, ensure it is running and accessible${hostInfo}.`);
     }
     throw new Error(error.message || 'An unexpected error occurred during the API call.');
   }
