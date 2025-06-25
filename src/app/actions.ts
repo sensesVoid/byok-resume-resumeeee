@@ -26,7 +26,6 @@ import {
   type ValidateApiKeyOutput,
 } from '@/ai/flows/validate-api-key';
 import type { AiConfig } from '@/lib/schemas';
-import htmlToDocx from 'html-to-docx';
 
 
 export async function calculateAtsScoreAction(
@@ -88,6 +87,7 @@ export async function validateApiKeyAction(
 
 export async function generateDocxAction(htmlString: string): Promise<string> {
   try {
+    const htmlToDocx = require('html-to-docx');
     // The library returns a Buffer on the server
     const fileBuffer = await htmlToDocx(htmlString, undefined, {
       orientation: 'portrait',
