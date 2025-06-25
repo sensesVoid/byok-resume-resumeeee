@@ -128,15 +128,15 @@ export function ResumeForm() {
     switch (provider) {
       case 'google':
         return (
-            <div className="p-2 text-left">
-                <h4 className="font-bold mb-2">Google Model Recommendations</h4>
+            <div className="p-2 text-left space-y-3">
+                <h4 className="font-bold">Google Model Recommendations</h4>
                 <p className="text-xs">
                     For a great balance of speed, cost, and intelligence, we recommend using:
                     <br />
                     <code className="my-1 block bg-muted p-1.5 rounded-md text-foreground">gemini-1.5-flash-latest</code>
                 </p>
-                <p className="text-xs mt-2">
-                    For maximum power, you can use:
+                <p className="text-xs">
+                    For maximum power and reasoning, you can use:
                     <br />
                     <code className="my-1 block bg-muted p-1.5 rounded-md text-foreground">gemini-1.5-pro-latest</code>
                 </p>
@@ -144,15 +144,20 @@ export function ResumeForm() {
         );
       case 'openai':
         return (
-            <div className="p-2 text-left">
-                <h4 className="font-bold mb-2">OpenAI Model Recommendations</h4>
+            <div className="p-2 text-left space-y-3">
+                <h4 className="font-bold">OpenAI Model Recommendations</h4>
                 <p className="text-xs">
                     The latest and most capable model is:
                     <br />
                     <code className="my-1 block bg-muted p-1.5 rounded-md text-foreground">gpt-4o</code>
                 </p>
-                <p className="text-xs mt-2">
-                    A faster and more affordable option is:
+                <p className="text-xs">
+                    A faster and more affordable, yet still powerful option is:
+                    <br />
+                    <code className="my-1 block bg-muted p-1.5 rounded-md text-foreground">gpt-4-turbo</code>
+                </p>
+                 <p className="text-xs">
+                    For maximum speed on simple tasks, you can use:
                     <br />
                     <code className="my-1 block bg-muted p-1.5 rounded-md text-foreground">gpt-3.5-turbo</code>
                 </p>
@@ -160,42 +165,60 @@ export function ResumeForm() {
         );
       case 'openrouter':
         return (
-            <div className="p-2 text-left">
-                <h4 className="font-bold mb-2">OpenRouter Model Usage</h4>
+            <div className="p-2 text-left space-y-3">
+                <h4 className="font-bold">OpenRouter Model Usage</h4>
                  <p className="text-xs">
                     To let OpenRouter automatically select the best model for the job, leave this field blank or enter:
                     <br />
                     <code className="my-1 block bg-muted p-1.5 rounded-md text-foreground">openrouter/auto</code>
                 </p>
-                <p className="text-xs mt-2">
-                    To use a specific model, you must provide its full identifier (e.g., `google/gemini-pro`, `anthropic/claude-3-haiku`).
+                <p className="text-xs">
+                    To use a specific model, you must provide its full identifier. You can find a list on the OpenRouter website. Popular choices include:
+                     <code className="my-1 block bg-muted p-1.5 rounded-md text-foreground">anthropic/claude-3-haiku</code>
+                     <code className="my-1 block bg-muted p-1.5 rounded-md text-foreground">google/gemini-flash-1.5</code>
+                     <code className="my-1 block bg-muted p-1.5 rounded-md text-foreground">mistralai/mistral-large</code>
                 </p>
             </div>
         );
       case 'ollama':
         return (
-            <div className="p-2 text-left max-w-md">
-                <h4 className="font-bold mb-2">How to Use Ollama Models</h4>
+            <div className="p-2 text-left max-w-md space-y-3">
+                <h4 className="font-bold">Comprehensive Guide to Ollama Models</h4>
                 <p className="text-xs">
-                    With Ollama, models run on your computer. You must first download a model before you can use it.
+                   Ollama lets you run powerful AI models on your own computer for free. Before using a model, you must download it first. Here’s how:
                 </p>
-                <ol className="list-decimal list-inside space-y-2 text-xs mt-2">
+                <ol className="list-decimal list-inside space-y-3 text-xs">
                     <li>
-                        <strong>Open your computer's terminal</strong>
-                        <br/>(Terminal on Mac, or PowerShell on Windows).
+                        <strong>Open Your Computer's Terminal</strong>
+                        <p className="pl-4 text-muted-foreground">
+                            - On **macOS**: Search for the "Terminal" app using Spotlight (Cmd+Space).<br />
+                            - On **Windows**: Search for "PowerShell" in the Start Menu.
+                        </p>
                     </li>
                     <li>
-                        <strong>Download a model.</strong> Type the command below and press Enter. This might take a few minutes. For the recommended <code className="text-foreground">llama3</code> model, the command is:
-                        <br />
-                        <code className="my-1 block bg-muted p-1.5 rounded-md text-foreground">ollama run llama3</code>
+                        <strong>Choose and Download a Model</strong>
+                         <p className="pl-4 text-muted-foreground">
+                            Copy one of the commands below and paste it into your terminal, then press Enter. The first download might take several minutes.
+                        </p>
+                        <div className="pl-4 space-y-2 pt-1">
+                            <p className="font-semibold text-foreground">Recommended General Models:</p>
+                            <code className="block w-full bg-muted p-1.5 rounded-md text-foreground">ollama run llama3</code>
+                            <code className="block w-full bg-muted p-1.5 rounded-md text-foreground">ollama run mistral</code>
+                            
+                            <p className="font-semibold text-foreground pt-2">For Coding Tasks:</p>
+                            <code className="block w-full bg-muted p-1.5 rounded-md text-foreground">ollama run codellama</code>
+
+                            <p className="font-semibold text-foreground pt-2">Lighter & Faster Models:</p>
+                            <code className="block w-full bg-muted p-1.5 rounded-md text-foreground">ollama run gemma</code>
+                        </div>
                     </li>
                     <li>
-                        <strong>Enter the model name below.</strong> Once the download is finished, type the name of the model (e.g., <code className="text-foreground">llama3</code>) into the input field.
+                        <strong>Use the Model in This App</strong>
+                         <p className="pl-4 text-muted-foreground">
+                            After the download is complete and you see a prompt like `>>> Send a message`, the model is ready. Come back here and type its name (e.g., `llama3`) into the "Model Name" field.
+                        </p>
                     </li>
                 </ol>
-                <p className="text-xs mt-2">
-                    Other great models to try are <code className="text-foreground">mistral</code> or <code className="text-foreground">gemma</code>.
-                </p>
             </div>
         );
       default:
@@ -448,9 +471,9 @@ export function ResumeForm() {
                                                                 </li>
                                                                 <li className="font-bold">
                                                                     Optional: For Remote Access (e.g., from your phone)
-                                                                    <p className="font-normal mt-1">If you need to connect from another device, you can use a tool like ngrok. Install it, then run this specific command in a new terminal:</p>
+                                                                    <p className="font-normal mt-1">If you need to connect from another device on a different network, you must use a tunneling tool like ngrok. Install it, then run this specific command in a new terminal:</p>
                                                                     <code className="my-1 block bg-muted p-1.5 rounded-md text-foreground">ngrok http --host-header=rewrite localhost:11434</code>
-                                                                    <p className="font-normal mt-1">Then, use the `https://...ngrok-free.app` URL provided by ngrok in the input field.</p>
+                                                                    <p className="font-normal mt-1">Then, use the `https://...ngrok-free.app` URL provided by ngrok in the input field. Using this exact command is required.</p>
                                                                 </li>
                                                             </ol>
                                                         </div>
