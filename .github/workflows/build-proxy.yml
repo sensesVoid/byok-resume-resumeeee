@@ -1,5 +1,6 @@
-# This GitHub Actions workflow automates the process of building the Ollama proxy executable.
-name: Build Ollama Proxy Executable
+# This GitHub Actions workflow automates the process of building the Ollama proxy executable
+# and publishing it to a GitHub Release.
+name: Build and Release Ollama Proxy
 
 on:
   # Run this workflow whenever a change is pushed to the main branch.
@@ -12,8 +13,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
-    name: Build Executables
+  build-and-release:
+    name: Build and Release Executables
     runs-on: ubuntu-latest
 
     steps:
@@ -25,21 +26,32 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18' # Using Node.js v18 for broad compatibility
+          node-version: '18'
 
       # 3. Install 'pkg', the tool that creates the executables
       - name: Install pkg
         run: npm install -g pkg
 
       # 4. Run pkg to build the executables for Windows, macOS, and Linux
-      # The output files will be named `ollama-proxy-win.exe`, `ollama-proxy-macos`, etc.
       - name: Build executables with pkg
         run: pkg ollama-proxy.js --targets node18-win-x64,node18-macos-x64,node18-linux-x64 --output dist/ollama-proxy
 
-      # 5. Upload the 'dist' directory containing the executables as a build artifact
-      # This allows you to download them from the completed workflow run.
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
+      # 5. Create or update a GitHub Release with the executables
+      - name: Create or Update GitHub Release
+        uses: softprops/action-gh-release@v2
         with:
-          name: ollama-proxy-executables
-          path: dist/
+          # This token is provided by GitHub Actions. No secret needed.
+          token: ${{ secrets.GITHUB_TOKEN }}
+          # The tag for this release. Using 'latest' will overwrite the previous 'latest' release.
+          tag_name: latest
+          # The name of the release in the GitHub UI.
+          name: Latest Ollama Proxy
+          # A description for the release.
+          body: |
+            This release contains the latest compiled executables for the Ollama proxy.
+            Download the appropriate file for your operating system.
+          # The files to upload to the release.
+          files: |
+            dist/ollama-proxy-win.exe
+            dist/ollama-proxy-macos
+            dist/ollama-proxy-linux
