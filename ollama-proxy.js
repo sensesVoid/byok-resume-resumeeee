@@ -8,16 +8,15 @@ const OLLAMA_PORT = 11434;
 const PROXY_PORT = 3000;
 
 const server = http.createServer((client_req, client_res) => {
-  const headers = {
+  const corsHeaders = {
     'Access-Control-Allow-Origin': '*', // Allow all origins for simplicity in a local proxy
     'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-    'Content-Type': 'application/json'
   };
 
   // Handle CORS pre-flight requests
   if (client_req.method === 'OPTIONS') {
-    client_res.writeHead(204, headers);
+    client_res.writeHead(204, corsHeaders);
     client_res.end();
     return;
   }
@@ -36,8 +35,16 @@ const server = http.createServer((client_req, client_res) => {
 
   // Create a proxy request to the Ollama server
   const proxy = http.request(options, (ollama_res) => {
+    // IMPORTANT FIX: Combine Ollama's headers with our CORS headers.
+    // This ensures the browser receives the correct CORS policy on the actual response.
+    const finalHeaders = {
+      ...ollama_res.headers,
+      ...corsHeaders
+    };
+    
     // Write headers from Ollama's response to our client response
-    client_res.writeHead(ollama_res.statusCode, { ...headers, ...ollama_res.headers });
+    client_res.writeHead(ollama_res.statusCode, finalHeaders);
+    
     // Pipe the data from Ollama's response to our client response
     ollama_res.pipe(client_res, {
       end: true,
@@ -47,7 +54,7 @@ const server = http.createServer((client_req, client_res) => {
   // Handle errors on the proxy request
   proxy.on('error', (e) => {
     console.error(`[Proxy Error] Could not connect to Ollama server: ${e.message}`);
-    client_res.writeHead(502, headers);
+    client_res.writeHead(502, { ...corsHeaders, 'Content-Type': 'application/json' });
     client_res.end(JSON.stringify({
         error: 'Proxy Error: Could not connect to the Ollama server. Please ensure Ollama is running.'
     }));
