@@ -27,62 +27,68 @@ import {
 } from '@/ai/flows/validate-api-key';
 import type { AiConfig } from '@/lib/schemas';
 
+// Higher-order function to handle errors for AI actions
+async function handleAction<T, R>(
+  actionFn: (input: T) => Promise<R>,
+  input: T,
+  errorMessage: string
+): Promise<R> {
+  try {
+    return await actionFn(input);
+  } catch (error) {
+    console.error(`Error in ${actionFn.name}:`, error);
+    throw new Error((error as Error).message || errorMessage);
+  }
+}
 
 export async function calculateAtsScoreAction(
   input: CalculateAtsScoreInput
 ): Promise<CalculateAtsScoreOutput> {
-  try {
-    return await calculateAtsScore(input);
-  } catch (error) {
-    console.error('Error calculating ATS score:', error);
-    throw new Error((error as Error).message || 'Failed to calculate ATS score. Please try again.');
-  }
+  return handleAction(
+    calculateAtsScore,
+    input,
+    'Failed to calculate ATS score. Please try again.'
+  );
 }
 
 export async function generateCoverLetterAction(
   input: GenerateCoverLetterInput
 ): Promise<GenerateCoverLetterOutput> {
-  try {
-    return await generateCoverLetter(input);
-  } catch (error) {
-    console.error('Error generating cover letter:', error);
-    throw new Error((error as Error).message || 'Failed to generate cover letter. Please try again.');
-  }
+  return handleAction(
+    generateCoverLetter,
+    input,
+    'Failed to generate cover letter. Please try again.'
+  );
 }
 
 export async function improveContentAction(
   input: ImproveResumeContentInput
 ): Promise<ImproveResumeContentOutput> {
-  try {
-    return await improveResumeContent(input);
-  } catch (error) {
-    console.error('Error improving content:', error);
-    throw new Error((error as Error).message || 'Failed to get suggestions. Please try again.');
-  }
+  return handleAction(
+    improveResumeContent,
+    input,
+    'Failed to get suggestions. Please try again.'
+  );
 }
 
 export async function parseResumeAction(
   input: ParseResumeInput
 ): Promise<ParseResumeOutput> {
-  try {
-    return await parseResume(input);
-  } catch (error) {
-    console.error('Error parsing resume:', error);
-    throw new Error(
-      (error as Error).message || 'Failed to parse resume. Please check the file and try again.'
-    );
-  }
+  return handleAction(
+    parseResume,
+    input,
+    'Failed to parse resume. Please check the file and try again.'
+  );
 }
 
 export async function validateApiKeyAction(
   aiConfig: AiConfig
 ): Promise<ValidateApiKeyOutput> {
-  try {
-    return await validateApiKey(aiConfig);
-  } catch (error) {
-    console.error('Error validating API key:', error);
-    throw new Error((error as Error).message || 'An unexpected error occurred during API key validation.');
-  }
+  return handleAction(
+    validateApiKey,
+    aiConfig,
+    'An unexpected error occurred during API key validation.'
+  );
 }
 
 export async function generateDocxAction(htmlString: string): Promise<string> {
