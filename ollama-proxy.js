@@ -69,8 +69,10 @@ const server = http.createServer((client_req, client_res) => {
 // Start the proxy server
 server.listen(PROXY_PORT, () => {
   console.log(`[Ollama Proxy] Started successfully.`);
-  console.log(`Listening for requests from the web app on http://localhost:${PROXY_PORT}`);
-  console.log(`Forwarding requests to Ollama server at http://${OLLAMA_HOST}:${OLLAMA_PORT}`);
+  console.log(); // Added for spacing
+  console.log(`- Listening for requests on http://localhost:${PROXY_PORT}`);
+  console.log(`- Forwarding to Ollama at   http://${OLLAMA_HOST}:${OLLAMA_PORT}`);
+  console.log(); // Added for spacing
   console.log('You can now use Ollama features in the web app. Keep this window open.');
 });
 
