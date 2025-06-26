@@ -8,7 +8,8 @@ on:
     branches:
       - main
     paths:
-      - 'ollama-proxy.js' # Only run if the proxy script itself changes
+      - 'ollama-proxy.js'
+      - '.github/workflows/build-proxy.yml'
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
