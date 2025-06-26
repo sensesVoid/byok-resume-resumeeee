@@ -18,7 +18,7 @@ const ParsedExperienceSchema = z.object({
   jobTitle: z.string().describe('The job title.'),
   company: z.string().describe('The company name.'),
   location: z.string().optional().describe('The location of the company.'),
-  startDate: z.string().describe('The start date of the employment.'),
+  startDate: z.string().optional().describe('The start date of the employment.'),
   endDate: z.string().optional().describe("The end date of the employment (or 'Present')."),
   description: z.string().optional().describe('A description of the responsibilities and achievements, with newlines for bullet points.'),
 });
@@ -27,7 +27,7 @@ const ParsedEducationSchema = z.object({
   degree: z.string().describe('The degree or certificate obtained.'),
   institution: z.string().describe('The name of the institution.'),
   location: z.string().optional().describe('The location of the institution.'),
-  graduationDate: z.string().describe('The graduation date.'),
+  graduationDate: z.string().optional().describe('The graduation date.'),
   description: z.string().optional().describe('Any additional details, like GPA or honors.'),
 });
 
