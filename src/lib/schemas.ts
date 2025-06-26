@@ -176,9 +176,9 @@ export const defaultResumeData: ResumeSchema = {
   jobDescription: '',
   coverLetter: '',
   aiConfig: {
-    provider: 'anthropic', // Switched to Anthropic
+    provider: 'anthropic',
     apiKey: '',
-    model: 'claude-3-haiku-20240307', // Set Anthropic default model
+    model: '',
   },
   aiPowered: false,
   donationConfig: {

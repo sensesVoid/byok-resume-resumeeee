@@ -35,6 +35,14 @@ const fontStyles = [
   { value: 'playfair-display', label: 'Playfair Display (Serif)' },
 ];
 
+const modelPlaceholders: { [key: string]: string } = {
+  anthropic: 'e.g., claude-3-haiku-20240307',
+  google: 'e.g., gemini-1.5-flash-latest',
+  openai: 'e.g., gpt-4o',
+  openrouter: 'e.g., openrouter/auto',
+};
+
+
 interface ResumeFormProps {
   runAiTask: <T>(
     taskFn: () => Promise<T>
@@ -289,7 +297,7 @@ export function ResumeForm({ runAiTask }: ResumeFormProps) {
                                         </PopoverContent>
                                     </Popover>
                                 </div>
-                                <FormControl><Input placeholder="e.g., claude-3-haiku-20240307" {...field} disabled={aiPowered}/></FormControl>
+                                <FormControl><Input placeholder={modelPlaceholders[aiProvider] || 'Enter a model name'} {...field} disabled={aiPowered}/></FormControl>
                                 <FormDescription>If left blank, a default model will be used.</FormDescription>
                                 <FormMessage />
                                 </FormItem>
