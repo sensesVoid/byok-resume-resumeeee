@@ -14,6 +14,7 @@ import {
   Trash2,
   Brush,
   FileText,
+  Share2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/icons';
@@ -61,6 +62,24 @@ export function AppHeader({
   onDeleteClick,
 }: AppHeaderProps) {
   const { setTheme } = useTheme();
+
+  // Social Share Logic
+  const shareUrl = 'https://resumeeee.app';
+  const shareText =
+    "Building my resume with this free AI-powered resume builder! It has AI content suggestions, ATS scoring, and customizable templates. Check it out!";
+  const shareTitle = 'Resumeeee: The AI-Powered Resume Builder';
+
+  const twitterShareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
+    shareText
+  )}&url=${encodeURIComponent(shareUrl)}`;
+  const linkedinShareUrl = `https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(
+    shareUrl
+  )}&title=${encodeURIComponent(shareTitle)}&summary=${encodeURIComponent(
+    shareText
+  )}`;
+  const facebookShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
+    shareUrl
+  )}`;
 
   return (
     <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center justify-between border-b bg-background/80 px-4 backdrop-blur-sm sm:px-8 print:hidden">
@@ -140,14 +159,57 @@ export function AppHeader({
           </DropdownMenuContent>
         </DropdownMenu>
 
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label="Share App"
+              disabled={isUploading || isCalculatingAts || isSaving}
+            >
+              <Share2 className="h-5 w-5" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem asChild>
+              <a
+                href={twitterShareUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Share on Twitter
+              </a>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <a
+                href={linkedinShareUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Share on LinkedIn
+              </a>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <a
+                href={facebookShareUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Share on Facebook
+              </a>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
         {isDonationEnabled && (
           <Button
             onClick={onDonateClick}
-            variant="outline"
+            variant="ghost"
+            size="icon"
+            aria-label="Donate"
             disabled={isUploading || isCalculatingAts || isSaving}
           >
-            <Gift className="mr-2 h-4 w-4" />
-            <span className="ml-2 hidden sm:inline">Donate</span>
+            <Gift className="h-5 w-5" />
           </Button>
         )}
         <DropdownMenu>
