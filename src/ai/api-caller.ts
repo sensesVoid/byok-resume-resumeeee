@@ -72,13 +72,14 @@ function extractJson(text: string): string | null {
 
 // Universal API caller function that makes direct fetch requests
 export async function callApi({
-  prompt,
+  prompts,
   aiConfig,
 }: {
-  prompt: string;
+  prompts: { system: string; user: string };
   aiConfig: AiConfig;
 }): Promise<string> {
   const { provider, apiKey, model } = aiConfig;
+  const { system, user } = prompts;
 
   if (!apiKey) {
     throw new Error('API Key is missing. Please provide it in the form.');
@@ -97,7 +98,7 @@ export async function callApi({
         model || 'gemini-1.5-flash-latest'
       }:generateContent?key=${apiKey}`;
       payload = {
-        contents: [{ parts: [{ text: prompt }] }],
+        contents: [{ parts: [{ text: `${system}\n\n${user}` }] }],
         generationConfig: {
           response_mime_type: 'application/json',
         },
@@ -109,7 +110,10 @@ export async function callApi({
       headers['Authorization'] = `Bearer ${apiKey}`;
       payload = {
         model: model || 'gpt-4o',
-        messages: [{ role: 'user', content: prompt }],
+        messages: [
+            { role: 'system', content: system },
+            { role: 'user', content: user }
+        ],
         response_format: { type: 'json_object' },
       };
       break;
@@ -121,7 +125,10 @@ export async function callApi({
       headers['X-Title'] = 'Resumeeee';
       payload = {
         model: model || 'openrouter/auto',
-        messages: [{ role: 'user', content: prompt }],
+        messages: [
+            { role: 'system', content: system },
+            { role: 'user', content: user }
+        ],
         response_format: { type: 'json_object' },
       };
       break;
@@ -132,9 +139,9 @@ export async function callApi({
       headers['anthropic-version'] = '2023-06-01';
       payload = {
         model: model || 'claude-3-haiku-20240307',
-        messages: [{ role: 'user', content: prompt }],
-        max_tokens: 4096, // Anthropic requires max_tokens
-        // The instruction to return JSON is included in the prompt itself.
+        system: system,
+        messages: [{ role: 'user', content: user }],
+        max_tokens: 4096,
       };
       break;
 
@@ -171,6 +178,12 @@ export async function callApi({
     if (provider === 'google' && responseData.promptFeedback?.blockReason) {
         const reason = responseData.promptFeedback.blockReason;
         throw new Error(`Request blocked by Google for safety reasons: ${reason}. Please try modifying your content.`);
+    }
+
+    // Anthropic can sometimes return an error even with a 200 OK
+    if (provider === 'anthropic' && responseData.type === 'error') {
+        const reason = responseData.error?.message || 'Unknown error';
+        throw new Error(`Anthropic API Error: ${reason}`);
     }
 
     const text = extractTextFromResponse(responseData, provider);

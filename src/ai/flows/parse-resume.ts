@@ -69,8 +69,8 @@ const ParseResumeInputSchema = z.object({
 });
 export type ParseResumeInput = z.infer<typeof ParseResumeInputSchema>;
 
-function buildPrompt(resumeText: string): string {
-    return `You are an expert resume parser. Your task is to meticulously convert the following resume text into a single, valid JSON object.
+function buildPrompts(resumeText: string): { system: string; user: string } {
+    const system = `You are an expert resume parser. Your task is to meticulously convert the provided resume text into a single, valid JSON object.
 
 **CRITICAL PARSING LOGIC FOR WORK EXPERIENCE:**
 This is the most important rule. You must process each work experience entry independently. A new job entry begins when you see a new Job Title. All responsibilities and bullet points that follow a Job Title belong ONLY to that job, until you encounter the next Job Title.
@@ -120,20 +120,21 @@ It is a critical error to merge descriptions from different jobs. For example, a
   "projects": []
 }
 
-**Resume Text to Parse:**
+Now, provide ONLY the JSON object based on the strict rules and logic above. Pay very close attention to the work experience parsing rule.`;
+
+    const user = `**Resume Text to Parse:**
 ---
 ${resumeText}
----
-
-Now, provide ONLY the JSON object based on the strict rules and logic above. Pay very close attention to the work experience parsing rule.`;
+---`;
+    return { system, user };
 }
 
 
 export async function parseResume(input: ParseResumeInput): Promise<ParseResumeOutput> {
-  const prompt = buildPrompt(input.resumeText);
+  const prompts = buildPrompts(input.resumeText);
 
   try {
-    const jsonString = await callApi({ prompt, aiConfig: input.aiConfig });
+    const jsonString = await callApi({ prompts, aiConfig: input.aiConfig });
     const parsedJson = JSON.parse(jsonString);
     return ParseResumeOutputSchema.parse(parsedJson);
   } catch (error: any) {

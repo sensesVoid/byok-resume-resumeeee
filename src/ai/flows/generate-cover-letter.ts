@@ -24,30 +24,32 @@ export type GenerateCoverLetterOutput = z.infer<
   typeof GenerateCoverLetterOutputSchema
 >;
 
-function buildPrompt(resume: string, jobDescription: string, userName: string): string {
-  return `You are an expert career advisor. Based on the user's resume and the job description, generate a professional and engaging cover letter.
-
-  **Resume:**
-  ${resume}
-  
-  **Job Description:**
-  ${jobDescription}
-  
-  **User Name:**
-  ${userName}
+function buildPrompts(resume: string, jobDescription: string, userName: string): { system: string, user: string } {
+  const system = `You are an expert career advisor. Based on the user's resume and the job description, generate a professional and engaging cover letter.
 
   **CRITICAL INSTRUCTIONS:**
   Your response MUST BE ONLY a single, valid JSON object with one key: "coverLetter". The value must be the full text of the generated cover letter as a single string. Do not include any other text, markdown, or explanations.`;
+  
+  const user = `
+  **User Name:** ${userName}
+
+  **Job Description:**
+  ${jobDescription}
+
+  **User's Resume:**
+  ${resume}`;
+  
+  return { system, user };
 }
 
 
 export async function generateCoverLetter(
   input: GenerateCoverLetterInput
 ): Promise<GenerateCoverLetterOutput> {
-  const prompt = buildPrompt(input.resume, input.jobDescription, input.userName);
+  const prompts = buildPrompts(input.resume, input.jobDescription, input.userName);
 
   try {
-    const responseJsonString = await callApi({ prompt, aiConfig: input.aiConfig });
+    const responseJsonString = await callApi({ prompts, aiConfig: input.aiConfig });
     const parsedJson = JSON.parse(responseJsonString);
     return GenerateCoverLetterOutputSchema.parse(parsedJson);
   } catch (error: any) {

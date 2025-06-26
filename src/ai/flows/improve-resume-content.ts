@@ -32,33 +32,33 @@ export type ImproveResumeContentOutput = z.infer<
 >;
 
 
-function buildPrompt(content: string, fieldType: 'summary' | 'description', jobDescription?: string): string {
-  const basePrompt = `You are an expert resume writer. Your task is to rewrite and improve the provided resume content. Make it more professional, impactful, and concise. Use strong action verbs and quantify achievements where possible.
-
-Original Content:
-${content}`;
-
-  const jobDescPrompt = jobDescription
-    ? `\n\nTailor the rewritten content to this job description:\n${jobDescription}`
-    : '';
-  
+function buildPrompts(content: string, fieldType: 'summary' | 'description', jobDescription?: string): { system: string, user: string } {
   const formatStyle = fieldType === 'summary'
     ? 'The rewritten content should be a single, cohesive paragraph. Do not use bullet points or multiple paragraphs.'
     : 'The rewritten content should be a series of bullet points. Each bullet point should start on a new line with a hyphen and a space (e.g., "- Achieved X...").';
 
-  const formatInstruction = `\n\n**CRITICAL INSTRUCTIONS:**\n${formatStyle}\n\nYour response MUST BE ONLY a single, valid JSON object with one key: "suggestions". The value should be ONLY the rewritten, improved content as a single string. Do not add any extra explanations, introductory phrases, or markdown formatting.`;
+  const system = `You are an expert resume writer. Your task is to rewrite and improve the provided resume content. Make it more professional, impactful, and concise. Use strong action verbs and quantify achievements where possible.
 
-  return basePrompt + jobDescPrompt + formatInstruction;
+  **CRITICAL INSTRUCTIONS:**
+  ${formatStyle}
+
+  Your response MUST BE ONLY a single, valid JSON object with one key: "suggestions". The value should be ONLY the rewritten, improved content as a single string. Do not add any extra explanations, introductory phrases, or markdown formatting.`;
+
+  const user = `Original Content:
+${content}
+${jobDescription ? `\n\nTailor the rewritten content to this job description:\n${jobDescription}` : ''}`;
+
+  return { system, user };
 }
 
 
 export async function improveResumeContent(
   input: ImproveResumeContentInput
 ): Promise<ImproveResumeContentOutput> {
-  const prompt = buildPrompt(input.content, input.fieldType, input.jobDescription);
+  const prompts = buildPrompts(input.content, input.fieldType, input.jobDescription);
 
   try {
-    const responseJsonString = await callApi({ prompt, aiConfig: input.aiConfig });
+    const responseJsonString = await callApi({ prompts, aiConfig: input.aiConfig });
     const parsedJson = JSON.parse(responseJsonString);
     return ImproveResumeContentOutputSchema.parse(parsedJson);
   } catch (error: any) {

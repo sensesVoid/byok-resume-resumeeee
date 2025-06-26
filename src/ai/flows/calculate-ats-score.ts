@@ -51,20 +51,14 @@ export type CalculateAtsScoreOutput = z.infer<
   typeof CalculateAtsScoreOutputSchema
 >;
 
-function buildPrompt(
+function buildPrompts(
   documentText: string,
   jobDescription: string,
   documentType: 'resume' | 'cover-letter'
-): string {
+): { system: string; user: string } {
   const documentName = documentType === 'resume' ? 'Resume' : 'Cover Letter';
-  return `You are an advanced Applicant Tracking System (ATS) simulator. Your task is to analyze the provided ${documentName.toLowerCase()} against the given job description and provide a detailed evaluation.
+  const system = `You are an advanced Applicant Tracking System (ATS) simulator. Your task is to analyze the provided ${documentName.toLowerCase()} against the given job description and provide a detailed evaluation.
 
-  **Job Description:**
-  ${jobDescription}
-
-  **${documentName} Text:**
-  ${documentText}
-  
   **CRITICAL INSTRUCTIONS:**
   Your response MUST BE ONLY a single, valid JSON object with the following keys: "score", "keywordAnalysis", "formattingFeedback", "missingSkills".
   - "score": A number from 0 to 100.
@@ -73,19 +67,29 @@ function buildPrompt(
   - "missingSkills": An array of strings listing missing skills.
   
   Do not include any other text, markdown, or explanations before or after the JSON object.`;
+  
+  const user = `
+  **Job Description:**
+  ${jobDescription}
+
+  **${documentName} Text:**
+  ${documentText}`;
+  
+  return { system, user };
 }
+
 
 export async function calculateAtsScore(
   input: CalculateAtsScoreInput
 ): Promise<CalculateAtsScoreOutput> {
-  const prompt = buildPrompt(
+  const prompts = buildPrompts(
     input.documentText,
     input.jobDescription,
     input.documentType
   );
   
   try {
-    const responseJsonString = await callApi({ prompt, aiConfig: input.aiConfig });
+    const responseJsonString = await callApi({ prompts, aiConfig: input.aiConfig });
     const parsedJson = JSON.parse(responseJsonString);
     return CalculateAtsScoreOutputSchema.parse(parsedJson);
   } catch (error: any) {
