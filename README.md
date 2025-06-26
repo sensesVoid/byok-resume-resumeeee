@@ -1,3 +1,4 @@
+
 # Resumeeee: Your AI-Powered Resume Builder
 
 Hello there! I built Resumeeee with one simple goal: to create a powerful, modern, and completely free tool to help people like you build professional resumes and cover letters without the usual hassle. Job hunting is stressful enough, and I believe everyone deserves access to high-quality tools without hitting a paywall or worrying about their data being sold.
@@ -25,7 +26,7 @@ Resumeeee saves all your progress automatically to your browser's **local storag
 
 ### Bring Your Own AI Key
 
-To keep this tool free and accessible, I've integrated it with leading AI providers like Google (Gemini), OpenAI, and OpenRouter. Instead of charging you a subscription, you can use your own API key.
+To keep this tool free and accessible, I've integrated it with leading AI providers like Google (Gemini), OpenAI, Anthropic, and OpenRouter. Instead of charging you a subscription, you can use your own API key.
 
 -   **Why?** This gives you full control over your usage and data. Your API calls go directly from your browser to the provider you choose.
 -   **Is it secure?** Absolutely. Your API key is also stored only in your browser's local storage and is never sent to or stored on any server that I control.

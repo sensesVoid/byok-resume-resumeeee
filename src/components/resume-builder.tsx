@@ -163,7 +163,7 @@ export function ResumeBuilder() {
       return null;
     }
 
-    if (aiConfig.provider !== 'ollama' && !aiConfig.apiKey) {
+    if (!aiConfig.apiKey) {
       toast({
         variant: 'destructive',
         title: 'API Key Missing',

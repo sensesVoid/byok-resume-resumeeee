@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -61,7 +62,7 @@ export function AboutModal({ isOpen, onOpenChange }: AboutModalProps) {
             <AccordionContent className="space-y-2 text-sm">
               <p>
                 This application integrates with powerful third-party AI models
-                from providers like Google and OpenAI to offer features like
+                from providers like Google, OpenAI, and Anthropic to offer features like
                 content improvement and resume parsing. These services require
                 an API key for authentication and to manage usage.
               </p>
@@ -82,7 +83,7 @@ export function AboutModal({ isOpen, onOpenChange }: AboutModalProps) {
                 </span>{' '}
                 When you use an AI feature, your browser sends the necessary
                 data directly to the AI provider you select (e.g., Google,
-                OpenAI).
+                OpenAI, Anthropic).
               </p>
               <p>
                 Your information remains on your machine and under your
