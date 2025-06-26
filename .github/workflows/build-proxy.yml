@@ -33,7 +33,12 @@ jobs:
 
       # 4. Run pkg to build the executables for Windows, macOS, and Linux
       - name: Build executables with pkg
-        run: pkg ollama-proxy.js --targets node18-win-x64,node18-macos-x64,node18-linux-x64 --output dist/ollama-proxy
+        run: |
+          mkdir -p dist
+          pkg ollama-proxy.js --targets node18-win-x64 --output dist/ollama-proxy-win.exe
+          pkg ollama-proxy.js --targets node18-macos-x64 --output dist/ollama-proxy-macos
+          pkg ollama-proxy.js --targets node18-linux-x64 --output dist/ollama-proxy-linux
+          chmod +x dist/ollama-proxy-macos dist/ollama-proxy-linux
 
       # 5. Create or update a GitHub Release with the executables
       - name: Create or Update GitHub Release
