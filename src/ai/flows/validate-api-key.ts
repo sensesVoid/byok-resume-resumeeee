@@ -14,7 +14,7 @@ export type ValidateApiKeyOutput = z.infer<typeof ValidateApiKeyOutputSchema>;
 export async function validateApiKey(
   aiConfig: AiConfig
 ): Promise<ValidateApiKeyOutput> {
-  const { provider, apiKey, ollamaHost } = aiConfig;
+  const { provider, apiKey } = aiConfig;
 
   if (provider !== 'ollama' && !apiKey) {
     return { isValid: false, error: 'API Key is missing.' };
@@ -44,9 +44,9 @@ export async function validateApiKey(
         break;
       
       case 'ollama': {
-        const host = (ollamaHost || 'http://localhost:11434').replace(/\/$/, '');
-        // Hitting the /api/tags endpoint is a more reliable way to check
-        // if the Ollama server is running and responsive than hitting the root.
+        // For Ollama, we check the proxy, which in turn checks the Ollama server.
+        // Hitting the /api/tags endpoint is a reliable way to check if both are running.
+        const host = 'http://localhost:3000';
         url = `${host}/api/tags`;
         break;
       }
@@ -79,7 +79,7 @@ export async function validateApiKey(
     console.error(`API validation failed for ${provider}:`, error);
     let friendlyError = 'Failed to connect to the API provider. Please check your network connection.';
     if (provider === 'ollama') {
-      friendlyError = `Failed to connect to the Ollama host at ${aiConfig.ollamaHost || 'http://localhost:11434'}. Please ensure Ollama is running and you have configured CORS correctly if connecting from a deployed app.`;
+      friendlyError = `Failed to connect to the Ollama proxy at http://localhost:3000. Please ensure the proxy script is running and that your Ollama server is also running.`;
     }
     return { isValid: false, error: friendlyError };
   }

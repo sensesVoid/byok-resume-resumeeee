@@ -11,7 +11,7 @@ function extractTextFromResponse(
   if (provider === 'google') {
     return responseData.candidates?.[0]?.content?.parts?.[0]?.text ?? null;
   }
-  // All others use the same OpenAI-compatible format
+  // All others use the same OpenAI-compatible format, including Ollama via the proxy
   if (provider === 'openai' || provider === 'openrouter' || provider === 'ollama') {
     return responseData.choices?.[0]?.message?.content ?? null;
   }
@@ -75,7 +75,7 @@ export async function callApi({
   prompt: string;
   aiConfig: AiConfig;
 }): Promise<string> {
-  const { provider, apiKey, model, ollamaHost } = aiConfig;
+  const { provider, apiKey, model } = aiConfig;
 
   if (provider !== 'ollama' && !apiKey) {
     throw new Error('API Key is missing. Please provide it in the form.');
@@ -124,7 +124,8 @@ export async function callApi({
       break;
     
     case 'ollama': {
-      const host = (ollamaHost || 'http://localhost:11434').replace(/\/$/, '');
+      // Use the local proxy which forwards requests to the user's Ollama instance.
+      const host = 'http://localhost:3000';
       url = `${host}/v1/chat/completions`;
       payload = {
         model: model || 'llama3', // This model must be pulled locally
@@ -189,8 +190,8 @@ export async function callApi({
   } catch (error: any) {
     console.error(`API call failed for ${provider}:`, error);
     if (error.message.includes('Failed to fetch')) {
-        const hostInfo = provider === 'ollama' ? ` at ${aiConfig.ollamaHost || 'http://localhost:11434'}` : '';
-        throw new Error(`The AI provider could not be reached. Please check your network connection and CORS settings. If using Ollama, ensure it is running and accessible${hostInfo}.`);
+        const hostInfo = provider === 'ollama' ? ` at http://localhost:3000. Is your local proxy running?` : '';
+        throw new Error(`The AI provider could not be reached. Please check your network connection and CORS settings.${hostInfo}`);
     }
     // Re-throw the specific error we created or a generic one
     throw new Error(error.message || 'An unexpected error occurred during the API call.');

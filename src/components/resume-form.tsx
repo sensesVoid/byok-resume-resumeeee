@@ -114,7 +114,7 @@ export function ResumeForm({ runAiTask }: ResumeFormProps) {
       case 'ollama':
         return (
           <div>
-            <p>Ollama runs locally and does not require an API key.</p>
+            <p>Ollama runs locally and does not require an API key. It connects via a local proxy.</p>
             <a
               href="https://ollama.com/"
               target="_blank"
@@ -198,45 +198,81 @@ export function ResumeForm({ runAiTask }: ResumeFormProps) {
       case 'ollama':
         return (
             <div className="p-2 text-left max-w-md space-y-3">
-                <h4 className="font-bold">Comprehensive Guide to Ollama Models</h4>
+                <h4 className="font-bold">Guide to Using Ollama with a Local Proxy</h4>
                 <p className="text-xs">
-                   Ollama lets you run powerful AI models on your own computer for free. Before using a model, you must download it first. Here’s how:
+                   To securely connect this app to your local Ollama server, you need to run a small "proxy" script on your computer. This avoids all common browser connection issues.
                 </p>
                 <ol className="list-decimal list-inside space-y-3 text-xs">
                     <li>
-                        <strong>Open Your Computer's Terminal</strong>
-                        <p className="pl-4 text-muted-foreground">
-                            - On **macOS**: Search for the "Terminal" app using Spotlight (Cmd+Space).<br />
-                            - On **Windows**: Search for "PowerShell" in the Start Menu.
-                        </p>
+                        <strong>Install Node.js:</strong> If you don't have it, download and install it from{" "}
+                        <a href="https://nodejs.org/" target="_blank" rel="noopener noreferrer" className="text-primary underline">nodejs.org</a>.
                     </li>
                     <li>
-                        <strong>Choose and Download a Model</strong>
-                         <p className="pl-4 text-muted-foreground">
-                            Copy one of the commands below and paste it into your terminal, then press Enter. The first download might take several minutes.
-                        </p>
-                        <div className="pl-4 space-y-2 pt-1">
-                            <p className="font-semibold text-foreground">Recommended General Models:</p>
-                            <code className="block w-full bg-muted p-1.5 rounded-md text-foreground">ollama run llama3</code>
-                            <code className="block w-full bg-muted p-1.5 rounded-md text-foreground">ollama run mistral</code>
-                            
-                            <p className="font-semibold text-foreground pt-2">For Coding Tasks:</p>
-                            <code className="block w-full bg-muted p-1.5 rounded-md text-foreground">ollama run codellama</code>
+                        <strong>Save the Proxy Script:</strong> Create a new file on your computer named <code className="bg-muted px-1 py-0.5 rounded-md">ollama-proxy.js</code> and paste the code below into it.
+                        <ScrollArea className="max-h-40 mt-2">
+                        <pre className="text-xs bg-muted p-2 rounded-md whitespace-pre-wrap break-all">
+                            {`// Save as ollama-proxy.js
+import http from 'http';
 
-                            <p className="font-semibold text-foreground pt-2">Lighter & Faster Models:</p>
-                            <code className="block w-full bg-muted p-1.5 rounded-md text-foreground">ollama run gemma</code>
-                        </div>
+const OLLAMA_HOST = 'localhost';
+const OLLAMA_PORT = 11434;
+const PROXY_PORT = 3000;
+
+const server = http.createServer((client_req, client_res) => {
+    // Set CORS headers
+    client_res.setHeader('Access-Control-Allow-Origin', '*');
+    client_res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    client_res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type,Authorization');
+
+    if (client_req.method === 'OPTIONS') {
+        client_res.writeHead(204);
+        client_res.end();
+        return;
+    }
+
+    const options = {
+        hostname: OLLAMA_HOST,
+        port: OLLAMA_PORT,
+        path: client_req.url,
+        method: client_req.method,
+        headers: {
+            ...client_req.headers,
+            host: \`\${OLLAMA_HOST}:\${OLLAMA_PORT}\`
+        }
+    };
+
+    const proxy = http.request(options, (ollama_res) => {
+        client_res.writeHead(ollama_res.statusCode, ollama_res.headers);
+        ollama_res.pipe(client_res, { end: true });
+    });
+
+    proxy.on('error', (e) => {
+        console.error(\`Proxy request error: \${e.message}\`);
+        client_res.writeHead(500);
+        client_res.end('Proxy error');
+    });
+
+    client_req.pipe(proxy, { end: true });
+});
+
+server.listen(PROXY_PORT, () => {
+    console.log(\`Ollama proxy running on http://localhost:\${PROXY_PORT}\`);
+});`}
+                        </pre>
+                        </ScrollArea>
                     </li>
                     <li>
-                        <strong>Use the Model in This App</strong>
+                        <strong>Run Ollama & the Proxy:</strong>
                          <p className="pl-4 text-muted-foreground">
-                           {'After the download is complete and you see a prompt like `>>> Send a message`, the model is ready. Come back here and type its name (e.g., `llama3`) into the "Model Name" field.'}
+                            First, ensure your Ollama application is running. Then, open your computer's Terminal (or PowerShell on Windows) and run this command in the same folder where you saved the file:
                         </p>
+                        <code className="block w-full bg-muted p-1.5 rounded-md text-foreground mt-1">node ollama-proxy.js</code>
+                        <p className="pl-4 text-muted-foreground">Keep this terminal window open while you use the app.</p>
+                    </li>
+                    <li>
+                        <strong>Ready to Go:</strong> Now you can use Ollama in the app. Just enter a model name you have downloaded (e.g., `llama3`) and click the power button to connect.
                     </li>
                 </ol>
-                <p className="text-xs pt-3 border-t mt-3 border-border/50 text-muted-foreground">
-                    <strong>Pro Tip:</strong> For best results with resume parsing, larger models (like <code className="text-xs">llama3:70b</code> or <code className="text-xs">mixtral</code>) are recommended as they can process more of your document at once, but they require more computer resources.
-                </p>
             </div>
         );
       default:
@@ -410,7 +446,10 @@ export function ResumeForm({ runAiTask }: ResumeFormProps) {
                                 <FormField control={form.control} name="aiConfig.provider" render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>AI Provider</FormLabel>
-                                        <Select onValueChange={field.onChange} defaultValue={field.value} disabled={aiPowered}>
+                                        <Select onValueChange={(value) => {
+                                            field.onChange(value);
+                                            form.setValue('aiConfig.model', ''); // Clear model on provider change
+                                        }} defaultValue={field.value} disabled={aiPowered}>
                                             <FormControl>
                                                 <SelectTrigger>
                                                     <SelectValue placeholder="Select a provider" />
@@ -450,63 +489,6 @@ export function ResumeForm({ runAiTask }: ResumeFormProps) {
                                 )} />
                             )}
                             
-                            {aiProvider === 'ollama' && (
-                                <FormField control={form.control} name="aiConfig.ollamaHost" render={({ field }) => (
-                                    <FormItem>
-                                        <div className="flex items-center gap-2">
-                                            <FormLabel>Ollama Host URL</FormLabel>
-                                            <Popover>
-                                                <PopoverTrigger asChild>
-                                                    <button type="button" aria-label="Ollama setup help" className="cursor-help">
-                                                        <HelpCircle className="h-4 w-4 text-muted-foreground hover:text-foreground" />
-                                                    </button>
-                                                </PopoverTrigger>
-                                                <PopoverContent side="right" className="max-w-md w-screen">
-                                                    <div className="space-y-3 p-2 text-left">
-                                                        <h4 className="font-bold">How to Use Ollama (Local AI)</h4>
-                                                        <p className="text-xs">
-                                                            Ollama lets you run powerful AI models on your own computer, for free and with complete privacy.
-                                                        </p>
-                                                        <ol className="list-decimal list-inside space-y-3 text-xs">
-                                                            <li>
-                                                                <strong>Install Ollama:</strong> Download and install the application from{" "}
-                                                                <a href="https://ollama.com/download" target="_blank" rel="noopener noreferrer" className="text-primary underline">ollama.com/download</a>. Make sure it is running.
-                                                            </li>
-                                                            <li>
-                                                                <strong>For Local Use:</strong> If you are running this app on the same computer as Ollama, use the default URL:
-                                                                <br/>
-                                                                <code className="my-1 block bg-muted p-1.5 rounded-md text-foreground">http://localhost:11434</code>
-                                                            </li>
-                                                            <li className="font-bold">
-                                                                For Deployed App Use (e.g., resumeeee.pro)
-                                                                <p className="font-normal mt-1">To connect this deployed site to your local Ollama, you must securely expose Ollama to the internet.</p>
-                                                                
-                                                                <p className="font-normal mt-2"><strong>Step 1: Start Ollama with Specific Permissions</strong></p>
-                                                                <p className="font-normal mt-1 text-muted-foreground">
-                                                                    This is the most important step. Open your terminal and run the command below. It tells Ollama to accept connections from your deployed website (`resumeeee.pro`) and from ngrok, which is more secure than allowing all connections.
-                                                                </p>
-                                                                <code className="my-1 block bg-muted p-1.5 rounded-md text-foreground">OLLAMA_HOST=0.0.0.0 OLLAMA_ORIGINS='https://resumeeee.pro,https://*.ngrok-free.app' ollama serve</code>
-                                                                <p className="font-normal mt-1 text-muted-foreground">Keep this terminal window open. If you close it, the connection will stop.</p>
-                                                                
-                                                                <p className="font-normal mt-2"><strong>Step 2: Expose Ollama with ngrok</strong></p>
-                                                                <p className="font-normal mt-1 text-muted-foreground">In a <strong>new, separate</strong> terminal window, run this command to create a public URL for Ollama:</p>
-                                                                <code className="my-1 block bg-muted p-1.5 rounded-md text-foreground">ngrok http 11434</code>
-                                                                
-                                                                <p className="font-normal mt-2"><strong>Step 3: Use the ngrok URL Here</strong></p>
-                                                                <p className="font-normal mt-1 text-muted-foreground">Copy the `https://...ngrok-free.app` URL from your ngrok terminal and paste it into the "Ollama Host URL" field in this app.</p>
-                                                            </li>
-                                                        </ol>
-                                                    </div>
-                                                </PopoverContent>
-                                            </Popover>
-                                        </div>
-                                        <FormControl><Input placeholder="http://localhost:11434" {...field} value={field.value ?? ''} disabled={aiPowered} /></FormControl>
-                                        <FormDescription>The URL of your running Ollama server. Visiting this URL in a browser may show a blank page; this is normal.</FormDescription>
-                                        <FormMessage />
-                                    </FormItem>
-                                )} />
-                            )}
-
                             <FormField control={form.control} name="aiConfig.model" render={({ field }) => (
                                 <FormItem>
                                 <div className="flex items-center gap-2">
