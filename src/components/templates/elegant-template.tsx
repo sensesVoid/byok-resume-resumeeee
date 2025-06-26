@@ -3,7 +3,7 @@
 
 import { type ResumeSchema } from '@/lib/schemas';
 import { AtSign, Globe, MapPin, Phone } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, sanitize } from '@/lib/utils';
 import type * as React from 'react';
 
 interface TemplateProps {
@@ -37,7 +37,7 @@ export function ElegantTemplate({ data }: TemplateProps) {
     return (
       <ul className="list-disc space-y-1 pl-5">
         {text.split('\n').map((line, index) => (
-          line.trim() && <li key={index} className="text-sm">{line.replace(/^-/, '').trim()}</li>
+          line.trim() && <li key={index} className="text-sm">{sanitize(line.replace(/^-/, '').trim())}</li>
         ))}
       </ul>
     );
@@ -57,7 +57,7 @@ export function ElegantTemplate({ data }: TemplateProps) {
 
       {summary && (
         <section className="mb-8">
-          <p className="text-center text-sm italic">{summary}</p>
+          <p className="text-center text-sm italic">{sanitize(summary)}</p>
         </section>
       )}
       
@@ -109,7 +109,7 @@ export function ElegantTemplate({ data }: TemplateProps) {
                         <h3 className="text-md font-bold">{edu.degree || 'Degree'}</h3>
                         <p className="text-sm font-semibold">{edu.institution || 'Institution'}</p>
                         <p className="text-xs text-gray-500">{edu.graduationDate}</p>
-                        {edu.description && <p className="mt-1 text-xs italic text-gray-600">{edu.description}</p>}
+                        {edu.description && <p className="mt-1 text-xs italic text-gray-600">{sanitize(edu.description)}</p>}
                         </div>
                     ))}
                     </div>

@@ -3,7 +3,7 @@
 
 import { type ResumeSchema } from '@/lib/schemas';
 import { AtSign, Globe, MapPin, Phone } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, sanitize } from '@/lib/utils';
 import type * as React from 'react';
 
 interface TemplateProps {
@@ -42,7 +42,7 @@ export function AcademicTemplate({ data }: TemplateProps) {
     return (
       <ul className="list-disc space-y-1 pl-5">
         {text.split('\n').map((line, index) => (
-          line.trim() && <li key={index} className="text-sm leading-relaxed">{line.replace(/^-/, '').trim()}</li>
+          line.trim() && <li key={index} className="text-sm leading-relaxed">{sanitize(line.replace(/^-/, '').trim())}</li>
         ))}
       </ul>
     );
@@ -65,7 +65,7 @@ export function AcademicTemplate({ data }: TemplateProps) {
         {summary && (
             <section>
                 <h2 className="text-base font-semibold uppercase tracking-widest border-b pb-1 mb-2" style={headingWithAccentLineStyle}>Research Interests</h2>
-                <p className="text-sm">{summary}</p>
+                <p className="text-sm">{sanitize(summary)}</p>
             </section>
         )}
         
@@ -80,7 +80,7 @@ export function AcademicTemplate({ data }: TemplateProps) {
                     <div className="text-sm font-normal text-gray-500 shrink-0 whitespace-nowrap">{edu.graduationDate}</div>
                   </div>
                    <p className="text-sm">{edu.institution || 'Institution'}{edu.location ? `, ${edu.location}` : ''}</p>
-                  {edu.description && <p className="mt-1 text-xs italic text-gray-600">{edu.description}</p>}
+                  {edu.description && <p className="mt-1 text-xs italic text-gray-600">{sanitize(edu.description)}</p>}
                 </div>
               ))}
             </div>

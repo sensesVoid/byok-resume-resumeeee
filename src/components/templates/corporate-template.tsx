@@ -3,7 +3,7 @@
 
 import { type ResumeSchema } from '@/lib/schemas';
 import { AtSign, Globe, MapPin, Phone } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, sanitize } from '@/lib/utils';
 import type * as React from 'react';
 
 interface TemplateProps {
@@ -54,7 +54,7 @@ export function CorporateTemplate({ data }: TemplateProps) {
             (line, index) =>
               line.trim() && (
                 <li key={index} className="text-sm">
-                  {line.replace(/^-/, '').trim()}
+                  {sanitize(line.replace(/^-/, '').trim())}
                 </li>
               )
           )}
@@ -101,7 +101,7 @@ export function CorporateTemplate({ data }: TemplateProps) {
                   <h3 className="font-semibold text-md">{edu.degree}</h3>
                   <p className="text-sm">{edu.institution}</p>
                   <p className="text-xs text-gray-500">{edu.graduationDate}</p>
-                  {edu.description && <p className="text-xs text-gray-500 italic mt-1">{edu.description}</p>}
+                  {edu.description && <p className="text-xs text-gray-500 italic mt-1">{sanitize(edu.description)}</p>}
                 </div>
               ))}
             </div>
@@ -147,7 +147,7 @@ export function CorporateTemplate({ data }: TemplateProps) {
         {summary && (
           <section>
             <h2 className="text-xl font-bold border-b-2 pb-1 mb-3" style={{...headingStyle, borderColor: accentColor}}>Professional Profile</h2>
-            <p className="text-sm">{summary}</p>
+            <p className="text-sm">{sanitize(summary)}</p>
           </section>
         )}
 

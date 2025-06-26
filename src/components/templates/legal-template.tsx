@@ -3,7 +3,7 @@
 
 import { type ResumeSchema } from '@/lib/schemas';
 import { AtSign, Globe, MapPin, Phone } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, sanitize } from '@/lib/utils';
 import type * as React from 'react';
 
 interface TemplateProps {
@@ -41,7 +41,7 @@ export function LegalTemplate({ data }: TemplateProps) {
     return (
       <ul className="list-disc space-y-1.5 pl-6">
         {text.split('\n').map((line, index) => (
-          line.trim() && <li key={index} className="text-sm leading-normal">{line.replace(/^-/, '').trim()}</li>
+          line.trim() && <li key={index} className="text-sm leading-normal">{sanitize(line.replace(/^-/, '').trim())}</li>
         ))}
       </ul>
     );
@@ -63,7 +63,7 @@ export function LegalTemplate({ data }: TemplateProps) {
       {summary && (
         <section className="mb-6">
           <h2 className="text-sm font-bold uppercase tracking-[0.2em] mb-3" style={headingStyle}>Objective</h2>
-          <p className="text-sm">{summary}</p>
+          <p className="text-sm">{sanitize(summary)}</p>
         </section>
       )}
       
@@ -101,7 +101,7 @@ export function LegalTemplate({ data }: TemplateProps) {
                     <div className="text-sm font-normal shrink-0 whitespace-nowrap">{edu.graduationDate}</div>
                   </div>
                    <p className="text-sm italic">{edu.institution || 'Institution'}{edu.location ? `, ${edu.location}` : ''}</p>
-                  {edu.description && <p className="mt-1 text-xs">{edu.description}</p>}
+                  {edu.description && <p className="mt-1 text-xs">{sanitize(edu.description)}</p>}
                 </div>
               ))}
             </div>

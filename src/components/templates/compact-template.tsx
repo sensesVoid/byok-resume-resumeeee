@@ -3,7 +3,7 @@
 
 import { type ResumeSchema } from '@/lib/schemas';
 import { AtSign, Globe, MapPin, Phone } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, sanitize } from '@/lib/utils';
 import type * as React from 'react';
 
 interface TemplateProps {
@@ -54,7 +54,7 @@ export function CompactTemplate({ data }: TemplateProps) {
             (line, index) =>
               line.trim() && (
                 <li key={index} className="text-xs">
-                  {line.replace(/^-/, '').trim()}
+                  {sanitize(line.replace(/^-/, '').trim())}
                 </li>
               )
           )}
@@ -113,7 +113,7 @@ export function CompactTemplate({ data }: TemplateProps) {
       <div className="space-y-3">
         {summary && (
           <section>
-            <p className="text-xs italic">{summary}</p>
+            <p className="text-xs italic">{sanitize(summary)}</p>
           </section>
         )}
 
@@ -163,7 +163,7 @@ export function CompactTemplate({ data }: TemplateProps) {
                     </div>
                   </div>
                    <p className="text-xs font-medium">{edu.institution || 'Institution'}{edu.location ? ` | ${edu.location}` : ''}</p>
-                   {edu.description && <p className="text-xs italic text-gray-600">{edu.description}</p>}
+                   {edu.description && <p className="text-xs italic text-gray-600">{sanitize(edu.description)}</p>}
                 </div>
               ))}
             </div>

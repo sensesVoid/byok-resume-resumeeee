@@ -3,7 +3,7 @@
 
 import { type ResumeSchema } from '@/lib/schemas';
 import { AtSign, Globe, MapPin, Phone } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, sanitize } from '@/lib/utils';
 import type * as React from 'react';
 
 interface TemplateProps {
@@ -61,7 +61,7 @@ export function TwoToneTemplate({ data }: TemplateProps) {
             (line, index) =>
               line.trim() && (
                 <li key={index} className="text-sm">
-                  {line.replace(/^-/, '').trim()}
+                  {sanitize(line.replace(/^-/, '').trim())}
                 </li>
               )
           )}
@@ -124,7 +124,7 @@ export function TwoToneTemplate({ data }: TemplateProps) {
             <h2 className="text-xl font-bold mb-2" style={headingStyle}>
               Summary
             </h2>
-            <p className="text-sm">{summary}</p>
+            <p className="text-sm">{sanitize(summary)}</p>
           </section>
         )}
 

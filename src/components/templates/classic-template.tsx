@@ -3,7 +3,7 @@
 
 import { type ResumeSchema } from '@/lib/schemas';
 import { AtSign, Globe, MapPin, Phone } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, sanitize } from '@/lib/utils';
 import type * as React from 'react';
 
 interface TemplateProps {
@@ -42,7 +42,7 @@ export function ClassicTemplate({ data }: TemplateProps) {
     return (
       <ul className="list-disc space-y-1 pl-5">
         {text.split('\n').map((line, index) => (
-          line.trim() && <li key={index} className="text-sm">{line.replace(/^-/, '').trim()}</li>
+          line.trim() && <li key={index} className="text-sm">{sanitize(line.replace(/^-/, '').trim())}</li>
         ))}
       </ul>
     );
@@ -63,7 +63,7 @@ export function ClassicTemplate({ data }: TemplateProps) {
       {summary && (
         <section className="mb-6">
           <h2 className="text-sm font-bold uppercase tracking-widest text-center border-b-2 pb-1 mb-2" style={headingWithAccentBorderStyle}>Summary</h2>
-          <p className="text-sm text-center">{summary}</p>
+          <p className="text-sm text-center">{sanitize(summary)}</p>
         </section>
       )}
       
@@ -101,7 +101,7 @@ export function ClassicTemplate({ data }: TemplateProps) {
                    <div className="flex justify-between items-baseline text-sm">
                     <span className="font-semibold">{edu.institution || 'Institution'}{edu.location ? `, ${edu.location}` : ''}</span>
                   </div>
-                  {edu.description && <p className="mt-1 text-xs italic text-gray-600">{edu.description}</p>}
+                  {edu.description && <p className="mt-1 text-xs italic text-gray-600">{sanitize(edu.description)}</p>}
                 </div>
               ))}
             </div>

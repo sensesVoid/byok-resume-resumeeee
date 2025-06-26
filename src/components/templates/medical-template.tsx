@@ -3,7 +3,7 @@
 
 import { type ResumeSchema } from '@/lib/schemas';
 import { AtSign, Globe, MapPin, Phone, Award } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, sanitize } from '@/lib/utils';
 import type * as React from 'react';
 
 interface TemplateProps {
@@ -54,7 +54,7 @@ export function MedicalTemplate({ data }: TemplateProps) {
             (line, index) =>
               line.trim() && (
                 <li key={index} className="text-sm">
-                  {line.replace(/^-/, '').trim()}
+                  {sanitize(line.replace(/^-/, '').trim())}
                 </li>
               )
           )}
@@ -106,7 +106,7 @@ export function MedicalTemplate({ data }: TemplateProps) {
             <h2 className="text-md font-bold uppercase tracking-wider text-gray-600 mb-2" style={headingStyle}>
               Professional Summary
             </h2>
-            <p className="text-sm">{summary}</p>
+            <p className="text-sm">{sanitize(summary)}</p>
           </section>
         )}
 
@@ -156,7 +156,7 @@ export function MedicalTemplate({ data }: TemplateProps) {
                     </div>
                   </div>
                    <p className="font-medium text-sm">{edu.institution || 'Institution'}{edu.location ? `, ${edu.location}` : ''}</p>
-                  {edu.description && <p className="mt-1 text-xs italic text-gray-600">{edu.description}</p>}
+                  {edu.description && <p className="mt-1 text-xs italic text-gray-600">{sanitize(edu.description)}</p>}
                 </div>
               ))}
             </div>

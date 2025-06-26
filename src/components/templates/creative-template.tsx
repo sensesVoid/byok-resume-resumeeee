@@ -3,7 +3,7 @@
 
 import { type ResumeSchema } from '@/lib/schemas';
 import { AtSign, Globe, MapPin, Phone, Briefcase, GraduationCap, Star, KanbanSquare } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, sanitize } from '@/lib/utils';
 import type * as React from 'react';
 
 interface TemplateProps {
@@ -37,7 +37,7 @@ export function CreativeTemplate({ data }: TemplateProps) {
         return (
           <ul className="list-disc space-y-1 pl-4">
             {text.split('\n').map((line, index) => (
-              line.trim() && <li key={index} className="text-sm">{line.replace(/^-/, '').trim()}</li>
+              line.trim() && <li key={index} className="text-sm">{sanitize(line.replace(/^-/, '').trim())}</li>
             ))}
           </ul>
         );
@@ -116,7 +116,7 @@ export function CreativeTemplate({ data }: TemplateProps) {
                 {summary && (
                     <section>
                         <h2 className="text-xl font-bold flex items-center gap-2 mb-4" style={headingStyle}><Star size={20} /> Professional Summary</h2>
-                        <p className="text-sm">{summary}</p>
+                        <p className="text-sm">{sanitize(summary)}</p>
                     </section>
                 )}
 

@@ -3,7 +3,7 @@
 
 import { type ResumeSchema } from '@/lib/schemas';
 import { AtSign, Globe, MapPin, Phone } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, sanitize } from '@/lib/utils';
 import type * as React from 'react';
 
 interface TemplateProps {
@@ -54,7 +54,7 @@ export function MinimalistTemplate({ data }: TemplateProps) {
             (line, index) =>
               line.trim() && (
                 <li key={index} className="text-sm">
-                  {line.replace(/^-/, '').trim()}
+                  {sanitize(line.replace(/^-/, '').trim())}
                 </li>
               )
           )}
@@ -116,7 +116,7 @@ export function MinimalistTemplate({ data }: TemplateProps) {
             <h2 className="text-base font-semibold tracking-widest uppercase text-gray-500 mb-2">
               Summary
             </h2>
-            <p className="text-sm">{summary}</p>
+            <p className="text-sm">{sanitize(summary)}</p>
           </section>
         )}
 
@@ -177,7 +177,7 @@ export function MinimalistTemplate({ data }: TemplateProps) {
                   </div>
                   {edu.description && (
                     <p className="mt-1 text-xs italic text-gray-600">
-                      {edu.description}
+                      {sanitize(edu.description)}
                     </p>
                   )}
                 </div>

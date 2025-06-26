@@ -3,7 +3,7 @@
 
 import { type ResumeSchema } from '@/lib/schemas';
 import { AtSign, Globe, MapPin, Phone, Briefcase, GraduationCap, Star, User, Award, KanbanSquare } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, sanitize } from '@/lib/utils';
 import type * as React from 'react';
 
 interface TemplateProps {
@@ -41,7 +41,7 @@ export function InfographicTemplate({ data }: TemplateProps) {
     return (
       <ul className="list-disc space-y-1 pl-4">
         {text.split('\n').map((line, index) => (
-          line.trim() && <li key={index} className="text-sm">{line.replace(/^-/, '').trim()}</li>
+          line.trim() && <li key={index} className="text-sm">{sanitize(line.replace(/^-/, '').trim())}</li>
         ))}
       </ul>
     );
@@ -66,7 +66,7 @@ export function InfographicTemplate({ data }: TemplateProps) {
         {summary && (
             <section>
                 <h2 className="flex items-center gap-2 text-xl font-bold mb-3" style={headingStyle}><User style={accentTextStyle} /> About Me</h2>
-                <p className="text-sm border-l-4 pl-4" style={{borderColor: accentColor}}>{summary}</p>
+                <p className="text-sm border-l-4 pl-4" style={{borderColor: accentColor}}>{sanitize(summary)}</p>
             </section>
         )}
 
@@ -103,7 +103,7 @@ export function InfographicTemplate({ data }: TemplateProps) {
                     <h3 className="text-lg font-semibold">{edu.degree || 'Degree'}</h3>
                     <p className="text-md font-medium text-gray-600">{edu.institution || 'Institution'}</p>
                     <p className="text-sm text-gray-500">{edu.graduationDate}</p>
-                    {edu.description && <p className="mt-1 text-sm">{edu.description}</p>}
+                    {edu.description && <p className="mt-1 text-sm">{sanitize(edu.description)}</p>}
                     </div>
                 ))}
                 </div>

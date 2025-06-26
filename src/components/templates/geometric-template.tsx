@@ -3,7 +3,7 @@
 
 import { type ResumeSchema } from '@/lib/schemas';
 import { AtSign, Globe, MapPin, Phone } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, sanitize } from '@/lib/utils';
 import type * as React from 'react';
 
 interface TemplateProps {
@@ -44,7 +44,7 @@ export function GeometricTemplate({ data }: TemplateProps) {
               line.trim() && (
                 <li key={index} className="relative pl-4 text-sm">
                     <span className="absolute left-0 top-2 h-1 w-1 bg-current rounded-full" style={headingStyle}></span>
-                    {line.replace(/^-/, '').trim()}
+                    {sanitize(line.replace(/^-/, '').trim())}
                 </li>
               )
             ))}
@@ -70,7 +70,7 @@ export function GeometricTemplate({ data }: TemplateProps) {
             <main className="space-y-8">
                 {summary && (
                     <section>
-                        <p className="text-sm text-center border-y py-4" style={{ borderColor: headingColor }}>{summary}</p>
+                        <p className="text-sm text-center border-y py-4" style={{ borderColor: headingColor }}>{sanitize(summary)}</p>
                     </section>
                 )}
                 
@@ -113,7 +113,7 @@ export function GeometricTemplate({ data }: TemplateProps) {
                         <div className="flex items-baseline justify-between text-md font-medium text-gray-600">
                             <span>{edu.institution || 'Institution'}{edu.location ? `, ${edu.location}`: ''}</span>
                         </div>
-                        {edu.description && <p className="mt-1 text-sm">{edu.description}</p>}
+                        {edu.description && <p className="mt-1 text-sm">{sanitize(edu.description)}</p>}
                         </div>
                     ))}
                     </div>

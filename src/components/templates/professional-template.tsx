@@ -13,7 +13,7 @@ import {
   User,
   KanbanSquare,
 } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, sanitize } from '@/lib/utils';
 import type * as React from 'react';
 
 interface TemplateProps {
@@ -68,7 +68,7 @@ export function ProfessionalTemplate({ data }: TemplateProps) {
             (line, index) =>
               line.trim() && (
                 <li key={index} className="text-sm">
-                  {line.replace(/^-/, '').trim()}
+                  {sanitize(line.replace(/^-/, '').trim())}
                 </li>
               )
           )}
@@ -183,7 +183,7 @@ export function ProfessionalTemplate({ data }: TemplateProps) {
             <h2 className="text-xl font-bold flex items-center gap-2 mb-2" style={headingStyle}>
               <User size={20} /> Professional Summary
             </h2>
-            <p className="text-sm">{summary}</p>
+            <p className="text-sm">{sanitize(summary)}</p>
           </section>
         )}
 
