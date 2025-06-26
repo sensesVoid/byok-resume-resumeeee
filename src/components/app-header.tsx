@@ -1,4 +1,3 @@
-
 'use client';
 
 import {
@@ -66,7 +65,7 @@ export function AppHeader({
   // Social Share Logic
   const shareUrl = 'https://resumeeee.app';
   const shareText =
-    "Building my resume with this free AI-powered resume builder! It has AI content suggestions, ATS scoring, and customizable templates. Check it out!";
+    "Just created my professional resume with Resumeeee! It’s an amazing free tool with AI suggestions, ATS scoring, and sleek templates. Highly recommend it if you're on the job hunt. Check it out! #ResumeBuilder #AI #JobSearch #Career";
   const shareTitle = 'Resumeeee: The AI-Powered Resume Builder';
 
   const xShareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
