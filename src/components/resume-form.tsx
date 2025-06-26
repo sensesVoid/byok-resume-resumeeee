@@ -213,7 +213,7 @@ export function ResumeForm({ runAiTask }: ResumeFormProps) {
                             Go to this app's GitHub repository. Click on the "Actions" tab, select the most recent "Build Ollama Proxy Executable" workflow, and download the correct file for your operating system from the "Artifacts" section (e.g., `ollama-proxy-win.exe` for Windows).
                         </p>
                          <Button asChild variant="link" size="sm" className="p-0 h-auto -mt-1">
-                            <a href="https://github.com/geraldaton/resumeeee/actions" target="_blank" rel="noopener noreferrer">
+                            <a href="./actions" target="_blank" rel="noopener noreferrer">
                                 Go to GitHub Actions
                             </a>
                         </Button>

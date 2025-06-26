@@ -1,3 +1,4 @@
+
 // Save as ollama-proxy.js at the root of your project.
 // This script uses only built-in Node.js modules, so it requires no external dependencies.
 const http = require('http');
@@ -6,28 +7,9 @@ const OLLAMA_HOST = 'localhost';
 const OLLAMA_PORT = 11434;
 const PROXY_PORT = 3000;
 
-// A list of allowed origins. Add your deployed app's URL here.
-const ALLOWED_ORIGINS = [
-  'http://localhost:3001', // Your local dev environment
-  // Add your production and preview URLs here, e.g.:
-  // 'https://resumeeee.app',
-  // 'https://*.vercel.app' 
-];
-
 const server = http.createServer((client_req, client_res) => {
-  const origin = client_req.headers.origin;
-
-  // Simple CORS validation
-  const isAllowed = ALLOWED_ORIGINS.some(allowedOrigin => {
-    if (allowedOrigin.includes('*')) {
-      const regex = new RegExp(`^https?://${allowedOrigin.replace(/\*/g, '[^/]+')}$`);
-      return regex.test(origin);
-    }
-    return origin === allowedOrigin;
-  });
-
   const headers = {
-    'Access-Control-Allow-Origin': isAllowed ? origin : ALLOWED_ORIGINS[0],
+    'Access-Control-Allow-Origin': '*', // Allow all origins for simplicity in a local proxy
     'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type, Authorization',
     'Content-Type': 'application/json'
