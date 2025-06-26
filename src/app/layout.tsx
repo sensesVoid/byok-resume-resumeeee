@@ -29,6 +29,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        <meta name="google-site-verification" content="pYX3Xionuswra4WIaN5iA0zwwjz9XxwCJU6Q8mIPX_M" />
         <meta name="google-adsense-account" content="ca-pub-6611183288979464" />
         <link rel="icon" href="/images/favicon.ico" sizes="any" />
         <script
