@@ -3,7 +3,7 @@
 // This script uses only built-in Node.js modules, so it requires no external dependencies.
 const http = require('http');
 
-const OLLAMA_HOST = 'localhost';
+const OLLAMA_HOST = '127.0.0.1'; // Use the explicit IPv4 loopback address
 const OLLAMA_PORT = 11434;
 const PROXY_PORT = 3000;
 
