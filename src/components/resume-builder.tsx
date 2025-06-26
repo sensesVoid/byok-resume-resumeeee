@@ -392,30 +392,43 @@ export function ResumeBuilder() {
             ...form.getValues().personalInfo, // Keep original info like photo
             ...parsedData.personalInfo,     // Overwrite with parsed text fields
           },
-          experience: parsedData.experience.map((exp) => ({
-            ...exp,
+          experience: (parsedData.experience || []).map((exp) => ({
             id: crypto.randomUUID(),
+            jobTitle: exp.jobTitle || '',
+            company: exp.company || '',
+            location: exp.location || '',
+            startDate: exp.startDate || '',
+            endDate: exp.endDate || '',
+            description: exp.description || '',
           })),
-          education: parsedData.education.map((edu) => ({
-            ...edu,
+          education: (parsedData.education || []).map((edu) => ({
             id: crypto.randomUUID(),
+            degree: edu.degree || '',
+            institution: edu.institution || '',
+            location: edu.location || '',
+            graduationDate: edu.graduationDate || '',
+            description: edu.description || '',
           })),
-          skills: parsedData.skills.map((skill) => ({
-            ...skill,
+          skills: (parsedData.skills || []).map((skill) => ({
             id: crypto.randomUUID(),
+            name: skill.name || '',
           })),
           certifications: (parsedData.certifications || []).map((cert) => ({
-            ...cert,
             id: crypto.randomUUID(),
+            name: cert.name || '',
+            issuer: cert.issuer || '',
+            date: cert.date || '',
           })),
           projects: (parsedData.projects || []).map((proj) => ({
-            ...proj,
             id: crypto.randomUUID(),
+            name: proj.name || '',
+            description: proj.description || '',
+            link: proj.link || '',
           })),
         };
 
         // Only update summary if the parser found one
-        if ('summary' in parsedData) {
+        if ('summary' in parsedData && parsedData.summary) {
           finalData.summary = parsedData.summary;
         }
 

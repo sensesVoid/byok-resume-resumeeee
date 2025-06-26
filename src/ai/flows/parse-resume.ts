@@ -25,7 +25,7 @@ const ParsedExperienceSchema = z.object({
 
 const ParsedEducationSchema = z.object({
   degree: z.string().describe('The degree or certificate obtained.'),
-  institution: z.string().describe('The name of the institution.'),
+  institution: z.string().optional().describe('The name of the institution.'),
   location: z.string().optional().describe('The location of the institution.'),
   graduationDate: z.string().optional().describe('The graduation date.'),
   description: z.string().optional().describe('Any additional details, like GPA or honors.'),
