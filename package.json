@@ -38,7 +38,7 @@
     "firebase": "^11.9.1",
     "html-to-docx": "^1.8.0",
     "html2canvas": "^1.4.1",
-    "isomorphic-dompurify": "^1.13.0",
+    "isomorphic-dompurify": "^2.25.0",
     "jspdf": "^3.0.1",
     "lucide-react": "0.395.0",
     "next": "^14.2.30",
