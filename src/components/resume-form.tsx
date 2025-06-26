@@ -114,14 +114,14 @@ export function ResumeForm({ runAiTask }: ResumeFormProps) {
       case 'ollama':
         return (
           <div>
-            <p>Ollama runs locally and does not require an API key. It connects via a local proxy.</p>
+            <p>Ollama runs locally and connects via a local proxy, so it does not require an API key.</p>
             <a
-              href="https://ollama.com/"
+              href="https://github.com/geraldaton/resumeeee"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-primary underline"
+              className="text-primary underline mt-2 block"
             >
-              Learn more about Ollama
+              See setup guide for instructions.
             </a>
           </div>
         );
@@ -198,79 +198,34 @@ export function ResumeForm({ runAiTask }: ResumeFormProps) {
       case 'ollama':
         return (
             <div className="p-2 text-left max-w-md space-y-3">
-                <h4 className="font-bold">Guide to Using Ollama with a Local Proxy</h4>
+                <h4 className="font-bold">How to Use Ollama (Local AI)</h4>
                 <p className="text-xs">
-                   To securely connect this app to your local Ollama server, you need to run a small "proxy" script on your computer. This avoids all common browser connection issues.
+                   To connect this web app to your local Ollama server, you need to run a small helper application called a "proxy" on your computer. We've made this easy by providing a pre-built executable.
                 </p>
                 <ol className="list-decimal list-inside space-y-3 text-xs">
                     <li>
-                        <strong>Install Node.js:</strong> If you don't have it, download and install it from{" "}
-                        <a href="https://nodejs.org/" target="_blank" rel="noopener noreferrer" className="text-primary underline">nodejs.org</a>.
+                        <strong>Install Ollama:</strong> If you haven't already, download and install it from{" "}
+                        <a href="https://ollama.com/" target="_blank" rel="noopener noreferrer" className="text-primary underline">ollama.com</a>.
                     </li>
                     <li>
-                        <strong>Save the Proxy Script:</strong> Create a new file on your computer named <code className="bg-muted px-1 py-0.5 rounded-md">ollama-proxy.js</code> and paste the code below into it.
-                        <ScrollArea className="max-h-40 mt-2">
-                        <pre className="text-xs bg-muted p-2 rounded-md whitespace-pre-wrap break-all">
-                            {`// Save as ollama-proxy.js
-import http from 'http';
-
-const OLLAMA_HOST = 'localhost';
-const OLLAMA_PORT = 11434;
-const PROXY_PORT = 3000;
-
-const server = http.createServer((client_req, client_res) => {
-    // Set CORS headers
-    client_res.setHeader('Access-Control-Allow-Origin', '*');
-    client_res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-    client_res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type,Authorization');
-
-    if (client_req.method === 'OPTIONS') {
-        client_res.writeHead(204);
-        client_res.end();
-        return;
-    }
-
-    const options = {
-        hostname: OLLAMA_HOST,
-        port: OLLAMA_PORT,
-        path: client_req.url,
-        method: client_req.method,
-        headers: {
-            ...client_req.headers,
-            host: \`\${OLLAMA_HOST}:\${OLLAMA_PORT}\`
-        }
-    };
-
-    const proxy = http.request(options, (ollama_res) => {
-        client_res.writeHead(ollama_res.statusCode, ollama_res.headers);
-        ollama_res.pipe(client_res, { end: true });
-    });
-
-    proxy.on('error', (e) => {
-        console.error(\`Proxy request error: \${e.message}\`);
-        client_res.writeHead(500);
-        client_res.end('Proxy error');
-    });
-
-    client_req.pipe(proxy, { end: true });
-});
-
-server.listen(PROXY_PORT, () => {
-    console.log(\`Ollama proxy running on http://localhost:\${PROXY_PORT}\`);
-});`}
-                        </pre>
-                        </ScrollArea>
+                        <strong>Download the Proxy:</strong>
+                        <p className="pl-4 text-muted-foreground">
+                            Go to this app's GitHub repository. Click on the "Actions" tab, select the most recent "Build Ollama Proxy Executable" workflow, and download the correct file for your operating system from the "Artifacts" section (e.g., `ollama-proxy-win.exe` for Windows).
+                        </p>
+                         <Button asChild variant="link" size="sm" className="p-0 h-auto -mt-1">
+                            <a href="https://github.com/geraldaton/resumeeee/actions" target="_blank" rel="noopener noreferrer">
+                                Go to GitHub Actions
+                            </a>
+                        </Button>
                     </li>
                     <li>
                         <strong>Run Ollama & the Proxy:</strong>
                          <p className="pl-4 text-muted-foreground">
-                            First, ensure your Ollama application is running. Then, open your computer's Terminal (or PowerShell on Windows) and run this command in the same folder where you saved the file:
+                            First, ensure your main Ollama application is running. Then, find the proxy file you downloaded and double-click to run it. A terminal window will open.
                         </p>
-                        <code className="block w-full bg-muted p-1.5 rounded-md text-foreground mt-1">node ollama-proxy.js</code>
-                        <p className="pl-4 text-muted-foreground">Keep this terminal window open while you use the app.</p>
                     </li>
                     <li>
-                        <strong>Ready to Go:</strong> Now you can use Ollama in the app. Just enter a model name you have downloaded (e.g., `llama3`) and click the power button to connect.
+                        <strong>Ready to Go:</strong> Keep the proxy's terminal window open. Now you can use Ollama in the app. Just enter a model name you have downloaded (e.g., `llama3`) and click the power button to connect.
                     </li>
                 </ol>
             </div>
@@ -434,8 +389,8 @@ server.listen(PROXY_PORT, () => {
             </h2>
             <Accordion type="multiple" defaultValue={['ai-tools']} className="w-full">
                 <AccordionItem value="ai-tools">
-                    <AccordionTrigger data-powered={aiPowered}>
-                        <div className="flex items-center"><KeyRound className={cn("mr-3", aiPowered ? "text-primary" : "text-destructive")} /> Power your Agent</div>
+                    <AccordionTrigger>
+                        <div className="flex items-center"><KeyRound className="mr-3 text-primary" /> Power your Agent</div>
                     </AccordionTrigger>
                     <AccordionContent>
                         <div className="pt-4">
@@ -532,8 +487,8 @@ server.listen(PROXY_PORT, () => {
                 </AccordionItem>
 
                 <AccordionItem value="ats-tools">
-                    <AccordionTrigger data-powered={aiPowered}>
-                        <div className="flex items-center"><ScanSearch className={cn("mr-3", aiPowered ? "text-primary" : "text-destructive")} /> ATS & Job Matching</div>
+                    <AccordionTrigger>
+                        <div className="flex items-center"><ScanSearch className="mr-3 text-primary" /> ATS & Job Matching</div>
                     </AccordionTrigger>
                     <AccordionContent>
                         <div className="space-y-4 pt-4">
@@ -550,8 +505,8 @@ server.listen(PROXY_PORT, () => {
                 </AccordionItem>
 
                 <AccordionItem value="cover-letter-generator">
-                    <AccordionTrigger data-powered={aiPowered}>
-                        <div className="flex items-center"><Mail className={cn("mr-3", aiPowered ? "text-primary" : "text-destructive")} /> AI Cover Letter Generator</div>
+                    <AccordionTrigger>
+                        <div className="flex items-center"><Mail className="mr-3 text-primary" /> AI Cover Letter Generator</div>
                     </AccordionTrigger>
                     <AccordionContent>
                         <div className="space-y-4 pt-4">

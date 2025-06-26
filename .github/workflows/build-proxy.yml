@@ -1,0 +1,45 @@
+# This GitHub Actions workflow automates the process of building the Ollama proxy executable.
+name: Build Ollama Proxy Executable
+
+on:
+  # Run this workflow whenever a change is pushed to the main branch.
+  push:
+    branches:
+      - main
+    paths:
+      - 'ollama-proxy.js' # Only run if the proxy script itself changes
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build Executables
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Check out the repository's code
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Set up Node.js environment
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18' # Using Node.js v18 for broad compatibility
+
+      # 3. Install 'pkg', the tool that creates the executables
+      - name: Install pkg
+        run: npm install -g pkg
+
+      # 4. Run pkg to build the executables for Windows, macOS, and Linux
+      # The output files will be named `ollama-proxy-win.exe`, `ollama-proxy-macos`, etc.
+      - name: Build executables with pkg
+        run: pkg ollama-proxy.js --targets node18-win-x64,node18-macos-x64,node18-linux-x64 --output dist/ollama-proxy
+
+      # 5. Upload the 'dist' directory containing the executables as a build artifact
+      # This allows you to download them from the completed workflow run.
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ollama-proxy-executables
+          path: dist/
