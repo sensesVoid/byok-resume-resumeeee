@@ -69,7 +69,7 @@ export function AppHeader({
     "Building my resume with this free AI-powered resume builder! It has AI content suggestions, ATS scoring, and customizable templates. Check it out!";
   const shareTitle = 'Resumeeee: The AI-Powered Resume Builder';
 
-  const twitterShareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
+  const xShareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
     shareText
   )}&url=${encodeURIComponent(shareUrl)}`;
   const linkedinShareUrl = `https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(
@@ -173,11 +173,11 @@ export function AppHeader({
           <DropdownMenuContent align="end">
             <DropdownMenuItem asChild>
               <a
-                href={twitterShareUrl}
+                href={xShareUrl}
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                Share on Twitter
+                Share on X
               </a>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
