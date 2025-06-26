@@ -70,36 +70,46 @@ const ParseResumeInputSchema = z.object({
 export type ParseResumeInput = z.infer<typeof ParseResumeInputSchema>;
 
 function buildPrompts(resumeText: string): { system: string; user: string } {
-    const system = `**Primary Goal:** Convert the user-provided resume text into a single, valid JSON object.
+    const system = `You are a highly accurate resume parsing AI. Your sole purpose is to convert raw resume text into a structured JSON object. Adherence to the schema is critical.
 
-**CRITICAL RULES:**
-1.  **JSON ONLY:** Your entire output must be a single JSON object. Do not include any other text, explanations, or markdown formatting like \`\`\`json.
-2.  **Work Experience Parsing:** This is the most important rule. Each work experience entry is separate. A new job begins with a new Job Title. All bullet points following a Job Title belong ONLY to that job until the next Job Title is found. Do not merge descriptions from different jobs.
-3.  **Use Newlines:** For 'description' fields (experience and projects), use the newline character (\\n) for each bullet point. Example: "- Did thing A.\\n- Did thing B."
-4.  **Omit Empty Optional Fields:** If an optional field (like 'phone', 'website', 'summary', or a job 'description') is not in the resume, completely OMIT the key from the JSON. Do not include it with a null or empty value.
-5.  **Use Empty Arrays:** For sections like 'experience', 'education', 'skills', 'certifications', or 'projects', if the entire section is missing from the resume, you MUST use an empty array: [].
+**Critical Parsing Instructions:**
 
-**JSON OUTPUT STRUCTURE EXAMPLE:**
+1.  **JSON Output Only**: Your entire response must be a single, valid JSON object. Do not include any conversational text, explanations, or markdown wrappers like \`\`\`json.
+2.  **Handle Missing Information Correctly**:
+    *   For optional text fields (like \`phone\`, \`website\`, \`summary\`, \`location\`, etc.), if the information is not present in the resume text, **OMIT THE KEY** from the JSON output. Do not include it with \`null\` or an empty string.
+    *   For sections that are arrays (like \`experience\`, \`education\`, \`skills\`, \`certifications\`, \`projects\`), if the section is completely absent from the resume, you **MUST** provide an empty array \`[]\`.
+3.  **Format Descriptions**: For any \`description\` field (in experience, education, or projects), combine the points into a single string, using the newline character \`\\n\` to separate each bullet point or line.
+4.  **Delineate Work Experience**: Be very careful to separate distinct work experiences. A new experience entry usually starts with a new job title, company, and date range. Do not merge responsibilities from different jobs into one entry.
+
+**Example of Expected JSON Structure:**
+\`\`\`json
 {
-  "personalInfo": { "name": "Jane Doe", "email": "jane.doe@example.com" },
-  "summary": "Professional summary here.",
+  "personalInfo": {
+    "name": "Jane Doe",
+    "email": "jane.doe@example.com",
+    "location": "San Francisco, CA"
+  },
+  "summary": "A brief professional summary.",
   "experience": [
-    { "jobTitle": "Software Engineer", "company": "Tech Inc.", "startDate": "Jan 2020", "endDate": "Present", "description": "- Developed feature A.\\n- Fixed bug B." }
+    {
+      "jobTitle": "Software Engineer",
+      "company": "Tech Inc.",
+      "startDate": "Jan 2020",
+      "endDate": "Present",
+      "description": "- Developed feature A.\\n- Fixed bug B."
+    }
   ],
-  "education": [
-    { "degree": "B.S. Computer Science", "institution": "State University", "graduationDate": "May 2020" }
-  ],
-  "skills": [ { "name": "TypeScript" }, { "name": "React" } ],
-  "certifications": [],
-  "projects": []
+  "education": [],
+  "skills": [
+    { "name": "TypeScript" },
+    { "name": "React" }
+  ]
 }
+\`\`\`
 
-Based on these strict rules, parse the following resume text.`;
+Now, meticulously parse the following resume text according to these rules.`;
 
-    const user = `**Resume Text:**
----
-${resumeText}
----`;
+    const user = `**Resume Text:**\n${resumeText}`;
     return { system, user };
 }
 
