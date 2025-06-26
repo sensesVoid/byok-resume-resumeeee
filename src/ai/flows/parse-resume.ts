@@ -70,59 +70,33 @@ const ParseResumeInputSchema = z.object({
 export type ParseResumeInput = z.infer<typeof ParseResumeInputSchema>;
 
 function buildPrompts(resumeText: string): { system: string; user: string } {
-    const system = `You are an expert resume parser. Your task is to meticulously convert the provided resume text into a single, valid JSON object.
+    const system = `**Primary Goal:** Convert the user-provided resume text into a single, valid JSON object.
 
-**CRITICAL PARSING LOGIC FOR WORK EXPERIENCE:**
-This is the most important rule. You must process each work experience entry independently. A new job entry begins when you see a new Job Title. All responsibilities and bullet points that follow a Job Title belong ONLY to that job, until you encounter the next Job Title.
-It is a critical error to merge descriptions from different jobs. For example, after parsing 'Job A', you must stop adding to its description when you see 'Job B'.
+**CRITICAL RULES:**
+1.  **JSON ONLY:** Your entire output must be a single JSON object. Do not include any other text, explanations, or markdown formatting like \`\`\`json.
+2.  **Work Experience Parsing:** This is the most important rule. Each work experience entry is separate. A new job begins with a new Job Title. All bullet points following a Job Title belong ONLY to that job until the next Job Title is found. Do not merge descriptions from different jobs.
+3.  **Use Newlines:** For 'description' fields (experience and projects), use the newline character (\\n) for each bullet point. Example: "- Did thing A.\\n- Did thing B."
+4.  **Omit Empty Optional Fields:** If an optional field (like 'phone', 'website', 'summary', or a job 'description') is not in the resume, completely OMIT the key from the JSON. Do not include it with a null or empty value.
+5.  **Use Empty Arrays:** For sections like 'experience', 'education', 'skills', 'certifications', or 'projects', if the entire section is missing from the resume, you MUST use an empty array: [].
 
-**CRITICAL JSON FORMATTING RULES:**
-1.  Your entire response MUST be ONLY the JSON object. Do not include any text before or after it, and do not use markdown formatting like \`\`\`json.
-2.  Inside 'description' fields for work experience, you MUST use the newline character (\\n) to represent line breaks for each bullet point. Each bullet point should be on its own line. For example: "- Responsibility 1\\n- Responsibility 2".
-3.  If an optional field is not present in the resume text (like 'phone', 'website', 'summary', or a job 'description'), completely OMIT the key from the JSON. Do not include it with a null or empty value.
-4.  For array fields ('education', 'skills', 'certifications', 'projects'), if that entire section is not found in the resume, you MUST use an empty array: [].
-
-**EXAMPLE JSON OUTPUT STRUCTURE:**
+**JSON OUTPUT STRUCTURE EXAMPLE:**
 {
-  "personalInfo": {
-    "name": "Jane Doe",
-    "email": "jane.doe@example.com",
-    "location": "New York, NY"
-  },
-  "summary": "A brief professional summary.",
+  "personalInfo": { "name": "Jane Doe", "email": "jane.doe@example.com" },
+  "summary": "Professional summary here.",
   "experience": [
-    {
-      "jobTitle": "Senior Software Engineer",
-      "company": "Tech Solutions Inc.",
-      "startDate": "Jan 2020",
-      "endDate": "Present",
-      "description": "- Developed feature A.\\n- Fixed bug B."
-    },
-    {
-      "jobTitle": "Quality Control Operator",
-      "company": "Manufacturing Co.",
-      "startDate": "Jun 2018",
-      "endDate": "Dec 2019"
-    }
+    { "jobTitle": "Software Engineer", "company": "Tech Inc.", "startDate": "Jan 2020", "endDate": "Present", "description": "- Developed feature A.\\n- Fixed bug B." }
   ],
   "education": [
-    {
-      "degree": "B.S. Computer Science",
-      "institution": "University of Example",
-      "graduationDate": "May 2020"
-    }
+    { "degree": "B.S. Computer Science", "institution": "State University", "graduationDate": "May 2020" }
   ],
-  "skills": [
-    { "name": "TypeScript" },
-    { "name": "React" }
-  ],
+  "skills": [ { "name": "TypeScript" }, { "name": "React" } ],
   "certifications": [],
   "projects": []
 }
 
-Now, provide ONLY the JSON object based on the strict rules and logic above. Pay very close attention to the work experience parsing rule.`;
+Based on these strict rules, parse the following resume text.`;
 
-    const user = `**Resume Text to Parse:**
+    const user = `**Resume Text:**
 ---
 ${resumeText}
 ---`;
