@@ -209,12 +209,12 @@ export function ResumeForm({ runAiTask }: ResumeFormProps) {
                     </li>
                     <li>
                         <strong>Download the Proxy:</strong>
-                        <p className="pl-4 text-muted-foreground">
-                            Go to this app's GitHub repository. Click on the "Actions" tab, select the most recent "Build Ollama Proxy Executable" workflow, and download the correct file for your operating system from the "Artifacts" section (e.g., `ollama-proxy-win.exe` for Windows).
+                         <p className="pl-4 text-muted-foreground">
+                            Download the correct proxy executable for your operating system from the latest release on GitHub. After downloading, you may need to grant it permission to run.
                         </p>
-                         <Button asChild variant="link" size="sm" className="p-0 h-auto -mt-1">
-                            <a href="./actions" target="_blank" rel="noopener noreferrer">
-                                Go to GitHub Actions
+                        <Button asChild variant="default" size="sm" className="mt-2 ml-4">
+                            <a href="https://github.com/sensesVoid/byok-resume-resumeeee/releases/latest" target="_blank" rel="noopener noreferrer">
+                                Download Proxy Executable
                             </a>
                         </Button>
                     </li>
