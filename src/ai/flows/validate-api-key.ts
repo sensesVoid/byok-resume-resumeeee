@@ -14,15 +14,18 @@ export type ValidateApiKeyOutput = z.infer<typeof ValidateApiKeyOutputSchema>;
 export async function validateApiKey(
   aiConfig: AiConfig
 ): Promise<ValidateApiKeyOutput> {
-  const { provider, apiKey } = aiConfig;
+  const { provider, apiKey, model } = aiConfig;
 
-  if (provider !== 'ollama' && !apiKey) {
+  if (!apiKey) {
     return { isValid: false, error: 'API Key is missing.' };
   }
 
   let url = '';
-  const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
+  let options: RequestInit = {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
   };
 
 
@@ -35,28 +38,34 @@ export async function validateApiKey(
       
       case 'openai':
         url = 'https://api.openai.com/v1/models';
-        headers['Authorization'] = `Bearer ${apiKey}`;
+        options.headers!['Authorization'] = `Bearer ${apiKey}`;
         break;
       
       case 'openrouter':
         url = 'https://openrouter.ai/api/v1/models';
-        headers['Authorization'] = `Bearer ${apiKey}`;
+        options.headers!['Authorization'] = `Bearer ${apiKey}`;
+        break;
+
+      case 'anthropic':
+        // For Anthropic, we must make a POST request, as there's no simple GET endpoint.
+        // We'll send a very small, cheap request to check the key.
+        url = 'https://api.anthropic.com/v1/messages';
+        options.method = 'POST';
+        options.headers!['x-api-key'] = apiKey;
+        options.headers!['anthropic-version'] = '2023-06-01';
+        options.body = JSON.stringify({
+          model: model || 'claude-3-haiku-20240307',
+          messages: [{ role: 'user', content: 'Hello' }],
+          max_tokens: 10,
+        });
         break;
       
-      case 'ollama': {
-        // For Ollama, we check the proxy, which in turn checks the Ollama server.
-        // Hitting the /api/tags endpoint is a reliable way to check if both are running.
-        const host = 'http://localhost:3000';
-        url = `${host}/api/tags`;
-        break;
-      }
-
       default:
         const exhaustiveCheck: never = provider;
         return { isValid: false, error: `Unsupported provider: ${exhaustiveCheck}` };
     }
     
-    const response = await fetch(url, { method: 'GET', headers });
+    const response = await fetch(url, options);
 
     if (response.ok) {
        // A 200 OK from any of these endpoints means the connection is valid.
@@ -66,7 +75,7 @@ export async function validateApiKey(
       try {
           const errorData = await response.json();
           // Try to extract a more specific message from the API's error response
-          errorMessage = `Validation failed (${response.status}): ${errorData.error?.message || errorData.detail || errorData.error || JSON.stringify(errorData)}`;
+          errorMessage = `Validation failed (${response.status}): ${errorData.error?.message || errorData.error?.type || errorData.detail || JSON.stringify(errorData)}`;
       } catch (e) {
           // Error response was not JSON. The default message is sufficient.
       }
@@ -77,10 +86,6 @@ export async function validateApiKey(
     }
   } catch (error: any) {
     console.error(`API validation failed for ${provider}:`, error);
-    let friendlyError = 'Failed to connect to the API provider. Please check your network connection.';
-    if (provider === 'ollama') {
-      friendlyError = `Failed to connect to the Ollama proxy at http://localhost:3000. Please ensure the proxy script is running and that your Ollama server is also running.`;
-    }
-    return { isValid: false, error: friendlyError };
+    return { isValid: false, error: 'Failed to connect to the API provider. Please check your network connection.' };
   }
 }

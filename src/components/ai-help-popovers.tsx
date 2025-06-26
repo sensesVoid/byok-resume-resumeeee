@@ -3,7 +3,7 @@
 
 import { Button } from "./ui/button";
 
-type Provider = 'google' | 'openai' | 'openrouter' | 'ollama';
+type Provider = 'google' | 'openai' | 'openrouter' | 'anthropic';
 
 interface HelpContentProps {
     provider: Provider;
@@ -53,20 +53,20 @@ export function ApiKeyHelpContent({ provider }: HelpContentProps) {
           </a>
         </div>
       );
-    case 'ollama':
-      return (
-        <div>
-          <p>Ollama runs locally and connects via a local proxy, so it does not require an API key.</p>
-          <a
-            href="https://github.com/geraldaton/resumeeee"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-primary underline mt-2 block"
-          >
-            See setup guide for instructions.
-          </a>
-        </div>
-      );
+    case 'anthropic':
+        return (
+          <div>
+            <p>Get your Anthropic API key from your account settings.</p>
+            <a
+              href="https://console.anthropic.com/settings/keys"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary underline"
+            >
+              Go to Anthropic Keys
+            </a>
+          </div>
+        );
     default:
       return <p>Select a provider to see help.</p>;
   }
@@ -137,39 +137,25 @@ export function ModelHelpContent({ provider }: HelpContentProps) {
                 </p>
             </div>
         );
-      case 'ollama':
+      case 'anthropic':
         return (
-            <div className="p-2 text-left max-w-md space-y-3">
-                <h4 className="font-bold">How to Use Ollama (Local AI)</h4>
+            <div className="p-2 text-left space-y-3">
+                <h4 className="font-bold">Anthropic Model Recommendations</h4>
                 <p className="text-xs">
-                   To connect this web app to your local Ollama server, you need to run a small helper application called a "proxy" on your computer. We've made this easy by providing a pre-built executable.
+                    For the best balance of speed and intelligence, we recommend:
+                    <br />
+                    <code className="my-1 block bg-muted p-1.5 rounded-md text-foreground">claude-3-5-sonnet-20240620</code>
                 </p>
-                <ol className="list-decimal list-inside space-y-3 text-xs">
-                    <li>
-                        <strong>Install Ollama:</strong> If you haven't already, download and install it from{" "}
-                        <a href="https://ollama.com/" target="_blank" rel="noopener noreferrer" className="text-primary underline">ollama.com</a>.
-                    </li>
-                    <li>
-                        <strong>Download the Proxy:</strong>
-                         <p className="pl-4 text-muted-foreground">
-                            Download the correct proxy executable for your operating system from the latest release on GitHub. After downloading, you may need to grant it permission to run.
-                        </p>
-                        <Button asChild variant="default" size="sm" className="mt-2 ml-4">
-                            <a href="https://github.com/sensesVoid/byok-resume-resumeeee/releases/latest" target="_blank" rel="noopener noreferrer">
-                                Download Proxy Executable
-                            </a>
-                        </Button>
-                    </li>
-                    <li>
-                        <strong>Run Ollama & the Proxy:</strong>
-                         <p className="pl-4 text-muted-foreground">
-                            First, ensure your main Ollama application is running. Then, find the proxy file you downloaded and double-click to run it. A terminal window will open.
-                        </p>
-                    </li>
-                    <li>
-                        <strong>Ready to Go:</strong> Keep the proxy's terminal window open. Now you can use Ollama in the app. Just enter a model name you have downloaded (e.g., `llama3`) and click the power button to connect.
-                    </li>
-                </ol>
+                <p className="text-xs">
+                    For maximum speed and affordability on simpler tasks, use:
+                    <br />
+                    <code className="my-1 block bg-muted p-1.5 rounded-md text-foreground">claude-3-haiku-20240307</code>
+                </p>
+                 <p className="text-xs">
+                    For the most powerful (and most expensive) model, use:
+                    <br />
+                    <code className="my-1 block bg-muted p-1.5 rounded-md text-foreground">claude-3-opus-20240229</code>
+                </p>
             </div>
         );
       default:

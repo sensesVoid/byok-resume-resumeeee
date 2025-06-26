@@ -11,9 +11,12 @@ function extractTextFromResponse(
   if (provider === 'google') {
     return responseData.candidates?.[0]?.content?.parts?.[0]?.text ?? null;
   }
-  // All others use the same OpenAI-compatible format, including Ollama via the proxy
-  if (provider === 'openai' || provider === 'openrouter' || provider === 'ollama') {
+  // OpenAI and OpenRouter use the same format
+  if (provider === 'openai' || provider === 'openrouter') {
     return responseData.choices?.[0]?.message?.content ?? null;
+  }
+  if (provider === 'anthropic') {
+    return responseData.content?.[0]?.text ?? null;
   }
   return null;
 }
@@ -77,7 +80,7 @@ export async function callApi({
 }): Promise<string> {
   const { provider, apiKey, model } = aiConfig;
 
-  if (provider !== 'ollama' && !apiKey) {
+  if (!apiKey) {
     throw new Error('API Key is missing. Please provide it in the form.');
   }
 
@@ -123,19 +126,17 @@ export async function callApi({
       };
       break;
     
-    case 'ollama': {
-      // Use the local proxy which forwards requests to the user's Ollama instance.
-      const host = 'http://localhost:3000';
-      url = `${host}/v1/chat/completions`;
+    case 'anthropic':
+      url = 'https://api.anthropic.com/v1/messages';
+      headers['x-api-key'] = apiKey;
+      headers['anthropic-version'] = '2023-06-01';
       payload = {
-        model: model || 'llama3', // This model must be pulled locally
+        model: model || 'claude-3-haiku-20240307',
         messages: [{ role: 'user', content: prompt }],
-        stream: false,
-        // Use the OpenAI-compatible format key to ensure JSON output
-        response_format: { type: 'json_object' }, 
+        max_tokens: 4096, // Anthropic requires max_tokens
+        // The instruction to return JSON is included in the prompt itself.
       };
       break;
-    }
 
     default:
       const exhaustiveCheck: never = provider;
@@ -154,7 +155,7 @@ export async function callApi({
         try {
             const errorData = await response.json();
             // Try to extract a more specific message from the API's error response
-            errorMessage = `API Error (${response.status}): ${errorData.error?.message || errorData.detail || errorData.error || JSON.stringify(errorData)}`;
+            errorMessage = `API Error (${response.status}): ${errorData.error?.message || errorData.error?.type || errorData.detail || JSON.stringify(errorData)}`;
         } catch (e) {
             // The error response was not JSON. The status text is the best we can do.
         }
@@ -190,8 +191,7 @@ export async function callApi({
   } catch (error: any) {
     console.error(`API call failed for ${provider}:`, error);
     if (error.message.includes('Failed to fetch')) {
-        const hostInfo = provider === 'ollama' ? ` at http://localhost:3000. Is your local proxy running?` : '';
-        throw new Error(`The AI provider could not be reached. Please check your network connection and CORS settings.${hostInfo}`);
+        throw new Error(`The AI provider could not be reached. Please check your network connection and CORS settings.`);
     }
     // Re-throw the specific error we created or a generic one
     throw new Error(error.message || 'An unexpected error occurred during the API call.');

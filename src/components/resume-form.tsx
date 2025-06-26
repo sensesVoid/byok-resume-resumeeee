@@ -243,10 +243,10 @@ export function ResumeForm({ runAiTask }: ResumeFormProps) {
                                                 </SelectTrigger>
                                             </FormControl>
                                             <SelectContent>
+                                                <SelectItem value="anthropic">Anthropic</SelectItem>
                                                 <SelectItem value="google">Google AI</SelectItem>
                                                 <SelectItem value="openai">OpenAI</SelectItem>
                                                 <SelectItem value="openrouter">OpenRouter</SelectItem>
-                                                <SelectItem value="ollama">Ollama (Local)</SelectItem>
                                             </SelectContent>
                                         </Select>
                                         <FormDescription>Select the AI provider you want to use.</FormDescription>
@@ -254,27 +254,25 @@ export function ResumeForm({ runAiTask }: ResumeFormProps) {
                                     </FormItem>
                                 )} />
                             
-                            {aiProvider !== 'ollama' && (
-                                <FormField control={form.control} name="aiConfig.apiKey" render={({ field }) => (
-                                    <FormItem>
-                                    <div className="flex items-center gap-2">
-                                        <FormLabel>API Key</FormLabel>
-                                        <Popover>
-                                            <PopoverTrigger asChild>
-                                                <button type="button" aria-label="API key help" className="cursor-help">
-                                                    <HelpCircle className="h-4 w-4 text-muted-foreground hover:text-foreground" />
-                                                </button>
-                                            </PopoverTrigger>
-                                            <PopoverContent side="right" className="w-80">
-                                                <ApiKeyHelpContent provider={aiProvider} />
-                                            </PopoverContent>
-                                        </Popover>
-                                    </div>
-                                    <FormControl><Input type="password" placeholder="Enter your API key" {...field} disabled={aiPowered} /></FormControl>
-                                    <FormMessage />
-                                    </FormItem>
-                                )} />
-                            )}
+                            <FormField control={form.control} name="aiConfig.apiKey" render={({ field }) => (
+                                <FormItem>
+                                <div className="flex items-center gap-2">
+                                    <FormLabel>API Key</FormLabel>
+                                    <Popover>
+                                        <PopoverTrigger asChild>
+                                            <button type="button" aria-label="API key help" className="cursor-help">
+                                                <HelpCircle className="h-4 w-4 text-muted-foreground hover:text-foreground" />
+                                            </button>
+                                        </PopoverTrigger>
+                                        <PopoverContent side="right" className="w-80">
+                                            <ApiKeyHelpContent provider={aiProvider} />
+                                        </PopoverContent>
+                                    </Popover>
+                                </div>
+                                <FormControl><Input type="password" placeholder="Enter your API key" {...field} disabled={aiPowered} /></FormControl>
+                                <FormMessage />
+                                </FormItem>
+                            )} />
                             
                             <FormField control={form.control} name="aiConfig.model" render={({ field }) => (
                                 <FormItem>
@@ -291,7 +289,7 @@ export function ResumeForm({ runAiTask }: ResumeFormProps) {
                                         </PopoverContent>
                                     </Popover>
                                 </div>
-                                <FormControl><Input placeholder="e.g., gemini-1.5-flash-latest" {...field} disabled={aiPowered}/></FormControl>
+                                <FormControl><Input placeholder="e.g., claude-3-haiku-20240307" {...field} disabled={aiPowered}/></FormControl>
                                 <FormDescription>If left blank, a default model will be used.</FormDescription>
                                 <FormMessage />
                                 </FormItem>

@@ -45,9 +45,8 @@ export const projectSchema = z.object({
 
 
 const baseAiConfigSchema = z.object({
-  provider: z.enum(['google', 'openai', 'openrouter', 'ollama']).default('google'),
+  provider: z.enum(['anthropic', 'google', 'openai', 'openrouter']).default('anthropic'), // Replaced 'ollama' with 'anthropic'
   model: z.string().optional(),
-  ollamaHost: z.string().url().optional().or(z.literal('')),
 });
 
 export const donationConfigSchema = z.object({
@@ -117,8 +116,7 @@ export type AiConfig = z.infer<typeof aiConfigSchema>;
 resumeSchema.refine(
   (data) => {
     if (!data.aiPowered) return true; // Not powered, no key needed
-    if (data.aiConfig.provider === 'ollama') return true; // Ollama needs no key
-    return !!data.aiConfig.apiKey; // Others need a key
+    return !!data.aiConfig.apiKey; // All cloud providers need a key
   },
   {
     message: 'API Key is required for the selected provider.',
@@ -178,10 +176,9 @@ export const defaultResumeData: ResumeSchema = {
   jobDescription: '',
   coverLetter: '',
   aiConfig: {
-    provider: 'openrouter',
+    provider: 'anthropic', // Switched to Anthropic
     apiKey: '',
-    model: 'deepseek/deepseek-r1-0528-qwen3-8b:free',
-    ollamaHost: 'http://localhost:11434',
+    model: 'claude-3-haiku-20240307', // Set Anthropic default model
   },
   aiPowered: false,
   donationConfig: {
