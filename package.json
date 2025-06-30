@@ -58,7 +58,7 @@
   "devDependencies": {
     "@types/html-to-docx": "^1.8.0",
     "@types/jspdf": "^2.0.0",
-    "@types/node": "^20",
+    "@types/node": "^24",
     "@types/qrcode.react": "^1.0.5",
     "@types/react": "^18",
     "@types/react-dom": "^18",
